@@ -29,7 +29,7 @@ spec:
               cpu: 400m
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 256Mi
           env:
             - name: STORAGE_DIR
               value: "/downloads"
