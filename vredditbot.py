@@ -74,6 +74,7 @@ def _send_drug_package(
         json={
             "chat_id": chat_id,
             "reply_to_message_id": reply_to_message_id,
+            "disable_notification": True,
             "media": [_build_input_media_video(drug) for drug in drugs]
         },
         timeout=10,
