@@ -211,7 +211,7 @@ def _handle_update(update: dict):
         _send_drug_package(
             chat_id=message["chat"]["id"],
             reply_to_message_id=message["message_id"],
-            drugs=drugs
+            drugs=drugs,
         )
 
 
