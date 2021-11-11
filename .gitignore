@@ -1,0 +1,9 @@
+# Files and directories created by pub.
+__pycache__
+.venv
+
+# Conventional directory for build output.
+build/
+
+# IntelliJ IDEA
+.idea/

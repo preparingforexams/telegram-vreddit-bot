@@ -1,0 +1,33 @@
+name: Workflow
+on: [push]
+
+jobs:
+  push_docker:
+    runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build the tagged Docker image
+        run: docker build -t ghcr.io/openalcoholics/vredditbot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" .
+      - name: Push the tagged Docker image
+        run: docker push ghcr.io/openalcoholics/vredditbot:${GITHUB_SHA}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push_docker
+    steps:
+      - uses: actions/checkout@v1
+      - name: Substitute environment variables in values.yaml
+        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      - uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm upgrade vredditbot . --install --namespace=telegram-bots
+          kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'

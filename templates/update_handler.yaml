@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: telegram-bots
+  name: coin-update-handler
+  labels:
+    app: coin-update-handler
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: coin-update-handler
+  template:
+    metadata:
+      labels:
+        app: coin-update-handler
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          resources:
+            limits:
+              cpu: 50m
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          envFrom:
+            - secretRef:
+                name: coin-secrets
