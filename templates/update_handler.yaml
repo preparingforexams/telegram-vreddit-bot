@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: telegram-bots
-  name: coin-update-handler
+  name: vreddit-update-handler
   labels:
-    app: coin-update-handler
+    app: vreddit-update-handler
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -15,11 +15,11 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: coin-update-handler
+      app: vreddit-update-handler
   template:
     metadata:
       labels:
-        app: coin-update-handler
+        app: vreddit-update-handler
     spec:
       containers:
         - name: app
@@ -35,7 +35,7 @@ spec:
               value: "/downloads"
           envFrom:
             - secretRef:
-                name: coin-secrets
+                name: vreddit-secrets
           volumeMounts:
             - mountPath: "/downloads"
               name: downloads
