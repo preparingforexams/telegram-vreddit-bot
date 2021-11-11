@@ -4,6 +4,7 @@ import subprocess
 import sys
 import uuid
 from dataclasses import dataclass
+from tempfile import TemporaryDirectory
 from typing import Callable, Optional, List
 from urllib.parse import urlparse, ParseResult
 
@@ -114,12 +115,9 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[str]:
         return url
 
 
-def _develop_cures(cancer: str) -> List[Cure]:
-    if not os.path.exists(_STORAGE_DIR):
-        os.mkdir(_STORAGE_DIR)
-
+def _develop_cures(cure_parcel: str, cancer: str) -> List[Cure]:
     cure_id = str(uuid.uuid4())
-    cure_dir = os.path.join(_STORAGE_DIR, cure_id)
+    cure_dir = os.path.join(cure_parcel, cure_id)
     os.mkdir(cure_dir)
 
     ytdl = YoutubeDL(params={
@@ -206,14 +204,15 @@ def _handle_update(update: dict):
         _LOG.debug("Message was healthy")
         return
 
-    cures = [cure for cancer in cancers for cure in _develop_cures(cancer)]
-    drugs = [_manufacture_drug(cure) for cure in cures]
+    with TemporaryDirectory(dir=_STORAGE_DIR) as cure_parcel:
+        cures = [cure for cancer in cancers for cure in _develop_cures(cure_parcel, cancer)]
+        drugs = [_manufacture_drug(cure) for cure in cures]
 
-    _send_drug_package(
-        chat_id=message["chat"]["id"],
-        reply_to_message_id=message["message_id"],
-        drugs=drugs
-    )
+        _send_drug_package(
+            chat_id=message["chat"]["id"],
+            reply_to_message_id=message["message_id"],
+            drugs=drugs
+        )
 
 
 def _request_updates(last_update_id: Optional[int]) -> List[dict]:
@@ -252,6 +251,9 @@ def main():
     if not _API_KEY:
         _LOG.error("Missing API key")
         sys.exit(1)
+
+    if not os.path.exists(_STORAGE_DIR):
+        os.mkdir(_STORAGE_DIR)
 
     _handle_updates(_handle_update)
 
