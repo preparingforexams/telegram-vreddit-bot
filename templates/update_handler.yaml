@@ -26,10 +26,10 @@ spec:
           image: {{ .Values.image }}
           resources:
             limits:
-              cpu: 50m
+              cpu: 400m
             requests:
-              cpu: 10m
-              memory: 32Mi
+              cpu: 50m
+              memory: 128Mi
           env:
             - name: STORAGE_DIR
               value: "/downloads"
