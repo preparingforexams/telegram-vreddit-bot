@@ -30,6 +30,15 @@ spec:
             requests:
               cpu: 10m
               memory: 32Mi
+          env:
+            - name: STORAGE_DIR
+              value: "/downloads"
           envFrom:
             - secretRef:
                 name: coin-secrets
+          volumeMounts:
+            - mountPath: "/downloads"
+              name: downloads
+      volumes:
+        - name: downloads
+          emptyDir: {}
