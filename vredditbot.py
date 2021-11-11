@@ -13,7 +13,7 @@ from yt_dlp import YoutubeDL
 
 _API_KEY = os.getenv("TELEGRAM_API_KEY")
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
-_UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "133399998")
+_UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
 
 _LOG = logging.getLogger("vredditbot")
 
