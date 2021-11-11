@@ -1,10 +1,11 @@
 import logging
 import os
+import subprocess
 import sys
 import uuid
 from dataclasses import dataclass
 from typing import Callable, Optional, List
-from urllib.parse import urlparse
+from urllib.parse import urlparse, ParseResult
 
 import requests
 from yt_dlp import YoutubeDL
@@ -15,8 +16,24 @@ _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "133399998")
 
 _LOG = logging.getLogger("vredditbot")
 
-_CANCER_HOSTS = [
-    "v.redd.it",
+
+@dataclass
+class Cancer:
+    host: str
+    path: Optional[str] = None
+
+    def matches(self, symptoms: ParseResult) -> bool:
+        if symptoms.netloc.startswith(self.host):
+            return not self.path or symptoms.path.startswith(self.path)
+        return False
+
+
+_CANCERS = [
+    Cancer("v.redd.it"),
+    Cancer(
+        host="youtube.com",
+        path="/shorts/",
+    )
 ]
 
 
@@ -92,8 +109,8 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[str]:
         return None
 
     _LOG.info("Extracted URL %s", url)
-    netloc = urlparse(url).netloc
-    if any(netloc.startswith(cancer_host) for cancer_host in _CANCER_HOSTS):
+    symptoms = urlparse(url)
+    if any(cancer.matches(symptoms) for cancer in _CANCERS):
         return url
 
 
@@ -126,8 +143,30 @@ def _develop_cures(cancer: str) -> List[Cure]:
     ]
 
 
+def _convert_cure(input_path: str, output_path: str):
+    _LOG.info("Converting from %s to %s", input_path, output_path)
+    process = subprocess.Popen([
+        'ffmpeg',
+        '-i', input_path,
+        output_path,
+    ])
+    if process.wait() != 0:
+        raise RuntimeError("Could not convert file!")
+
+
+def _ensure_compatibility(original_path: str) -> str:
+    base, ext = os.path.splitext(original_path)
+    if ext == ".mp4":
+        return original_path
+
+    converted_path = f"{base}.mp4"
+    _convert_cure(original_path, converted_path)
+    return converted_path
+
+
 def _manufacture_drug(cure: Cure) -> Drug:
-    message = _upload_video(cure.cure_path)
+    cure_path = _ensure_compatibility(cure.cure_path)
+    message = _upload_video(cure_path)
     video = message["video"]
     file_id = video["file_id"]
     return Drug(cancer=cure.cancer, drug_id=file_id)
