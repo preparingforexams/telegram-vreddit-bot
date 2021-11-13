@@ -3,9 +3,11 @@ import os
 import subprocess
 import sys
 import uuid
+from collections import defaultdict
 from dataclasses import dataclass
+from enum import Enum, auto
 from tempfile import TemporaryDirectory
-from typing import Callable, Optional, List
+from typing import Callable, Optional, List, Dict
 from urllib.parse import urlparse, ParseResult
 
 import requests
@@ -18,9 +20,15 @@ _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
 _LOG = logging.getLogger("vredditbot")
 
 
+class Treatment(Enum):
+    DOWNLOAD = auto()
+    YOUTUBE_URL_CONVERT = auto()
+
+
 @dataclass
 class Cancer:
     host: str
+    treatment: Treatment
     path: Optional[str] = None
 
     def matches(self, symptoms: ParseResult) -> bool:
@@ -30,12 +38,19 @@ class Cancer:
 
 
 _CANCERS = [
-    Cancer("v.redd.it"),
+    Cancer("v.redd.it", Treatment.DOWNLOAD),
     Cancer(
         host="youtube.com",
         path="/shorts/",
-    )
+        treatment=Treatment.YOUTUBE_URL_CONVERT,
+    ),
 ]
+
+
+@dataclass
+class Diagnosis:
+    cancer: Cancer
+    case: str
 
 
 @dataclass
@@ -82,6 +97,26 @@ def _build_input_media_video(drug: Drug) -> dict:
     }
 
 
+def _send_rewritten_case_files(
+    chat_id: int,
+    reply_to_message_id: Optional[int],
+    case_files: List[str],
+) -> dict:
+    list_of_case_files = "\n".join(case_files)
+    return _get_actual_body(requests.post(
+        _build_url("sendMessage"),
+        json={
+            "chat_id": chat_id,
+            "reply_to_message_id": reply_to_message_id,
+            "disable_notification": True,
+            "allow_sending_without_reply": True,
+            "disable_web_page_preview": True,
+            "text": f"I cured that cancer of yours:\n{list_of_case_files}",
+        },
+        timeout=10,
+    ))
+
+
 def _send_drug_package(
     chat_id: int,
     reply_to_message_id: Optional[int],
@@ -100,7 +135,7 @@ def _send_drug_package(
     ))
 
 
-def _diagnose_cancer(text: str, entity: dict) -> Optional[str]:
+def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
     if entity["type"] == "url":
         offset = entity["offset"]
         length = entity["length"]
@@ -112,8 +147,9 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[str]:
 
     _LOG.info("Extracted URL %s", url)
     symptoms = urlparse(url)
-    if any(cancer.matches(symptoms) for cancer in _CANCERS):
-        return url
+    for cancer in _CANCERS:
+        if cancer.matches(symptoms):
+            return Diagnosis(cancer, url)
 
 
 def _develop_cures(cure_parcel: str, cancer: str) -> List[Cure]:
@@ -151,6 +187,12 @@ def _convert_cure(input_path: str, output_path: str):
     ])
     if process.wait() != 0:
         raise RuntimeError("Could not convert file!")
+
+
+def _rewrite_youtube_url(case: str) -> str:
+    parsed = urlparse(case)
+    video_id = parsed.path.split("/")[-1]
+    return f"https://youtube.com/watch?v={video_id}"
 
 
 def _ensure_compatibility(original_path: str) -> str:
@@ -195,24 +237,42 @@ def _handle_update(update: dict):
         _LOG.debug("No entities found in message")
         return
 
-    cancers = []
+    diagnosis_by_treatment: Dict[Treatment, List[Diagnosis]] = defaultdict(list)
     for entity in entities:
-        cancer = _diagnose_cancer(text, entity)
-        if cancer:
-            cancers.append(cancer)
+        diagnosis = _diagnose_cancer(text, entity)
+        if diagnosis:
+            diagnosis_by_treatment[diagnosis.cancer.treatment].append(diagnosis)
 
-    if not cancers:
+    if not diagnosis_by_treatment:
         _LOG.debug("Message was healthy")
         return
 
-    with TemporaryDirectory(dir=_STORAGE_DIR) as cure_parcel:
-        cures = [cure for cancer in cancers for cure in _develop_cures(cure_parcel, cancer)]
-        drugs = [_manufacture_drug(cure) for cure in cures]
+    downloadable = diagnosis_by_treatment[Treatment.DOWNLOAD]
+    if downloadable:
+        with TemporaryDirectory(dir=_STORAGE_DIR) as cure_parcel:
+            cures = [
+                cure
+                for diagnosis in downloadable
+                for cure in _develop_cures(cure_parcel, diagnosis.case)
+            ]
+            drugs = [_manufacture_drug(cure) for cure in cures]
 
-        _send_drug_package(
+            _send_drug_package(
+                chat_id=message["chat"]["id"],
+                reply_to_message_id=message["message_id"],
+                drugs=drugs,
+            )
+
+    youtube_url_rewritable = diagnosis_by_treatment[Treatment.YOUTUBE_URL_CONVERT]
+    if youtube_url_rewritable:
+        rewritten_case_files = [
+            _rewrite_youtube_url(diagnosis.case)
+            for diagnosis in youtube_url_rewritable
+        ]
+        _send_rewritten_case_files(
             chat_id=message["chat"]["id"],
             reply_to_message_id=message["message_id"],
-            drugs=drugs,
+            case_files=rewritten_case_files,
         )
 
 
