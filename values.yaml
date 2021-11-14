@@ -1,3 +1,5 @@
 image: ghcr.io/openalcoholics/vredditbot:${GITHUB_SHA}
 telegram:
   apiKey: ${TELEGRAM_TOKEN}
+sentry:
+  dsn: ${SENTRY_DSN}
