@@ -1,4 +1,4 @@
-image: ghcr.io/openalcoholics/vredditbot:${GITHUB_SHA}
+image: ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA}
 telegram:
   apiKey: ${TELEGRAM_TOKEN}
 sentry:
