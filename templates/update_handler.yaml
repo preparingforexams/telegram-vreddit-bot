@@ -23,7 +23,7 @@ spec:
           image: {{ .Values.image }}
           resources:
             limits:
-              cpu: 400m
+              cpu: "1"
             requests:
               cpu: 50m
               memory: 128Mi
