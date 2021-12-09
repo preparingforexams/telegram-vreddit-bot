@@ -2,10 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: telegram-bots
-  name: vreddit-update-handler
+  name: update-handler
   labels:
-    app: vreddit-update-handler
+    app: update-handler
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -13,11 +12,11 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: vreddit-update-handler
+      app: update-handler
   template:
     metadata:
       labels:
-        app: vreddit-update-handler
+        app: update-handler
     spec:
       containers:
         - name: app
@@ -33,7 +32,7 @@ spec:
               value: "/downloads"
           envFrom:
             - secretRef:
-                name: vreddit-secrets
+                name: secrets
           volumeMounts:
             - mountPath: "/downloads"
               name: downloads
