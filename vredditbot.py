@@ -39,6 +39,7 @@ class Cancer:
 
 
 _CANCERS = [
+    Cancer(host="twitter.com", treatment=Treatment.DOWNLOAD),
     Cancer("v.redd.it", Treatment.DOWNLOAD),
     Cancer(
         host="youtube.com",
@@ -163,7 +164,7 @@ def _develop_cures(cure_parcel: str, cancer: str) -> List[Cure]:
     })
 
     return_code = ytdl.download([cancer])
-    if not return_code == 0:
+    if return_code != 0:
         _LOG.error("YTDL returned error code %d", return_code)
         return []
 
