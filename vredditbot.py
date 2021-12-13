@@ -41,6 +41,7 @@ class Cancer:
 _CANCERS = [
     Cancer(host="twitter.com", treatment=Treatment.DOWNLOAD),
     Cancer("v.redd.it", Treatment.DOWNLOAD),
+    Cancer("www.reddit.com", Treatment.DOWNLOAD),
     Cancer(
         host="youtube.com",
         path="/shorts/",
