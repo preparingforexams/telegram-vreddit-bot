@@ -42,8 +42,8 @@ _CANCERS = [
     Cancer(host="twitter.com", treatment=Treatment.DOWNLOAD),
     Cancer("v.redd.it", Treatment.DOWNLOAD),
     Cancer("www.reddit.com", Treatment.DOWNLOAD),
-    Cancer("instagram.com", Treatment.DOWNLOAD),
-    Cancer("www.instagram.com", Treatment.DOWNLOAD),
+    #Cancer("instagram.com", Treatment.DOWNLOAD),
+    #Cancer("www.instagram.com", Treatment.DOWNLOAD),
     Cancer("facebook.com", Treatment.DOWNLOAD),
     Cancer("www.facebook.com", Treatment.DOWNLOAD),
     Cancer(
