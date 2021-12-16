@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: update-handler
+  name: downloader
   labels:
-    app: update-handler
+    app: downloader
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -12,25 +12,34 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: update-handler
+      app: downloader
   template:
     metadata:
       labels:
-        app: update-handler
+        app: downloader
     spec:
       containers:
         - name: app
           image: {{ .Values.image }}
           args:
-            - handle_updates
+            - download
           resources:
             limits:
-              cpu: 20m
+              cpu: "1"
             requests:
-              cpu: 5m
-              memory: 32Mi
+              cpu: 50m
+              memory: 128Mi
+          env:
+            - name: STORAGE_DIR
+              value: "/downloads"
           envFrom:
             - configMapRef:
                 name: config
             - secretRef:
                 name: secrets
+          volumeMounts:
+            - mountPath: "/downloads"
+              name: downloads
+      volumes:
+        - name: downloads
+          emptyDir: {}

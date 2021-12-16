@@ -10,3 +10,5 @@ build/
 
 # TMP dirs
 downloads/
+
+.pytest_cache/

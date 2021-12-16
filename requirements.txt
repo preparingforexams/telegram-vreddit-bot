@@ -1,4 +1,4 @@
-click==8.0.3
+click==8.0.1
 paho-mqtt==1.6.1
 requests==2.26.0
 sentry-sdk==1.5.1

@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: update-handler
+  name: youtube-converter
   labels:
-    app: update-handler
+    app: youtube-converter
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -12,23 +12,23 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: update-handler
+      app: youtube-converter
   template:
     metadata:
       labels:
-        app: update-handler
+        app: youtube-converter
     spec:
       containers:
         - name: app
           image: {{ .Values.image }}
           args:
-            - handle_updates
+            - youtube_url_convert
           resources:
             limits:
-              cpu: 20m
+              cpu: 10m
             requests:
-              cpu: 5m
-              memory: 32Mi
+              cpu: 1m
+              memory: 128Mi
           envFrom:
             - configMapRef:
                 name: config
