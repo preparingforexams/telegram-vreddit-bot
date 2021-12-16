@@ -37,6 +37,7 @@ T = TypeVar('T', bound=Message)
 def subscribe(message_type: Type[T], handle: Callable[[T], None]):
     def on_message(client, userdata, message):
         payload = message.payload
+        _LOG.debug("Received message with payload %s", payload)
         handle(message_type.deserialize(payload))
 
     callback(

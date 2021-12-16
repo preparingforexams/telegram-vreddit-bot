@@ -11,7 +11,7 @@ _LOG = logging.getLogger("cancer")
 
 def _setup_logging():
     logging.basicConfig()
-    _LOG.level = logging.INFO
+    _LOG.level = logging.DEBUG
 
 
 def _setup_sentry():
