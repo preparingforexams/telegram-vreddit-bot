@@ -30,6 +30,7 @@ def run():
     telegram.check()
     mqtt.check()
 
+    _LOG.debug("Subscribing to MQTT topic")
     mqtt.subscribe(
         YoutubeUrlConvertMessage,
         _handle_payload,
