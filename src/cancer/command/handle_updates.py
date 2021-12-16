@@ -97,6 +97,7 @@ def _make_message(
         return DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
     if treatment == Treatment.YOUTUBE_URL_CONVERT:
         return YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
+    raise ValueError(f"Unkonown treatment: {treatment}")
 
 
 def _handle_update(update: dict):

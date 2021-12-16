@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List, Callable, TypeVar, Type
 
@@ -5,6 +6,8 @@ from paho.mqtt.publish import multiple
 from paho.mqtt.subscribe import callback
 
 from cancer.message import Message
+
+_LOG = logging.getLogger(__name__)
 
 _HOST = os.getenv("MQTT_HOST")
 _USER = os.getenv("MQTT_USER")
@@ -17,9 +20,10 @@ def check():
 
 
 def publish_messages(messages: List[Message]):
+    _LOG.debug("Publishing messages %s", messages)
     multiple(
         msgs=[
-            dict(topic=message.topic(), payload=message.serialize())
+            dict(topic=message.topic(), qos=1, payload=message.serialize())
             for message in messages
         ],
         hostname=_HOST,
