@@ -7,3 +7,6 @@ mqtt:
   host: mqtt.mqtt
   user: cancer
   password: ${MQTT_PASSWORD}
+  topic:
+    download: cancer/download
+    youtubeUrlConvert: cancer/youtubeUrlConvert

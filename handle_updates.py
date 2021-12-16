@@ -12,6 +12,7 @@ from urllib.parse import urlparse, ParseResult
 
 import requests
 import sentry_sdk
+from paho.mqtt.publish import multiple
 from yt_dlp import YoutubeDL
 
 _API_KEY = os.getenv("TELEGRAM_API_KEY")
@@ -42,8 +43,8 @@ _CANCERS = [
     Cancer(host="twitter.com", treatment=Treatment.DOWNLOAD),
     Cancer("v.redd.it", Treatment.DOWNLOAD),
     Cancer("www.reddit.com", Treatment.DOWNLOAD),
-    #Cancer("instagram.com", Treatment.DOWNLOAD),
-    #Cancer("www.instagram.com", Treatment.DOWNLOAD),
+    # Cancer("instagram.com", Treatment.DOWNLOAD),
+    # Cancer("www.instagram.com", Treatment.DOWNLOAD),
     Cancer("facebook.com", Treatment.DOWNLOAD),
     Cancer("www.facebook.com", Treatment.DOWNLOAD),
     Cancer(
@@ -220,6 +221,21 @@ def _manufacture_drug(cure: Cure) -> Drug:
     return Drug(cancer=cure.cancer, drug_id=file_id)
 
 
+def _get_topic(treatment: Treatment) -> str:
+    if treatment == Treatment.DOWNLOAD:
+        return os.getenv("MQTT_TOPIC_DOWNLOAD")
+    if treatment == Treatment.YOUTUBE_URL_CONVERT:
+        return os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT")
+
+
+def _publish_diagnosis(treatment: Treatment, diagnoses: List[Diagnosis]):
+    topic = _get_topic(treatment)
+    multiple([
+        dict(topic=topic, debug=True, diagnosis=diagnosis.case)
+        for diagnosis in diagnoses
+    ])
+
+
 def _handle_update(update: dict):
     message: Optional[dict] = update.get("message")
 
@@ -253,6 +269,12 @@ def _handle_update(update: dict):
     if not diagnosis_by_treatment:
         _LOG.debug("Message was healthy")
         return
+
+    for treatment, diagnoses in diagnosis_by_treatment.items():
+        try:
+            _publish_diagnosis(treatment, diagnoses)
+        except Exception as e:
+            _LOG.error("Could not publish events", exc_info=e)
 
     downloadable = diagnosis_by_treatment[Treatment.DOWNLOAD]
     if downloadable:

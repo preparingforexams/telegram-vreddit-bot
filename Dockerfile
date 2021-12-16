@@ -13,4 +13,4 @@ COPY vredditbot.py .
 ARG build
 ENV BUILD_SHA=$build
 
-CMD [ "python", "-m", "vredditbot" ]
+CMD [ "python", "-m" ]
