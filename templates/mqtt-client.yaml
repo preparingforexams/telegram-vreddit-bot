@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqtt-client
+  template:
+    metadata:
+      labels:
+        app: mqtt-client
+    spec:
+      containers:
+        - name: client
+          image: efrecon/mqtt-client
+          command: [ "sub",  "-h", "mqtt.mqtt", "-p", "1883", "-t", "#", "-v", "-d" "-u" "cancer", "-p", "$MQTT_PASSWORD" ]
+          env:
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MQTT_PASSWORD
+                  name: secrets
