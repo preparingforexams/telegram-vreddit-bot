@@ -18,8 +18,7 @@ spec:
           command: [ "sub" ]
           args: [
               "-h", "mqtt.mqtt",
-              "-p", "1883",
-              "-t", "#",
+              "-t", "\"#\"",
               "-u", "cancer",
               "-P", "$MQTT_PASSWORD",
               "-v",
