@@ -1,5 +1,5 @@
 import os
-from typing import List, Callable, TypeVar
+from typing import List, Callable, TypeVar, Type
 
 from paho.mqtt.publish import multiple
 from paho.mqtt.subscribe import callback
@@ -30,10 +30,10 @@ def publish_messages(messages: List[Message]):
 T = TypeVar('T', bound=Message)
 
 
-def subscribe(topic: str, handle: Callable[[T], None]):
+def subscribe(topic: str, message_type: Type[T], handle: Callable[[T], None]):
     def on_message(client, userdata, message):
         payload = message.payload
-        handle(T.deserialize(payload))
+        handle(message_type.deserialize(payload))
 
     callback(
         on_message,

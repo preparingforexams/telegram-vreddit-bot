@@ -3,7 +3,7 @@ import os
 from urllib.parse import urlparse
 
 from cancer import telegram, mqtt
-from cancer.message.download import DownloadMessage
+from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
 
 _LOG = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ def _rewrite_youtube_url(case: str) -> str:
     return f"https://youtube.com/watch?v={video_id}"
 
 
-def _handle_payload(payload: DownloadMessage):
+def _handle_payload(payload: YoutubeUrlConvertMessage):
     _LOG.info("Received payload: %s", payload)
 
     rewritten_urls = [_rewrite_youtube_url(url) for url in payload.urls]
@@ -31,4 +31,8 @@ def run():
     telegram.check()
     mqtt.check()
 
-    mqtt.subscribe(os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT"), _handle_payload)
+    mqtt.subscribe(
+        os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT"),
+        YoutubeUrlConvertMessage,
+        _handle_payload,
+    )
