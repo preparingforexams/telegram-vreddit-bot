@@ -44,7 +44,7 @@ _CANCERS = [
     # Cancer("www.instagram.com", Treatment.DOWNLOAD),
     Cancer("facebook.com", Treatment.DOWNLOAD),
     Cancer("www.facebook.com", Treatment.DOWNLOAD),
-    # Cancer("vm.tiktok.com", Treatment.DOWNLOAD),
+    Cancer("vm.tiktok.com", Treatment.DOWNLOAD),
     Cancer(
         host="youtube.com",
         path="/shorts/",
