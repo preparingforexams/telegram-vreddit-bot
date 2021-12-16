@@ -8,9 +8,9 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache
 
-COPY *.py .
+COPY cancer .
 
 ARG build
 ENV BUILD_SHA=$build
 
-ENTRYPOINT [ "python", "-m" ]
+ENTRYPOINT [ "python", "-m", "cancer" ]

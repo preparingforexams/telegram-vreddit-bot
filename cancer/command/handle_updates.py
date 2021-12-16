@@ -20,7 +20,7 @@ _API_KEY = os.getenv("TELEGRAM_API_KEY")
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
 
-_LOG = logging.getLogger("vredditbot")
+_LOG = logging.getLogger(__name__)
 
 
 class Treatment(Enum):
@@ -359,7 +359,7 @@ def _setup_sentry():
     )
 
 
-def main():
+def run():
     _setup_logging()
     _setup_sentry()
 
@@ -371,7 +371,3 @@ def main():
         os.mkdir(_STORAGE_DIR)
 
     _handle_updates(_handle_update)
-
-
-if __name__ == '__main__':
-    main()
