@@ -39,9 +39,9 @@ def _request_updates(last_update_id: Optional[int]) -> List[dict]:
     ))
 
 
-def handle_updates(handler: Callable[[dict], None]):
+def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], None]):
     last_update_id: Optional[int] = None
-    while True:
+    while should_run():
         updates = _request_updates(last_update_id)
         try:
             for update in updates:

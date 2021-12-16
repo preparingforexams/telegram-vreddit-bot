@@ -1,6 +1,8 @@
 import logging
 import os
+import signal
 import subprocess
+import sys
 import uuid
 from tempfile import TemporaryDirectory
 from typing import List
@@ -93,5 +95,7 @@ def run():
     if not os.path.exists(_STORAGE_DIR):
         os.mkdir(_STORAGE_DIR)
 
+    signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
+
+    _LOG.debug("Subscribing to MQTT topic")
     mqtt.subscribe(DownloadMessage, _handle_payload)
-    _LOG.info("Subscribed to MQTT topic")

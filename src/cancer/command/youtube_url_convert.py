@@ -1,4 +1,6 @@
 import logging
+import signal
+import sys
 from urllib.parse import urlparse
 
 from cancer import telegram, mqtt
@@ -30,9 +32,10 @@ def run():
     telegram.check()
     mqtt.check()
 
+    signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
+
     _LOG.debug("Subscribing to MQTT topic")
     mqtt.subscribe(
         YoutubeUrlConvertMessage,
         _handle_payload,
     )
-    _LOG.info("Subscribed to MQTT topic")

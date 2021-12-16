@@ -1,5 +1,6 @@
 import logging
 import os
+import signal
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -151,4 +152,15 @@ def run():
     telegram.check()
     mqtt.check()
 
-    telegram.handle_updates(_handle_update)
+    received_sigterm = False
+
+    def should_run() -> bool:
+        return not received_sigterm
+
+    def on_sigterm(*args):
+        nonlocal received_sigterm
+        received_sigterm = True
+
+    signal.signal(signal.SIGTERM, on_sigterm)
+
+    telegram.handle_updates(should_run, _handle_update)
