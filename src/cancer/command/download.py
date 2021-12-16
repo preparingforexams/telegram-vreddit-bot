@@ -94,3 +94,4 @@ def run():
         os.mkdir(_STORAGE_DIR)
 
     mqtt.subscribe(DownloadMessage, _handle_payload)
+    _LOG.info("Subscribed to MQTT topic")

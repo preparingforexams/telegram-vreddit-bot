@@ -28,7 +28,7 @@ spec:
               cpu: 10m
             requests:
               cpu: 1m
-              memory: 128Mi
+              memory: 16Mi
           envFrom:
             - configMapRef:
                 name: config

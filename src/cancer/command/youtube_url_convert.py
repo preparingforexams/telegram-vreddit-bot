@@ -1,5 +1,4 @@
 import logging
-import os
 from urllib.parse import urlparse
 
 from cancer import telegram, mqtt
@@ -35,3 +34,4 @@ def run():
         YoutubeUrlConvertMessage,
         _handle_payload,
     )
+    _LOG.info("Subscribed to MQTT topic")
