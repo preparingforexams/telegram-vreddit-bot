@@ -8,7 +8,7 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache
 
-COPY cancer .
+COPY src .
 
 ARG build
 ENV BUILD_SHA=$build
