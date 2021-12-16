@@ -232,7 +232,7 @@ def _publish_diagnosis(treatment: Treatment, diagnoses: List[Diagnosis]):
     topic = _get_topic(treatment)
     multiple(
         msgs=[
-            dict(topic=topic, debug=True, diagnosis=diagnosis.case)
+            dict(topic=topic, payload=dict(debug=True, diagnosis=diagnosis.case))
             for diagnosis in diagnoses
         ],
         hostname=os.getenv("MQTT_HOST"),
