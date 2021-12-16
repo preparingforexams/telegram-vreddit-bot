@@ -13,4 +13,4 @@ COPY *.py .
 ARG build
 ENV BUILD_SHA=$build
 
-CMD [ "python", "-m" ]
+ENTRYPOINT [ "python", "-m" ]
