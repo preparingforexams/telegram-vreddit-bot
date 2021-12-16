@@ -21,8 +21,7 @@ spec:
               "-t", "#",
               "-u", "$(MQTT_USER)",
               "-P", "$(MQTT_PASSWORD)",
-              "-v",
-              "-d"
+              "-v"
           ]
           envFrom:
             - configMapRef:
