@@ -17,13 +17,16 @@ spec:
           image: efrecon/mqtt-client
           command: [ "sub" ]
           args: [
-              "-h", "mqtt.mqtt",
-              "-t", "'#'",
-              "-u", "cancer",
-              "-P", "$MQTT_PASSWORD",
+              "-h", "$(MQTT_HOST)",
+              "-t", "#",
+              "-u", "$(MQTT_USER)",
+              "-P", "$(MQTT_PASSWORD)",
               "-v",
               "-d"
           ]
+          envFrom:
+            - configMapRef:
+                name: config
           env:
             - name: MQTT_PASSWORD
               valueFrom:

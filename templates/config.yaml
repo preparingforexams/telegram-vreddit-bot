@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  MQTT_HOST: {{ .Values.mqtt.host }}
+  MQTT_USER: {{ .Values.mqtt.user }}
