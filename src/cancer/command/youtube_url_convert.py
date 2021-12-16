@@ -32,7 +32,6 @@ def run():
     mqtt.check()
 
     mqtt.subscribe(
-        os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT"),
         YoutubeUrlConvertMessage,
         _handle_payload,
     )

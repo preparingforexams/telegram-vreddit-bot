@@ -93,4 +93,4 @@ def run():
     if not os.path.exists(_STORAGE_DIR):
         os.mkdir(_STORAGE_DIR)
 
-    mqtt.subscribe(os.getenv("MQTT_TOPIC_DOWNLOAD"), DownloadMessage, _handle_payload)
+    mqtt.subscribe(DownloadMessage, _handle_payload)

@@ -30,14 +30,14 @@ def publish_messages(messages: List[Message]):
 T = TypeVar('T', bound=Message)
 
 
-def subscribe(topic: str, message_type: Type[T], handle: Callable[[T], None]):
+def subscribe(message_type: Type[T], handle: Callable[[T], None]):
     def on_message(client, userdata, message):
         payload = message.payload
         handle(message_type.deserialize(payload))
 
     callback(
         on_message,
-        topics=[topic],
+        topics=[message_type.topic()],
         qos=1,
         hostname=_HOST,
         auth={"username": _USER, "password": _PASSWORD},
