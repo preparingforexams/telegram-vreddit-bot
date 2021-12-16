@@ -230,10 +230,15 @@ def _get_topic(treatment: Treatment) -> str:
 
 def _publish_diagnosis(treatment: Treatment, diagnoses: List[Diagnosis]):
     topic = _get_topic(treatment)
-    multiple([
-        dict(topic=topic, debug=True, diagnosis=diagnosis.case)
-        for diagnosis in diagnoses
-    ])
+    multiple(
+        msgs=[
+            dict(topic=topic, debug=True, diagnosis=diagnosis.case)
+            for diagnosis in diagnoses
+        ],
+        hostname=os.getenv("MQTT_HOST"),
+        auth={"username": os.getenv("MQTT_USER"), "password": os.getenv("MQTT_PASSWORD")},
+
+    )
 
 
 def _handle_update(update: dict):
