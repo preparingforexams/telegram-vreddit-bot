@@ -15,7 +15,7 @@ spec:
       containers:
         - name: client
           image: efrecon/mqtt-client
-          command: [ "sub",  "-h", "mqtt.mqtt", "-p", "1883", "-t", "#", "-v", "-d" "-u" "cancer", "-p", "$MQTT_PASSWORD" ]
+          command: [ "sub",  "-h", "mqtt.mqtt", "-p", "1883", "-t", "#", "-v", "-d" "-u" "cancer", "-P", "$MQTT_PASSWORD" ]
           env:
             - name: MQTT_PASSWORD
               valueFrom:
