@@ -10,13 +10,18 @@ from cancer.message import Message
 _LOG = logging.getLogger(__name__)
 
 _HOST = os.getenv("MQTT_HOST")
+_PORT = os.getenv("MQTT_PORT")
 _USER = os.getenv("MQTT_USER")
 _PASSWORD = os.getenv("MQTT_PASSWORD")
+_TRANSPORT = os.getenv("MQTT_TRANSPORT", "tcp")
 
 
 def check():
-    if not (_HOST and _USER and _PASSWORD):
-        raise ValueError("MQTT host, user or password is missing")
+    if not (_HOST and _PORT and _USER and _PASSWORD and _TRANSPORT):
+        raise ValueError("MQTT host, port, user or password is missing")
+    int(_PORT)
+
+    _LOG.debug("Going to use %s transport", _TRANSPORT)
 
 
 def publish_messages(messages: List[Message]):
@@ -27,7 +32,10 @@ def publish_messages(messages: List[Message]):
             for message in messages
         ],
         hostname=_HOST,
+        port=int(_PORT),
+        transport=_TRANSPORT,
         auth={"username": _USER, "password": _PASSWORD},
+        tls={},
     )
 
 
@@ -45,5 +53,8 @@ def subscribe(message_type: Type[T], handle: Callable[[T], None]):
         topics=[message_type.topic()],
         qos=1,
         hostname=_HOST,
+        port=int(_PORT),
+        transport=_TRANSPORT,
         auth={"username": _USER, "password": _PASSWORD},
+        tls={},
     )

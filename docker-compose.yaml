@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  downloader:
+    build:
+      context: .
+    image: cancer-downloader
+    command:
+      - download
+    volumes:
+      - downloads:/data
+    environment:
+      STORAGE_DIR: /data
+    env_file:
+      - .env
+
+  updater:
+    build:
+      context: .
+    image: cancer-downloader
+    command:
+      - handle_updates
+    env_file:
+      - .env
+
+volumes:
+  downloads:
