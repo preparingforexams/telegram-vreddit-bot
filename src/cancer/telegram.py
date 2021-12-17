@@ -30,12 +30,12 @@ def _request_updates(last_update_id: Optional[int]) -> List[dict]:
     if last_update_id:
         body = {
             "offset": last_update_id + 1,
-            "timeout": 30,
+            "timeout": 10,
         }
     return _get_actual_body(requests.post(
         _build_url("getUpdates"),
         json=body,
-        timeout=35,
+        timeout=12,
     ))
 
 
