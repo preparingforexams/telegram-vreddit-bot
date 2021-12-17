@@ -1,0 +1,47 @@
+---
+{{ if has "insta_download" .Values.features  }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cancer-insta-downloader
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: insta-downloader
+  template:
+    metadata:
+      labels:
+        app: insta-downloader
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          args:
+            - download
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          env:
+            - name: STORAGE_DIR
+              value: "/downloads"
+            - name: MQTT_TOPIC_DOWNLOAD
+              value: {{ .Values.mqtt.topic.instaDownload }}
+          envFrom:
+            - configMapRef:
+                name: cancer-external-config
+            - secretRef:
+                name: cancer-secrets
+          volumeMounts:
+            - mountPath: "/downloads"
+              name: downloads
+      volumes:
+        - name: downloads
+          emptyDir: { }
+{{ end }}

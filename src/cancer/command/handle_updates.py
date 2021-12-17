@@ -21,6 +21,7 @@ _LOG = logging.getLogger(__name__)
 
 class Treatment(Enum):
     DOWNLOAD = auto()
+    INSTA_DOWNLOAD = auto()
     YOUTUBE_URL_CONVERT = auto()
 
 
@@ -40,10 +41,10 @@ _CANCERS = [
     Cancer(host="twitter.com", treatment=Treatment.DOWNLOAD),
     Cancer("v.redd.it", Treatment.DOWNLOAD),
     Cancer("www.reddit.com", Treatment.DOWNLOAD),
-    # Cancer("instagram.com", Treatment.DOWNLOAD),
-    # Cancer("www.instagram.com", Treatment.DOWNLOAD),
-    Cancer("facebook.com", Treatment.DOWNLOAD),
-    Cancer("www.facebook.com", Treatment.DOWNLOAD),
+    Cancer("instagram.com", Treatment.INSTA_DOWNLOAD),
+    Cancer("www.instagram.com", Treatment.INSTA_DOWNLOAD),
+    Cancer("facebook.com", Treatment.INSTA_DOWNLOAD),
+    Cancer("www.facebook.com", Treatment.INSTA_DOWNLOAD),
     Cancer("vm.tiktok.com", Treatment.DOWNLOAD),
     Cancer(
         host="youtube.com",
@@ -94,8 +95,12 @@ def _make_message(
     treatment: Treatment,
     diagnoses: List[Diagnosis],
 ) -> Message:
-    if treatment == Treatment.DOWNLOAD:
-        return DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
+    if treatment in [Treatment.DOWNLOAD, Treatment.INSTA_DOWNLOAD]:
+        message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
+        if treatment == Treatment.INSTA_DOWNLOAD:
+            return message.instagram()
+        return message
+
     if treatment == Treatment.YOUTUBE_URL_CONVERT:
         return YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
     raise ValueError(f"Unkonown treatment: {treatment}")

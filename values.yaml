@@ -10,5 +10,6 @@ mqtt:
   password: ${MQTT_PASSWORD}
   topic:
     download: cancer/download
+    instaDownload: cancer/instaDownload
     youtubeUrlConvert: cancer/youtubeUrlConvert
 features: ${FEATURES}
