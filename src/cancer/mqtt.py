@@ -17,9 +17,22 @@ _TRANSPORT = os.getenv("MQTT_TRANSPORT", "tcp")
 
 
 def check():
-    if not (_HOST and _PORT and _USER and _PASSWORD and _TRANSPORT):
-        raise ValueError("MQTT host, port, user or password is missing")
-    int(_PORT)
+    if not _HOST:
+        raise ValueError("MQTT_HOST missing")
+
+    if not _PORT:
+        raise ValueError("MQTT_PORT missing")
+    else:
+        int(_PORT)
+
+    if not _USER:
+        raise ValueError("MQTT_USER missing")
+
+    if not _PASSWORD:
+        raise ValueError("MQTT_PASSWORD missing")
+
+    if not _TRANSPORT:
+        raise ValueError("MQTT_TRANSPORT missing")
 
     _LOG.debug("Going to use %s transport", _TRANSPORT)
 
