@@ -3,6 +3,7 @@ import os
 import signal
 import subprocess
 import sys
+import threading
 import uuid
 from tempfile import TemporaryDirectory
 from typing import List
@@ -98,4 +99,8 @@ def run():
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
     _LOG.debug("Subscribing to MQTT topic")
-    mqtt.subscribe(DownloadMessage, _handle_payload)
+    threading.Thread(
+        name="mqtt",
+        daemon=True,
+        target=lambda: mqtt.subscribe(DownloadMessage, _handle_payload),
+    ).start()
