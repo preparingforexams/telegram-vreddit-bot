@@ -3,9 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: downloader
-  labels:
-    app: downloader
+  name: cancer-downloader
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -35,9 +33,9 @@ spec:
               value: "/downloads"
           envFrom:
             - configMapRef:
-                name: config
+                name: cancer-config
             - secretRef:
-                name: secrets
+                name: cancer-secrets
           volumeMounts:
             - mountPath: "/downloads"
               name: downloads

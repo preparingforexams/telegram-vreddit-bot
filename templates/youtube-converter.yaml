@@ -3,9 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: youtube-converter
-  labels:
-    app: youtube-converter
+  name: cancer-youtube-converter
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -32,7 +30,7 @@ spec:
               memory: 16Mi
           envFrom:
             - configMapRef:
-                name: config
+                name: cancer-config
             - secretRef:
-                name: secrets
+                name: cancer-secrets
 {{ end }}

@@ -3,9 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: update-handler
-  labels:
-    app: update-handler
+  name: cancer-update-handler
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -32,7 +30,7 @@ spec:
               memory: 32Mi
           envFrom:
             - configMapRef:
-                name: config
+                name: cancer-config
             - secretRef:
-                name: secrets
+                name: cancer-secrets
 {{end}}
