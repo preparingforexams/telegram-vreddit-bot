@@ -18,7 +18,7 @@ _TLS_ENABLE = os.getenv("MQTT_TLS_ENABLE")
 
 
 def _is_tls_enabled() -> bool:
-    return bool(_TLS_ENABLE or "false")
+    return _TLS_ENABLE == "true"
 
 
 def check():
