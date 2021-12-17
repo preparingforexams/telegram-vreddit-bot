@@ -4,6 +4,6 @@ metadata:
   name: cancer-external-config
 data:
   MQTT_HOST: mqtt.bjoernpetersen.net
-  MQTT_PORT: 443
+  MQTT_PORT: "443"
   MQTT_USER: {{ .Values.mqtt.user }}
   MQTT_TLS_ENABLE: "true"
