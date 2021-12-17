@@ -5,5 +5,7 @@ metadata:
 data:
   MQTT_HOST: mqtt.bjoernpetersen.net
   MQTT_PORT: "443"
+  MQTT_TRANSPORT: websockets
   MQTT_USER: {{ .Values.mqtt.user }}
   MQTT_TLS_ENABLE: "true"
+
