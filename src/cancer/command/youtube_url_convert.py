@@ -1,7 +1,6 @@
 import logging
 import signal
 import sys
-import threading
 from urllib.parse import urlparse
 
 from cancer import telegram, mqtt
@@ -36,8 +35,7 @@ def run():
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
     _LOG.debug("Subscribing to MQTT topic")
-    threading.Thread(
-        name="mqtt",
-        daemon=True,
-        target=lambda: mqtt.subscribe(YoutubeUrlConvertMessage, _handle_payload),
-    ).start()
+    mqtt.subscribe(
+        YoutubeUrlConvertMessage,
+        _handle_payload,
+    )
