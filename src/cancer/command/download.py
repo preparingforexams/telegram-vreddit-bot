@@ -97,5 +97,6 @@ def run():
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    _LOG.debug("Subscribing to MQTT topic")
-    mqtt.subscribe(DownloadMessage, _handle_payload)
+    topic = os.getenv("MQTT_TOPIC_DOWNLOAD")
+    _LOG.debug("Subscribing to MQTT topic %s", topic)
+    mqtt.subscribe(topic, DownloadMessage, _handle_payload)

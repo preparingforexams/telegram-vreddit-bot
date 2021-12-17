@@ -5,11 +5,6 @@ import json
 
 @dataclasses.dataclass
 class Message(abc.ABC):
-    @classmethod
-    @abc.abstractmethod
-    def topic(cls) -> str:
-        pass
-
     def serialize(self) -> bytes:
         return json.dumps(dataclasses.asdict(self)).encode("utf-8")
 

@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List, Callable, TypeVar, Type
+from typing import List, Callable, TypeVar, Type, Tuple
 
 from paho.mqtt.publish import multiple
 from paho.mqtt.subscribe import callback
@@ -43,12 +43,12 @@ def check():
     _LOG.debug("Going to use %s transport", _TRANSPORT)
 
 
-def publish_messages(messages: List[Message]):
+def publish_messages(messages: List[Tuple[str, Message]]):
     _LOG.debug("Publishing messages %s", messages)
     multiple(
         msgs=[
-            dict(topic=message.topic(), qos=1, payload=message.serialize())
-            for message in messages
+            dict(topic=topic, qos=1, payload=message.serialize())
+            for topic, message in messages
         ],
         hostname=_HOST,
         port=int(_PORT),
@@ -61,7 +61,7 @@ def publish_messages(messages: List[Message]):
 T = TypeVar('T', bound=Message)
 
 
-def subscribe(message_type: Type[T], handle: Callable[[T], None]):
+def subscribe(topic: str, message_type: Type[T], handle: Callable[[T], None]):
     def on_message(client, userdata, message):
         payload = message.payload
         _LOG.debug("Received message with payload %s", payload)
@@ -69,7 +69,7 @@ def subscribe(message_type: Type[T], handle: Callable[[T], None]):
 
     callback(
         on_message,
-        topics=[message_type.topic()],
+        topics=[topic],
         qos=1,
         hostname=_HOST,
         port=int(_PORT),

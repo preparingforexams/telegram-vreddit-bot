@@ -4,7 +4,7 @@ import signal
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 from urllib.parse import urlparse, ParseResult
 
 from cancer import telegram, mqtt
@@ -94,15 +94,19 @@ def _make_message(
     message_id: int,
     treatment: Treatment,
     diagnoses: List[Diagnosis],
-) -> Message:
-    if treatment in [Treatment.DOWNLOAD, Treatment.INSTA_DOWNLOAD]:
+) -> Tuple[str, Message]:
+    if treatment == Treatment.DOWNLOAD:
         message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
-        if treatment == Treatment.INSTA_DOWNLOAD:
-            return message.instagram()
-        return message
+        return os.getenv("MQTT_TOPIC_DOWNLOAD"), message
+
+    if treatment == Treatment.INSTA_DOWNLOAD:
+        message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
+        return os.getenv("MQTT_TOPIC_INSTA_DOWNLOAD"), message
 
     if treatment == Treatment.YOUTUBE_URL_CONVERT:
-        return YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
+        message = YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
+        return os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT"), message
+
     raise ValueError(f"Unkonown treatment: {treatment}")
 
 

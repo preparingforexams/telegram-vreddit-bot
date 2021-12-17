@@ -1,4 +1,5 @@
 import logging
+import os
 import signal
 import sys
 from urllib.parse import urlparse
@@ -34,8 +35,10 @@ def run():
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    _LOG.debug("Subscribing to MQTT topic")
+    topic = os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT")
+    _LOG.debug("Subscribing to MQTT topic %s", topic)
     mqtt.subscribe(
+        topic,
         YoutubeUrlConvertMessage,
         _handle_payload,
     )
