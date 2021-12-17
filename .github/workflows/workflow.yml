@@ -16,7 +16,7 @@ jobs:
       - uses: docker/setup-buildx-action@v1
         id: buildx
       - name: Build the tagged Docker image
-        run: docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" --push .
+        run: docker buildx build --platform linux/amd64,linux/arm/v7 -t ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" --push .
 
   deploy:
     runs-on: ubuntu-latest
