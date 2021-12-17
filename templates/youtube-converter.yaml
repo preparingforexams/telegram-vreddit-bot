@@ -1,4 +1,5 @@
 ---
+{{ if has "youtube_url_convert" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,3 +35,4 @@ spec:
                 name: config
             - secretRef:
                 name: secrets
+{{ end }}

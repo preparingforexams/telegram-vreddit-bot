@@ -1,4 +1,5 @@
 ---
+{{ if has "handle_updates" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,3 +35,4 @@ spec:
                 name: config
             - secretRef:
                 name: secrets
+{{end}}

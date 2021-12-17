@@ -11,3 +11,4 @@ mqtt:
   topic:
     download: cancer/download
     youtubeUrlConvert: cancer/youtubeUrlConvert
+features: ${FEATURES}
