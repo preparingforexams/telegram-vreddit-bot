@@ -18,7 +18,7 @@ jobs:
       - name: Fix qemu
         run: docker run --privileged --rm tonistiigi/binfmt --install all
       - name: Build the tagged Docker image
-        run: docker buildx build --platform linux/amd64,linux/arm/v7 -t ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" --push .
+        run: docker buildx build --platform linux/amd64,linux/arm/v7 -t ghcr.io/preparingforexams/vredditbot:latest -t ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" --push .
 
   deploy:
     runs-on: ubuntu-latest
