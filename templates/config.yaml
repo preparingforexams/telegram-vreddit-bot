@@ -8,3 +8,4 @@ data:
   MQTT_TOPIC_DOWNLOAD: {{ .Values.mqtt.topic.download }}
   MQTT_TOPIC_YOUTUBE_URL_CONVERT: {{ .Values.mqtt.topic.youtubeUrlConvert }}
   MQTT_USER: {{ .Values.mqtt.user }}
+  MQTT_TLS_ENABLE: "false"

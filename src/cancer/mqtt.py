@@ -14,6 +14,11 @@ _PORT = os.getenv("MQTT_PORT")
 _USER = os.getenv("MQTT_USER")
 _PASSWORD = os.getenv("MQTT_PASSWORD")
 _TRANSPORT = os.getenv("MQTT_TRANSPORT", "tcp")
+_TLS_ENABLE = os.getenv("MQTT_TLS_ENABLE")
+
+
+def _is_tls_enabled() -> bool:
+    return bool(_TLS_ENABLE or "false")
 
 
 def check():
@@ -34,6 +39,7 @@ def check():
     if not _TRANSPORT:
         raise ValueError("MQTT_TRANSPORT missing")
 
+    _LOG.debug("TLS enabled: %s", _is_tls_enabled())
     _LOG.debug("Going to use %s transport", _TRANSPORT)
 
 
@@ -48,7 +54,7 @@ def publish_messages(messages: List[Message]):
         port=int(_PORT),
         transport=_TRANSPORT,
         auth={"username": _USER, "password": _PASSWORD},
-        tls={},
+        tls={} if _is_tls_enabled() else None,
     )
 
 
@@ -69,5 +75,5 @@ def subscribe(message_type: Type[T], handle: Callable[[T], None]):
         port=int(_PORT),
         transport=_TRANSPORT,
         auth={"username": _USER, "password": _PASSWORD},
-        tls={},
+        tls={} if _is_tls_enabled() else None,
     )
