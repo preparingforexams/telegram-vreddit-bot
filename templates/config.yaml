@@ -4,7 +4,7 @@ metadata:
   name: config
 data:
   MQTT_HOST: {{ .Values.mqtt.host }}
-  MQTT_PORT: {{ .Values.mqtt.port }}
+  MQTT_PORT: "{{ .Values.mqtt.port }}"
   MQTT_TOPIC_DOWNLOAD: {{ .Values.mqtt.topic.download }}
   MQTT_TOPIC_YOUTUBE_URL_CONVERT: {{ .Values.mqtt.topic.youtubeUrlConvert }}
   MQTT_USER: {{ .Values.mqtt.user }}
