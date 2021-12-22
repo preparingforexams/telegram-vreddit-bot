@@ -4,7 +4,8 @@ import signal
 import sys
 from urllib.parse import urlparse
 
-from cancer import telegram, mqtt
+from cancer import telegram
+from cancer.adapter.mqtt import MqttConfig, MqttSubscriber
 from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
 
 _LOG = logging.getLogger(__name__)
@@ -31,13 +32,13 @@ def _handle_payload(payload: YoutubeUrlConvertMessage):
 
 def run():
     telegram.check()
-    mqtt.check()
+    subscriber = MqttSubscriber(MqttConfig.from_env())
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
     topic = os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT")
     _LOG.debug("Subscribing to MQTT topic %s", topic)
-    mqtt.subscribe(
+    subscriber.subscribe(
         topic,
         YoutubeUrlConvertMessage,
         _handle_payload,

@@ -4,17 +4,15 @@ import signal
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 from urllib.parse import urlparse, ParseResult
 
-from cancer import telegram, mqtt
+from cancer import telegram
+from cancer.adapter.mqtt import MqttPublisher, MqttConfig
 from cancer.message import Message
 from cancer.message.download import DownloadMessage
 from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
-
-_API_KEY = os.getenv("TELEGRAM_API_KEY")
-_STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
-_UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
+from cancer.port.publisher import Publisher
 
 _LOG = logging.getLogger(__name__)
 
@@ -23,6 +21,18 @@ class Treatment(Enum):
     DOWNLOAD = auto()
     INSTA_DOWNLOAD = auto()
     YOUTUBE_URL_CONVERT = auto()
+
+    def topic(self):
+        if self == Treatment.DOWNLOAD:
+            return os.getenv("MQTT_TOPIC_DOWNLOAD")
+
+        if self == Treatment.INSTA_DOWNLOAD:
+            return os.getenv("MQTT_TOPIC_INSTA_DOWNLOAD")
+
+        if self == Treatment.YOUTUBE_URL_CONVERT:
+            return os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT")
+
+        raise ValueError(f"No topic for Treatment {self}")
 
 
 @dataclass
@@ -90,27 +100,27 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
 
 
 def _make_message(
-    chat_id: int,
-    message_id: int,
-    treatment: Treatment,
-    diagnoses: List[Diagnosis],
-) -> Tuple[str, Message]:
+        chat_id: int,
+        message_id: int,
+        treatment: Treatment,
+        diagnoses: List[Diagnosis],
+) -> Message:
     if treatment == Treatment.DOWNLOAD:
         message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
-        return os.getenv("MQTT_TOPIC_DOWNLOAD"), message
+        return message
 
     if treatment == Treatment.INSTA_DOWNLOAD:
         message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
-        return os.getenv("MQTT_TOPIC_INSTA_DOWNLOAD"), message
+        return message
 
     if treatment == Treatment.YOUTUBE_URL_CONVERT:
         message = YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
-        return os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT"), message
+        return message
 
     raise ValueError(f"Unkonown treatment: {treatment}")
 
 
-def _handle_update(update: dict):
+def _handle_update(publisher: Publisher, update: dict):
     message: Optional[dict] = update.get("message")
 
     if not message:
@@ -145,21 +155,25 @@ def _handle_update(update: dict):
         return
 
     # TODO: cut out the middle man
-    messages = [
-        _make_message(message["chat"]["id"], message["message_id"], treatment, diagnoses)
-        for treatment, diagnoses in diagnosis_by_treatment.items()
-    ]
+    for treatment in Treatment:
+        diagnoses = diagnosis_by_treatment[treatment]
+        if not diagnoses:
+            _LOG.debug("No diagnosed cases for treatment %s", treatment)
+            continue
 
-    try:
-        mqtt.publish_messages(messages)
-    except Exception as e:
-        _LOG.error("Could not publish events", exc_info=e)
-        raise
+        topic = treatment.topic()
+        event = _make_message(message["chat"]["id"], message["message_id"], treatment, diagnoses)
+
+        try:
+            publisher.publish(topic, event)
+        except Exception as e:
+            _LOG.error("Could not publish event", exc_info=e)
+            raise
 
 
 def run():
     telegram.check()
-    mqtt.check()
+    publisher: Publisher = MqttPublisher(MqttConfig.from_env())
 
     received_sigterm = False
 
@@ -172,4 +186,4 @@ def run():
 
     signal.signal(signal.SIGTERM, on_sigterm)
 
-    telegram.handle_updates(should_run, _handle_update)
+    telegram.handle_updates(should_run, lambda u: _handle_update(publisher, u))

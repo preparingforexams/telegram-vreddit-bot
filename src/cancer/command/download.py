@@ -9,7 +9,8 @@ from typing import List
 
 from yt_dlp import YoutubeDL
 
-from cancer import telegram, mqtt
+from cancer import telegram
+from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
 from cancer.message.download import DownloadMessage
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
@@ -90,7 +91,7 @@ def _handle_payload(payload: DownloadMessage):
 
 def run():
     telegram.check()
-    mqtt.check()
+    subscriber = MqttSubscriber(MqttConfig.from_env())
 
     if not os.path.exists(_STORAGE_DIR):
         os.mkdir(_STORAGE_DIR)
@@ -99,4 +100,4 @@ def run():
 
     topic = os.getenv("MQTT_TOPIC_DOWNLOAD")
     _LOG.debug("Subscribing to MQTT topic %s", topic)
-    mqtt.subscribe(topic, DownloadMessage, _handle_payload)
+    subscriber.subscribe(topic, DownloadMessage, _handle_payload)
