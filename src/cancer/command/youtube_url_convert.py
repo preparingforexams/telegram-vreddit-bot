@@ -1,4 +1,5 @@
 import logging
+import os
 import signal
 import sys
 from urllib.parse import urlparse
@@ -41,12 +42,12 @@ def run():
 
     topic = Topic.youtubeUrlConvert
     _LOG.debug("Subscribing to topic %s", topic)
+
     subscriber: Subscriber
-    try:
-        subscriber = RabbitSubscriber(RabbitConfig.from_env())
-    except ValueError as e:
-        _LOG.info("Couldn't initialize Rabbit subscriber, falling back to MQTT")
+    if os.getenv("BROKER_TYPE") == "mqtt":
         subscriber = MqttSubscriber(MqttConfig.from_env())
+    else:
+        subscriber = RabbitSubscriber(RabbitConfig.from_env())
     subscriber.subscribe(
         topic,
         YoutubeUrlConvertMessage,
