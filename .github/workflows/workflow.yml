@@ -35,5 +35,5 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       - uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade bot . --install --namespace=cancer
+          exec: helm upgrade bot . --install --atomic --namespace=cancer
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
