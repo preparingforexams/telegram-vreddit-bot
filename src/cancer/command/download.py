@@ -101,17 +101,19 @@ def run():
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    legacy_topic = os.getenv("MQTT_TOPIC_DOWNLOAD")
-    if legacy_topic == "cancer/instaDownload":
+    is_legacy_insta = os.getenv("MQTT_TOPIC_DOWNLOAD") == "cancer/instaDownload"
+    should_use_mqtt = is_legacy_insta or (os.getenv("BROKER_TYPE") == "mqtt")
+
+    if is_legacy_insta:
         topic = Topic.instaDownload
     else:
         topic = Topic.download
+
     _LOG.debug("Subscribing to topic %s", topic)
     subscriber: Subscriber
-    try:
-        subscriber = RabbitSubscriber(RabbitConfig.from_env())
-    except ValueError as e:
-        _LOG.info("Couldn't initialize Rabbit subscriber, falling back to MQTT")
+    if should_use_mqtt:
         subscriber = MqttSubscriber(MqttConfig.from_env())
+    else:
+        subscriber = RabbitSubscriber(RabbitConfig.from_env())
 
     subscriber.subscribe(topic, DownloadMessage, _handle_payload)
