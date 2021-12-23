@@ -101,17 +101,14 @@ def run():
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    is_legacy_insta = os.getenv("MQTT_TOPIC_DOWNLOAD") == "cancer/instaDownload"
-    should_use_mqtt = is_legacy_insta or (os.getenv("BROKER_TYPE") == "mqtt")
-
-    if is_legacy_insta:
+    if os.getenv("DOWNLOAD_TYPE") == "insta":
         topic = Topic.instaDownload
     else:
         topic = Topic.download
 
     _LOG.debug("Subscribing to topic %s", topic)
     subscriber: Subscriber
-    if should_use_mqtt:
+    if os.getenv("BROKER_TYPE") == "mqtt":
         subscriber = MqttSubscriber(MqttConfig.from_env())
     else:
         subscriber = RabbitSubscriber(RabbitConfig.from_env())
