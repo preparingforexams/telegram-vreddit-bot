@@ -99,7 +99,6 @@ class RabbitPublisher(Publisher):
 class RabbitSubscriber(Subscriber):
     def __init__(self, config: RabbitConfig):
         self.config = config
-        self.connection = pika.BlockingConnection(config.parameters)
 
     def subscribe(self, topic: Topic, message_type: Type[T], handle: Callable[[T], Subscriber.Result]):
         def _callback(channel: BlockingChannel, method, _, message: bytes):
@@ -124,10 +123,15 @@ class RabbitSubscriber(Subscriber):
             elif result == Subscriber.Result.Drop:
                 channel.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
-        with self.connection.channel() as channel:
+        connection = pika.BlockingConnection(self.config.parameters)
+        channel = connection.channel()
+        try:
             channel.basic_consume(
                 queue=topic.value,
                 on_message_callback=_callback,
                 auto_ack=False,
             )
             channel.start_consuming()
+        finally:
+            channel.close()
+            connection.close()
