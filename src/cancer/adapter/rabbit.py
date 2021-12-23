@@ -73,7 +73,7 @@ class RabbitPublisher(Publisher):
                 body=message.serialize(),
                 properties=BasicProperties(
                     content_type="application/json",
-                    delivery_mode=2,
+                    delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE,
                 )
             )
         _LOG.info("Published message to RabbitMQ queue %s", topic.value)
