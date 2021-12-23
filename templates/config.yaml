@@ -4,12 +4,12 @@ metadata:
   name: cancer-config
 data:
   MQTT_HOST: {{ .Values.mqtt.host }}
-  MQTT_PORT: "{{ .Values.mqtt.port }}"
+  MQTT_PORT: {{ quote .Values.mqtt.port }}
   MQTT_USER: {{ .Values.mqtt.user }}
   MQTT_TLS_ENABLE: "false"
   RABBITMQ_HOST: {{ .Values.rabbit.host }}
   RABBITMQ_VIRTUAL_HOST: {{ .Values.rabbit.virtualHost }}
-  RABBITMQ_PORT: {{ .Values.rabbit.port }}
+  RABBITMQ_PORT: {{ quote .Values.rabbit.port }}
   RABBITMQ_USE_TLS: {{ quote .Values.rabbit.useTls }}
   {{- if (.Values.rabbit.exchange | empty | not) }}
   RABBITMQ_EXCHANGE: {{ .Values.rabbit.exchange }}
