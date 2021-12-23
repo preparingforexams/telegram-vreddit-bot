@@ -31,6 +31,8 @@ spec:
           env:
             - name: STORAGE_DIR
               value: "/downloads"
+            - name: BROKER_TYPE
+              value: rabbit
           envFrom:
             - configMapRef:
                 name: cancer-config
