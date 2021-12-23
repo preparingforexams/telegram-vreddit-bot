@@ -1,11 +1,10 @@
 import abc
-from typing import List
 
-from cancer.message import Message
+from cancer.message import Message, Topic
 
 
 class Publisher(abc.ABC):
 
     @abc.abstractmethod
-    def publish(self, topic: str, messages: Message):
+    def publish(self, topic: Topic, message: Message):
         pass

@@ -30,6 +30,7 @@ jobs:
         env:
           FEATURES: "[handle_updates, download, youtube_url_convert]"
           MQTT_PASSWORD: ${{ secrets.MQTT_PASSWORD }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       - uses: WyriHaximus/github-action-helm3@v2

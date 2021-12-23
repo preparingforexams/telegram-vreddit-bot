@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List
 
-from . import Message
+from cancer.message.message import Message
 
 
 @dataclass

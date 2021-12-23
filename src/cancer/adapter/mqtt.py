@@ -8,7 +8,7 @@ from typing import Type, Callable, Optional, Dict
 from paho.mqtt.publish import single
 from paho.mqtt.subscribe import callback
 
-from cancer.message import Message
+from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher
 from cancer.port.subscriber import Subscriber, T
 
@@ -41,7 +41,7 @@ class MqttConfig:
 
     @classmethod
     def from_env(cls) -> MqttConfig:
-        return MqttConfig(
+        return cls(
             host=cls._get_required("MQTT_HOST"),
             port=int(cls._get_required("MQTT_PORT")),
             user=cls._get_required("MQTT_USER"),
@@ -55,11 +55,11 @@ class MqttConfig:
 class MqttPublisher(Publisher):
     config: MqttConfig
 
-    def publish(self, topic: str, message: Message):
+    def publish(self, topic: Topic, message: Message):
         _LOG.debug("Publishing message %s", message)
         single(
             qos=1,
-            topic=topic,
+            topic=f"cancer/{topic.value}",
             payload=message.serialize(),
             hostname=self.config.host,
             port=self.config.port,

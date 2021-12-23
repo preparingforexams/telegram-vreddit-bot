@@ -5,8 +5,10 @@ metadata:
 data:
   MQTT_HOST: {{ .Values.mqtt.host }}
   MQTT_PORT: "{{ .Values.mqtt.port }}"
-  MQTT_TOPIC_DOWNLOAD: {{ .Values.mqtt.topic.download }}
-  MQTT_TOPIC_INSTA_DOWNLOAD: {{ .Values.mqtt.topic.instaDownload }}
-  MQTT_TOPIC_YOUTUBE_URL_CONVERT: {{ .Values.mqtt.topic.youtubeUrlConvert }}
   MQTT_USER: {{ .Values.mqtt.user }}
   MQTT_TLS_ENABLE: "false"
+  RABBITMQ_HOST: {{ .Values.rabbit.host }}
+  RABBITMQ_VIRTUAL_HOST: {{ .Values.rabbit.virtualHost }}
+  RABBITMQ_PORT: {{ .Values.rabbit.port }}
+  RABBITMQ_USE_TLS: "{{ .Values.rabbit.useTls }}"
+  RABBITMQ_EXCHANGE: {{ .Values.rabbit.exchange }}

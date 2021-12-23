@@ -1,5 +1,4 @@
 import logging
-import os
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
@@ -8,10 +7,15 @@ from typing import Optional, List, Dict
 from urllib.parse import urlparse, ParseResult
 
 from cancer import telegram
+from cancer.adapter.joint import JointPublisher
 from cancer.adapter.mqtt import MqttPublisher, MqttConfig
-from cancer.message import Message
-from cancer.message.download import DownloadMessage
-from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
+from cancer.adapter.rabbit import RabbitPublisher, RabbitConfig
+from cancer.message import (
+    DownloadMessage,
+    Message,
+    Topic,
+    YoutubeUrlConvertMessage,
+)
 from cancer.port.publisher import Publisher
 
 _LOG = logging.getLogger(__name__)
@@ -22,15 +26,15 @@ class Treatment(Enum):
     INSTA_DOWNLOAD = auto()
     YOUTUBE_URL_CONVERT = auto()
 
-    def topic(self):
+    def topic(self) -> Topic:
         if self == Treatment.DOWNLOAD:
-            return os.getenv("MQTT_TOPIC_DOWNLOAD")
+            return Topic.download
 
         if self == Treatment.INSTA_DOWNLOAD:
-            return os.getenv("MQTT_TOPIC_INSTA_DOWNLOAD")
+            return Topic.instaDownload
 
         if self == Treatment.YOUTUBE_URL_CONVERT:
-            return os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT")
+            return Topic.youtubeUrlConvert
 
         raise ValueError(f"No topic for Treatment {self}")
 
@@ -117,7 +121,7 @@ def _make_message(
         message = YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
         return message
 
-    raise ValueError(f"Unkonown treatment: {treatment}")
+    raise ValueError(f"Unknown treatment: {treatment}")
 
 
 def _handle_update(publisher: Publisher, update: dict):
@@ -154,7 +158,7 @@ def _handle_update(publisher: Publisher, update: dict):
         _LOG.debug("Message was healthy")
         return
 
-    # TODO: cut out the middle man
+    # TODO: cut out the middle man ("Treatment")
     for treatment in Treatment:
         diagnoses = diagnosis_by_treatment[treatment]
         if not diagnoses:
@@ -166,6 +170,7 @@ def _handle_update(publisher: Publisher, update: dict):
 
         try:
             publisher.publish(topic, event)
+            _LOG.info("Published event on topic %s", topic.value)
         except Exception as e:
             _LOG.error("Could not publish event", exc_info=e)
             raise
@@ -173,7 +178,10 @@ def _handle_update(publisher: Publisher, update: dict):
 
 def run():
     telegram.check()
-    publisher: Publisher = MqttPublisher(MqttConfig.from_env())
+    publisher: Publisher = JointPublisher([
+        MqttPublisher(MqttConfig.from_env()),
+        RabbitPublisher(RabbitConfig.from_env()),
+    ])
 
     received_sigterm = False
 

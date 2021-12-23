@@ -11,7 +11,7 @@ from yt_dlp import YoutubeDL
 
 from cancer import telegram
 from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
-from cancer.message.download import DownloadMessage
+from cancer.message import DownloadMessage
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
