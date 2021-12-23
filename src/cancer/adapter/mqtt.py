@@ -81,7 +81,7 @@ class MqttSubscriber(Subscriber):
 
         callback(
             on_message,
-            topics=[topic],
+            topics=[topic.value],
             qos=1,
             hostname=self.config.host,
             port=self.config.port,
