@@ -4,13 +4,16 @@ import logging
 import os
 from dataclasses import dataclass
 from ssl import SSLContext
+from typing import Callable, Type
 
 import pika
 from pika import PlainCredentials, BasicProperties
+from pika.adapters.blocking_connection import BlockingChannel
 from pika.connection import Parameters, SSLOptions
 
 from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher
+from cancer.port.subscriber import Subscriber, T
 
 _LOG = logging.getLogger(__name__)
 
@@ -74,3 +77,39 @@ class RabbitPublisher(Publisher):
                 )
             )
         _LOG.info("Published message to RabbitMQ queue %s", topic.value)
+
+
+class RabbitSubscriber(Subscriber):
+    def __init__(self, config: RabbitConfig):
+        self.config = config
+        self.connection = pika.BlockingConnection(config.parameters)
+
+    def subscribe(self, topic: Topic, message_type: Type[T], handle: Callable[[T], Subscriber.Result]):
+        def _callback(channel: BlockingChannel, method, _, message: bytes):
+            try:
+                deserialized = message_type.deserialize(message)
+            except ValueError as e:
+                _LOG.error("Could not deserialize message", exc_info=e)
+                channel.basic_reject(delivery_tag=method.delivery_tag, requeue=False)
+                return
+
+            try:
+                result = handle(deserialized)
+            except Exception as e:
+                _LOG.error("Unexpected exception", exc_info=e)
+                channel.basic_nack(method.delivery_tag, requeue=True)
+                return
+
+            if result == Subscriber.Result.Ack:
+                channel.basic_ack(delivery_tag=method.delivery_tag)
+            elif result == Subscriber.Result.Drop:
+                channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+            elif result == Subscriber.Result.Drop:
+                channel.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
+
+        with self.connection.channel() as channel:
+            channel.basic_consume(
+                queue=topic.value,
+                on_message_callback=_callback,
+                auto_ack=False,
+            )

@@ -1,12 +1,14 @@
 import logging
-import os
 import signal
 import sys
 from urllib.parse import urlparse
 
 from cancer import telegram
 from cancer.adapter.mqtt import MqttConfig, MqttSubscriber
+from cancer.adapter.rabbit import RabbitSubscriber, RabbitConfig
+from cancer.message import Topic
 from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
+from cancer.port.subscriber import Subscriber
 
 _LOG = logging.getLogger(__name__)
 
@@ -17,7 +19,7 @@ def _rewrite_youtube_url(case: str) -> str:
     return f"https://youtube.com/watch?v={video_id}"
 
 
-def _handle_payload(payload: YoutubeUrlConvertMessage):
+def _handle_payload(payload: YoutubeUrlConvertMessage) -> Subscriber.Result:
     _LOG.info("Received payload: %s", payload)
 
     rewritten_urls = [_rewrite_youtube_url(url) for url in payload.urls]
@@ -29,15 +31,22 @@ def _handle_payload(payload: YoutubeUrlConvertMessage):
         text=text,
     )
 
+    return Subscriber.Result.Ack
+
 
 def run():
     telegram.check()
-    subscriber = MqttSubscriber(MqttConfig.from_env())
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    topic = os.getenv("MQTT_TOPIC_YOUTUBE_URL_CONVERT")
-    _LOG.debug("Subscribing to MQTT topic %s", topic)
+    topic = Topic.youtubeUrlConvert
+    _LOG.debug("Subscribing to topic %s", topic)
+    subscriber: Subscriber
+    try:
+        subscriber = RabbitSubscriber(RabbitConfig.from_env())
+    except ValueError as e:
+        _LOG.info("Couldn't initialize Rabbit subscriber, falling back to MQTT")
+        subscriber = MqttSubscriber(MqttConfig.from_env())
     subscriber.subscribe(
         topic,
         YoutubeUrlConvertMessage,

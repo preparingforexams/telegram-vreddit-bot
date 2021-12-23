@@ -11,7 +11,9 @@ from yt_dlp import YoutubeDL
 
 from cancer import telegram
 from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
-from cancer.message import DownloadMessage
+from cancer.adapter.rabbit import RabbitConfig, RabbitSubscriber
+from cancer.message import DownloadMessage, Topic
+from cancer.port.subscriber import Subscriber
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
@@ -71,7 +73,7 @@ def _upload_video(video_file: str) -> str:
     return file_id
 
 
-def _handle_payload(payload: DownloadMessage):
+def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
     _LOG.info("Received payload: %s", payload)
 
     with TemporaryDirectory(dir=_STORAGE_DIR) as folder:
@@ -88,16 +90,28 @@ def _handle_payload(payload: DownloadMessage):
             videos=video_ids,
         )
 
+        return Subscriber.Result.Ack
+
 
 def run():
     telegram.check()
-    subscriber = MqttSubscriber(MqttConfig.from_env())
 
     if not os.path.exists(_STORAGE_DIR):
         os.mkdir(_STORAGE_DIR)
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    topic = os.getenv("MQTT_TOPIC_DOWNLOAD")
-    _LOG.debug("Subscribing to MQTT topic %s", topic)
+    legacy_topic = os.getenv("MQTT_TOPIC_DOWNLOAD")
+    if legacy_topic == "cancer/instaDownload":
+        topic = Topic.instaDownload
+    else:
+        topic = Topic.download
+    _LOG.debug("Subscribing to topic %s", topic)
+    subscriber: Subscriber
+    try:
+        subscriber = RabbitSubscriber(RabbitConfig.from_env())
+    except ValueError as e:
+        _LOG.info("Couldn't initialize Rabbit subscriber, falling back to MQTT")
+        subscriber = MqttSubscriber(MqttConfig.from_env())
+
     subscriber.subscribe(topic, DownloadMessage, _handle_payload)
