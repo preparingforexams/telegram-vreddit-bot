@@ -176,11 +176,28 @@ def _handle_update(publisher: Publisher, update: dict):
             raise
 
 
+def _init_mqtt_publisher() -> Optional[Publisher]:
+    try:
+        return MqttPublisher(MqttConfig.from_env())
+    except ValueError as e:
+        _LOG.warning("Could not initialize MQTT", exc_info=e)
+        return None
+
+
+def _init_rabbit_publisher() -> Optional[Publisher]:
+    try:
+        return RabbitPublisher(RabbitConfig.from_env())
+    except ValueError as e:
+        _LOG.warning("Could not initialize RabbitMQ", exc_info=e)
+        return None
+
+
 def run():
     telegram.check()
+
     publisher: Publisher = JointPublisher([
-        MqttPublisher(MqttConfig.from_env()),
-        RabbitPublisher(RabbitConfig.from_env()),
+        _init_mqtt_publisher(),
+        _init_rabbit_publisher(),
     ])
 
     received_sigterm = False

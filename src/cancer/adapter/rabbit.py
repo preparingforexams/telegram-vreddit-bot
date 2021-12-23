@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from ssl import SSLContext
 
 import pika
-from pika import PlainCredentials
+from pika import PlainCredentials, BasicProperties
 from pika.connection import Parameters, SSLOptions
 
 from cancer.message import Message, Topic
@@ -68,4 +68,9 @@ class RabbitPublisher(Publisher):
                 exchange=self.config.exchange,
                 routing_key=topic.value,
                 body=message.serialize(),
+                properties=BasicProperties(
+                    content_type="application/json",
+                    delivery_mode=2,
+                )
             )
+        _LOG.info("Published message to RabbitMQ queue %s", topic.value)
