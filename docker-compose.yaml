@@ -3,7 +3,7 @@ services:
   downloader:
     build:
       context: .
-    image: cancer-downloader
+    image: cancer
     command:
       - download
     volumes:
@@ -16,7 +16,7 @@ services:
   updater:
     build:
       context: .
-    image: cancer-downloader
+    image: cancer
     command:
       - handle_updates
     env_file:

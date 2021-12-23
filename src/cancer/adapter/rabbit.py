@@ -130,3 +130,4 @@ class RabbitSubscriber(Subscriber):
                 on_message_callback=_callback,
                 auto_ack=False,
             )
+            channel.start_consuming()
