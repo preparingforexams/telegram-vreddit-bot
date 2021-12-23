@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+from contextlib import contextmanager
 from dataclasses import dataclass
 from ssl import SSLContext
 from typing import Callable, Type
@@ -63,10 +64,26 @@ class RabbitConfig:
 class RabbitPublisher(Publisher):
     def __init__(self, config: RabbitConfig):
         self.config = config
-        self.connection = pika.BlockingConnection(config.parameters)
+
+    @contextmanager
+    def _connect(self) -> pika.BlockingConnection:
+        connection = pika.BlockingConnection(self.config.parameters)
+        try:
+            yield connection
+        finally:
+            connection.close()
+
+    @contextmanager
+    def _channel(self):
+        with self._connect() as connection:
+            channel = connection.channel()
+            try:
+                yield channel
+            finally:
+                channel.close()
 
     def publish(self, topic: Topic, message: Message):
-        with self.connection.channel() as channel:
+        with self._channel() as channel:
             channel.basic_publish(
                 exchange=self.config.exchange,
                 routing_key=topic.value,
