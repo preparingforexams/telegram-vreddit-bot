@@ -10,7 +10,7 @@ data:
   RABBITMQ_HOST: {{ .Values.rabbit.host }}
   RABBITMQ_VIRTUAL_HOST: {{ .Values.rabbit.virtualHost }}
   RABBITMQ_PORT: {{ .Values.rabbit.port }}
-  RABBITMQ_USE_TLS: "{{ .Values.rabbit.useTls }}"
-  {{ if not empty .Values.rabbit.exchange }}
+  RABBITMQ_USE_TLS: {{ quote .Values.rabbit.useTls }}
+  {{ if (.Values.rabbit.exchange | empty | not) }}
   RABBITMQ_EXCHANGE: {{ .Values.rabbit.exchange }}
   {{ end }}
