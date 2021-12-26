@@ -70,6 +70,11 @@ _CANCERS = [
         treatment=Treatment.DOWNLOAD,
     ),
     Cancer(
+        host="www.youtube.com",
+        path="/watch",
+        treatment=Treatment.DOWNLOAD,
+    ),
+    Cancer(
         host="youtube.com",
         path="/watch",
         treatment=Treatment.DOWNLOAD,
