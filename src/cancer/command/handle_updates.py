@@ -65,6 +65,15 @@ _CANCERS = [
         path="/shorts/",
         treatment=Treatment.YOUTUBE_URL_CONVERT,
     ),
+    Cancer(
+        host="youtu.be",
+        treatment=Treatment.DOWNLOAD,
+    ),
+    Cancer(
+        host="youtube.com",
+        path="/watch",
+        treatment=Treatment.DOWNLOAD,
+    ),
 ]
 
 
