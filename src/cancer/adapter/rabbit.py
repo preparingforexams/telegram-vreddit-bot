@@ -133,5 +133,7 @@ class RabbitSubscriber(Subscriber):
             )
             channel.start_consuming()
         finally:
-            channel.close()
-            connection.close()
+            if not channel.is_closed:
+                channel.close()
+            if not connection.is_closed:
+                connection.close()
