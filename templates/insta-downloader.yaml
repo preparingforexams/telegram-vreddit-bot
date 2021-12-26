@@ -31,8 +31,8 @@ spec:
           env:
             - name: STORAGE_DIR
               value: "/downloads"
-            - name: MQTT_TOPIC_DOWNLOAD
-              value: {{ .Values.mqtt.topic.instaDownload }}
+            - name: DOWNLOAD_TYPE
+              value: insta
           envFrom:
             - configMapRef:
                 name: cancer-external-config
