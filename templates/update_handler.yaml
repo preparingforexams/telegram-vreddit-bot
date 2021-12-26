@@ -1,5 +1,12 @@
 ---
 {{ if has "handle_updates" .Values.features  }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: update-handler
+spec:
+  clusterIP: None
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -8,6 +15,7 @@ spec:
   revisionHistoryLimit: 1
   replicas: 1
   minReadySeconds: 5
+  serviceName: update-handler
   selector:
     matchLabels:
       app: update-handler
