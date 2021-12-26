@@ -5,8 +5,6 @@ kind: Deployment
 metadata:
   name: cancer-downloader
 spec:
-  revisionHistoryLimit: 1
-  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -42,14 +40,28 @@ spec:
           volumeMounts:
             - mountPath: "/downloads"
               name: downloads
-          readinessProbe:
-            initialDelaySeconds: 0
-            failureThreshold: 30
-            periodSeconds: 3
-            httpGet:
-              port: 8080
-              path: /
       volumes:
         - name: downloads
           emptyDir: { }
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cancer-downloader
+spec:
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cancer-downloader
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 30
 {{ end }}

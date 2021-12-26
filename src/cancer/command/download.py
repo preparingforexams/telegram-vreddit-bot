@@ -15,7 +15,6 @@ from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
 from cancer.adapter.rabbit import RabbitConfig, RabbitSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
-from cancer.readiness import ReadinessServer
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
@@ -118,6 +117,6 @@ def run():
     else:
         subscriber = RabbitSubscriber(RabbitConfig.from_env())
 
-    readiness_server = ReadinessServer()
-    readiness_server.start(lambda: not _busy_lock.locked())
+    # readiness_server = ReadinessServer()
+    # readiness_server.start(lambda: not _busy_lock.locked())
     subscriber.subscribe(topic, DownloadMessage, _handle_payload)
