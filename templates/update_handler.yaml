@@ -1,14 +1,13 @@
 ---
 {{ if has "handle_updates" .Values.features  }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: cancer-update-handler
 spec:
   revisionHistoryLimit: 1
   replicas: 1
-  strategy:
-    type: Recreate
+  minReadySeconds: 5
   selector:
     matchLabels:
       app: update-handler
