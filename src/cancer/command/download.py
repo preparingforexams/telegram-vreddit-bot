@@ -5,6 +5,7 @@ import subprocess
 import sys
 import uuid
 from tempfile import TemporaryDirectory
+from threading import Lock
 from typing import List
 
 from yt_dlp import YoutubeDL
@@ -14,11 +15,14 @@ from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
 from cancer.adapter.rabbit import RabbitConfig, RabbitSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
+from cancer.readiness import ReadinessServer
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
 
 _LOG = logging.getLogger(__name__)
+
+_busy_lock = Lock()
 
 
 def _download_videos(base_folder: str, url: str) -> List[str]:
@@ -77,20 +81,21 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
     _LOG.info("Received payload: %s", payload)
 
     with TemporaryDirectory(dir=_STORAGE_DIR) as folder:
-        files = [
-            file
-            for url in payload.urls
-            for file in _download_videos(folder, url)
-        ]
-        video_ids = [_upload_video(file) for file in files]
+        with _busy_lock:
+            files = [
+                file
+                for url in payload.urls
+                for file in _download_videos(folder, url)
+            ]
+            video_ids = [_upload_video(file) for file in files]
 
-        telegram.send_video_group(
-            chat_id=payload.chat_id,
-            reply_to_message_id=payload.message_id,
-            videos=video_ids,
-        )
+            telegram.send_video_group(
+                chat_id=payload.chat_id,
+                reply_to_message_id=payload.message_id,
+                videos=video_ids,
+            )
 
-        return Subscriber.Result.Ack
+            return Subscriber.Result.Ack
 
 
 def run():
@@ -113,4 +118,6 @@ def run():
     else:
         subscriber = RabbitSubscriber(RabbitConfig.from_env())
 
+    readiness_server = ReadinessServer()
+    readiness_server.start(lambda: not _busy_lock.locked())
     subscriber.subscribe(topic, DownloadMessage, _handle_payload)

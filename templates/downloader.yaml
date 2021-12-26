@@ -42,6 +42,13 @@ spec:
           volumeMounts:
             - mountPath: "/downloads"
               name: downloads
+          readinessProbe:
+            initialDelaySeconds: 0
+            failureThreshold: 30
+            periodSeconds: 3
+            httpGet:
+              port: 8080
+              path: /
       volumes:
         - name: downloads
           emptyDir: { }
