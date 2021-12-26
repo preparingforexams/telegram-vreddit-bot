@@ -209,10 +209,7 @@ def _init_rabbit_publisher() -> Optional[Publisher]:
 def run():
     telegram.check()
 
-    publisher: Publisher = JointPublisher([
-        _init_mqtt_publisher(),
-        _init_rabbit_publisher(),
-    ])
+    publisher: Publisher = _init_rabbit_publisher()
 
     received_sigterm = False
 
