@@ -50,6 +50,7 @@ metadata:
   name: cancer-downloader
 spec:
   minReplicas: 1
+  maxReplicas: 3
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
