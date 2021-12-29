@@ -1,0 +1,50 @@
+---
+{{ if has "youtube_download" .Values.features  }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cancer-youtube-downloader
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: youtube-downloader
+  template:
+    metadata:
+      labels:
+        app: youtube-downloader
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          args:
+            - download
+          resources:
+            limits:
+              cpu: "1.5"
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          env:
+            - name: STORAGE_DIR
+              value: "/downloads"
+            - name: DOWNLOAD_TYPE
+              value: youtube
+          envFrom:
+            - configMapRef:
+                name: cancer-config
+            - secretRef:
+                name: cancer-secrets
+          volumeMounts:
+            - mountPath: "/downloads"
+              name: downloads
+      volumes:
+        - name: downloads
+          emptyDir: { }
+{{ end }}
