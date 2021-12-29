@@ -5,6 +5,7 @@ kind: Deployment
 metadata:
   name: cancer-youtube-downloader
 spec:
+  replicas: 1
   revisionHistoryLimit: 1
   strategy:
     type: RollingUpdate
@@ -19,6 +20,7 @@ spec:
       labels:
         app: youtube-downloader
     spec:
+      terminationGracePeriodSeconds: 240
       containers:
         - name: app
           image: {{ .Values.image }}
@@ -46,17 +48,4 @@ spec:
       volumes:
         - name: downloads
           emptyDir: { }
----
-apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: cancer-youtube-downloader
-spec:
-  maxReplicas: 2
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: cancer-youtube-downloader
-  minReplicas: 1
-  targetCPUUtilizationPercentage: 50
 {{ end }}
