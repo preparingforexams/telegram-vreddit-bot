@@ -20,6 +20,15 @@ spec:
       labels:
         app: tiktok-downloader
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: bjoernpetersen.net/location
+                    operator: In
+                    values:
+                      - us
       terminationGracePeriodSeconds: 240
       containers:
         - name: app
