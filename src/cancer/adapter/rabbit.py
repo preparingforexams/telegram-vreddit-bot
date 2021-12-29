@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 from ssl import SSLContext
+from threading import Thread
 from typing import Callable, Type
 
 import pika
@@ -37,7 +39,7 @@ class RabbitConfig:
         params.virtual_host = self.virtual_host
         params.ssl_options = SSLOptions(SSLContext()) if self.use_ssl else None
         params.credentials = PlainCredentials(self.user, self.password)
-        params.heartbeat = 1200
+        params.heartbeat = 30
         return params
 
     @staticmethod
@@ -97,6 +99,27 @@ class RabbitPublisher(Publisher):
         _LOG.info("Published message to RabbitMQ queue %s", topic.value)
 
 
+class _Heartbeat:
+    def __init__(self, connection):
+        self._connection = connection
+        self._is_running = False
+
+    def start(self):
+        if self._is_running:
+            raise ValueError("Already running")
+
+        self._is_running = True
+        Thread(target=self._run, daemon=True).start()
+
+    def _run(self):
+        while self._is_running:
+            self._connection.process_data_events()
+            time.sleep(10)
+
+    def stop(self):
+        self._is_running = False
+
+
 class RabbitSubscriber(Subscriber):
     def __init__(self, config: RabbitConfig):
         self.config = config
@@ -110,12 +133,17 @@ class RabbitSubscriber(Subscriber):
                 channel.basic_reject(delivery_tag=method.delivery_tag, requeue=False)
                 return
 
+            heartbeat = _Heartbeat(channel.connection)
+            heartbeat.start()
+
             try:
                 result = handle(deserialized)
             except Exception as e:
                 _LOG.error("Unexpected exception", exc_info=e)
                 channel.basic_nack(method.delivery_tag, requeue=True)
                 return
+
+            heartbeat.stop()
 
             if result == Subscriber.Result.Ack:
                 channel.basic_ack(delivery_tag=method.delivery_tag)
