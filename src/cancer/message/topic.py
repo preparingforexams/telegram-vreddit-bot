@@ -1,7 +1,9 @@
 from enum import Enum
 from typing import Type, List
 
-from cancer.message import Message, YoutubeUrlConvertMessage, DownloadMessage
+from .download import DownloadMessage
+from .message import Message
+from .youtube_url_convert import YoutubeUrlConvertMessage
 
 
 class Topic(Enum):
