@@ -6,7 +6,6 @@ metadata:
   name: cancer-youtube-downloader
 spec:
   revisionHistoryLimit: 1
-  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -47,4 +46,17 @@ spec:
       volumes:
         - name: downloads
           emptyDir: { }
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cancer-youtube-downloader
+spec:
+  maxReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cancer-youtube-downloader
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 50
 {{ end }}
