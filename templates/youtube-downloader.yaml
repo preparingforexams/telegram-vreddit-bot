@@ -52,7 +52,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: cancer-youtube-downloader
 spec:
-  maxReplicas: 3
+  maxReplicas: 2
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
