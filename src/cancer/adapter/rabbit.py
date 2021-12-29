@@ -37,6 +37,7 @@ class RabbitConfig:
         params.virtual_host = self.virtual_host
         params.ssl_options = SSLOptions(SSLContext()) if self.use_ssl else None
         params.credentials = PlainCredentials(self.user, self.password)
+        params.heartbeat = None
         return params
 
     @staticmethod
