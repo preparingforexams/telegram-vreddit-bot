@@ -87,6 +87,7 @@ class RabbitPublisher(Publisher):
 
     def publish(self, topic: Topic, message: Message):
         with self._channel() as channel:
+            channel.queue_declare(topic.value, durable=True, auto_delete=False)
             channel.basic_publish(
                 exchange=self.config.exchange,
                 routing_key=topic.value,
@@ -155,6 +156,7 @@ class RabbitSubscriber(Subscriber):
         connection = pika.BlockingConnection(self.config.parameters)
         channel = connection.channel()
         try:
+            channel.queue_declare(topic.value, durable=True, auto_delete=False)
             channel.basic_qos(prefetch_count=1)
             channel.basic_consume(
                 queue=topic.value,
