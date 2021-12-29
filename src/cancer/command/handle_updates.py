@@ -2,47 +2,25 @@ import logging
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
-from enum import Enum, auto
 from typing import Optional, List, Dict
 from urllib.parse import urlparse, ParseResult
 
 from cancer import telegram
-from cancer.adapter.joint import JointPublisher
 from cancer.adapter.mqtt import MqttPublisher, MqttConfig
 from cancer.adapter.rabbit import RabbitPublisher, RabbitConfig
 from cancer.message import (
-    DownloadMessage,
     Message,
     Topic,
-    YoutubeUrlConvertMessage,
 )
 from cancer.port.publisher import Publisher
 
 _LOG = logging.getLogger(__name__)
 
 
-class Treatment(Enum):
-    DOWNLOAD = auto()
-    INSTA_DOWNLOAD = auto()
-    YOUTUBE_URL_CONVERT = auto()
-
-    def topic(self) -> Topic:
-        if self == Treatment.DOWNLOAD:
-            return Topic.download
-
-        if self == Treatment.INSTA_DOWNLOAD:
-            return Topic.instaDownload
-
-        if self == Treatment.YOUTUBE_URL_CONVERT:
-            return Topic.youtubeUrlConvert
-
-        raise ValueError(f"No topic for Treatment {self}")
-
-
 @dataclass
 class Cancer:
     host: str
-    treatment: Treatment
+    treatment: Topic
     path: Optional[str] = None
 
     def matches(self, symptoms: ParseResult) -> bool:
@@ -52,32 +30,33 @@ class Cancer:
 
 
 _CANCERS = [
-    Cancer(host="twitter.com", treatment=Treatment.DOWNLOAD),
-    Cancer("v.redd.it", Treatment.DOWNLOAD),
-    Cancer("www.reddit.com", Treatment.DOWNLOAD),
-    Cancer("instagram.com", Treatment.INSTA_DOWNLOAD),
-    Cancer("www.instagram.com", Treatment.INSTA_DOWNLOAD),
-    Cancer("facebook.com", Treatment.INSTA_DOWNLOAD),
-    Cancer("www.facebook.com", Treatment.INSTA_DOWNLOAD),
-    Cancer("vm.tiktok.com", Treatment.DOWNLOAD),
+    Cancer(host="twitter.com", treatment=Topic.download),
+    Cancer("v.redd.it", Topic.download),
+    Cancer("www.reddit.com", Topic.download),
+    Cancer("instagram.com", Topic.instaDownload),
+    Cancer("www.instagram.com", Topic.instaDownload),
+    Cancer("facebook.com", Topic.instaDownload),
+    Cancer("www.facebook.com", Topic.instaDownload),
+    Cancer("vm.tiktok.com", Topic.download),
+    # TODO: also download
     Cancer(
         host="youtube.com",
         path="/shorts/",
-        treatment=Treatment.YOUTUBE_URL_CONVERT,
+        treatment=Topic.youtubeUrlConvert,
     ),
     Cancer(
         host="youtu.be",
-        treatment=Treatment.DOWNLOAD,
+        treatment=Topic.youtubeDownload,
     ),
     Cancer(
         host="www.youtube.com",
         path="/watch",
-        treatment=Treatment.DOWNLOAD,
+        treatment=Topic.youtubeDownload,
     ),
     Cancer(
         host="youtube.com",
         path="/watch",
-        treatment=Treatment.DOWNLOAD,
+        treatment=Topic.youtubeDownload,
     ),
 ]
 
@@ -120,22 +99,10 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
 def _make_message(
         chat_id: int,
         message_id: int,
-        treatment: Treatment,
+        treatment: Topic,
         diagnoses: List[Diagnosis],
 ) -> Message:
-    if treatment == Treatment.DOWNLOAD:
-        message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
-        return message
-
-    if treatment == Treatment.INSTA_DOWNLOAD:
-        message = DownloadMessage(chat_id, message_id, [d.case for d in diagnoses])
-        return message
-
-    if treatment == Treatment.YOUTUBE_URL_CONVERT:
-        message = YoutubeUrlConvertMessage(chat_id, message_id, [d.case for d in diagnoses])
-        return message
-
-    raise ValueError(f"Unknown treatment: {treatment}")
+    return treatment.create_message(chat_id, message_id, [d.case for d in diagnoses])
 
 
 def _handle_update(publisher: Publisher, update: dict):
@@ -162,7 +129,7 @@ def _handle_update(publisher: Publisher, update: dict):
         _LOG.debug("No entities found in message")
         return
 
-    diagnosis_by_treatment: Dict[Treatment, List[Diagnosis]] = defaultdict(list)
+    diagnosis_by_treatment: Dict[Topic, List[Diagnosis]] = defaultdict(list)
     for entity in entities:
         diagnosis = _diagnose_cancer(text, entity)
         if diagnosis:
@@ -172,19 +139,17 @@ def _handle_update(publisher: Publisher, update: dict):
         _LOG.debug("Message was healthy")
         return
 
-    # TODO: cut out the middle man ("Treatment")
-    for treatment in Treatment:
+    for treatment in Topic:
         diagnoses = diagnosis_by_treatment[treatment]
         if not diagnoses:
             _LOG.debug("No diagnosed cases for treatment %s", treatment)
             continue
 
-        topic = treatment.topic()
         event = _make_message(message["chat"]["id"], message["message_id"], treatment, diagnoses)
 
         try:
-            publisher.publish(topic, event)
-            _LOG.info("Published event on topic %s", topic.value)
+            publisher.publish(treatment, event)
+            _LOG.info("Published event on topic %s", treatment.value)
         except Exception as e:
             _LOG.error("Could not publish event", exc_info=e)
             raise

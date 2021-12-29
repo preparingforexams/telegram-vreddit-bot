@@ -105,8 +105,11 @@ def run():
 
     signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
 
-    if os.getenv("DOWNLOAD_TYPE") == "insta":
+    download_type = os.getenv("DOWNLOAD_TYPE")
+    if download_type == "insta":
         topic = Topic.instaDownload
+    elif download_type == "youtube":
+        topic = Topic.youtubeDownload
     else:
         topic = Topic.download
 
