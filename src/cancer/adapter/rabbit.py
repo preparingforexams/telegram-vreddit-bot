@@ -37,7 +37,7 @@ class RabbitConfig:
         params.virtual_host = self.virtual_host
         params.ssl_options = SSLOptions(SSLContext()) if self.use_ssl else None
         params.credentials = PlainCredentials(self.user, self.password)
-        params.heartbeat = None
+        params.heartbeat = 1200
         return params
 
     @staticmethod
@@ -127,6 +127,7 @@ class RabbitSubscriber(Subscriber):
         connection = pika.BlockingConnection(self.config.parameters)
         channel = connection.channel()
         try:
+            channel.basic_qos(prefetch_count=1)
             channel.basic_consume(
                 queue=topic.value,
                 on_message_callback=_callback,
