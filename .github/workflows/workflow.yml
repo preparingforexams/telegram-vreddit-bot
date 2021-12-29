@@ -25,7 +25,7 @@ jobs:
       - name: Substitute environment variables in values.yaml
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
         env:
-          FEATURES: "[handle_updates, download, youtube_url_convert, insta_download, youtube_download]"
+          FEATURES: "[handle_updates, download, youtube_url_convert, insta_download, tiktok_download, youtube_download]"
           MQTT_PASSWORD: ${{ secrets.MQTT_PASSWORD }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}

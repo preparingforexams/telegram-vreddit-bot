@@ -11,12 +11,13 @@ class Topic(Enum):
     instaDownload = "instaDownload"
     youtubeDownload = "youtubeDownload"
     youtubeUrlConvert = "youtubeUrlConvert"
+    tiktokDownload = "tiktokDownload"
 
     def create_message(self, chat_id: int, message_id: int, urls: List[str]):
         clazz: Type[Message]
         if self == Topic.youtubeUrlConvert:
             clazz = YoutubeUrlConvertMessage
-        elif self in {Topic.download, Topic.instaDownload, Topic.youtubeDownload}:
+        elif self in {Topic.download, Topic.instaDownload, Topic.youtubeDownload, Topic.tiktokDownload}:
             clazz = DownloadMessage
         else:
             raise ValueError(f"Unknown message for type {self}")

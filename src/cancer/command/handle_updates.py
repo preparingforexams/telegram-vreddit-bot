@@ -37,7 +37,7 @@ _CANCERS = [
     Cancer("www.instagram.com", Topic.instaDownload),
     Cancer("facebook.com", Topic.instaDownload),
     Cancer("www.facebook.com", Topic.instaDownload),
-    Cancer("vm.tiktok.com", Topic.download),
+    Cancer("vm.tiktok.com", Topic.tiktokDownload),
     # TODO: also download
     Cancer(
         host="youtube.com",

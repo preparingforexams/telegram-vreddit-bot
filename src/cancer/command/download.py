@@ -111,6 +111,8 @@ def run():
         topic = Topic.instaDownload
     elif download_type == "youtube":
         topic = Topic.youtubeDownload
+    elif download_type == "tiktok":
+        topic = Topic.tiktokDownload
     else:
         topic = Topic.download
 
