@@ -94,6 +94,7 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                 videos=video_ids,
             )
 
+            _LOG.info("Successfully handled payload")
             return Subscriber.Result.Ack
 
 
