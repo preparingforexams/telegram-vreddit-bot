@@ -29,7 +29,6 @@ spec:
                     operator: In
                     values:
                       - us
-      terminationGracePeriodSeconds: 240
       containers:
         - name: app
           image: {{ .Values.image }}
