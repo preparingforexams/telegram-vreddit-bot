@@ -5,12 +5,11 @@ import os
 from dataclasses import dataclass
 from typing import Type, Callable, Optional, Dict
 
-from paho.mqtt.publish import single
-from paho.mqtt.subscribe import callback
-
 from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher
 from cancer.port.subscriber import Subscriber, T
+from paho.mqtt.publish import single
+from paho.mqtt.subscribe import callback
 
 _LOG = logging.getLogger(__name__)
 
@@ -73,7 +72,12 @@ class MqttPublisher(Publisher):
 class MqttSubscriber(Subscriber):
     config: MqttConfig
 
-    def subscribe(self, topic: Topic, message_type: Type[T], handle: Callable[[T], Subscriber.Result]):
+    def subscribe(
+        self,
+        topic: Topic,
+        message_type: Type[T],
+        handle: Callable[[T], Subscriber.Result],
+    ):
         def on_message(client, userdata, message):
             payload = message.payload
             _LOG.debug("Received message with payload %s", payload)

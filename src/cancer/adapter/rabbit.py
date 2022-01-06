@@ -125,7 +125,12 @@ class RabbitSubscriber(Subscriber):
     def __init__(self, config: RabbitConfig):
         self.config = config
 
-    def subscribe(self, topic: Topic, message_type: Type[T], handle: Callable[[T], Subscriber.Result]):
+    def subscribe(
+        self,
+        topic: Topic,
+        message_type: Type[T],
+        handle: Callable[[T], Subscriber.Result],
+    ):
         def _callback(channel: BlockingChannel, method, _, message: bytes):
             try:
                 deserialized = message_type.deserialize(message)

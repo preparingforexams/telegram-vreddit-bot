@@ -17,7 +17,12 @@ class Topic(Enum):
         clazz: Type[Message]
         if self == Topic.youtubeUrlConvert:
             clazz = YoutubeUrlConvertMessage
-        elif self in {Topic.download, Topic.instaDownload, Topic.youtubeDownload, Topic.tiktokDownload}:
+        elif self in {
+            Topic.download,
+            Topic.instaDownload,
+            Topic.youtubeDownload,
+            Topic.tiktokDownload,
+        }:
             clazz = DownloadMessage
         else:
             raise ValueError(f"Unknown message for type {self}")
