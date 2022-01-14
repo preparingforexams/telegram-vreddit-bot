@@ -9,6 +9,7 @@ from threading import Lock
 from typing import List
 
 from yt_dlp import YoutubeDL
+from yt_dlp.utils import UnsupportedError
 
 from cancer import telegram
 from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
@@ -33,7 +34,11 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
         "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
     })
 
-    return_code = ytdl.download([url])
+    try:
+        return_code = ytdl.download([url])
+    except UnsupportedError as e:
+        _LOG.warning("Download URL unsupported by youtube-dl: %s", url, exc_info=e)
+        return []
     if return_code != 0:
         _LOG.error("YTDL returned error code %d", return_code)
         return []
