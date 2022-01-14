@@ -58,5 +58,5 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       - uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade bot . --install --namespace=telegram-bots
+          exec: helm upgrade cancerbot . --install --namespace=telegram-bots
           kubeconfig: '${{ secrets.KUBECONFIG_RANCHER_RAW }}'
