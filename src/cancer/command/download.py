@@ -95,6 +95,10 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                 for url in payload.urls
                 for file in _download_videos(folder, url)
             ]
+            if not files:
+                _LOG.warning("Download returned no videos")
+                return Subscriber.Result.Ack
+
             video_ids = [_upload_video(file) for file in files]
 
             telegram.send_video_group(
