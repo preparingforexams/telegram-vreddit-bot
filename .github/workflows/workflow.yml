@@ -7,7 +7,7 @@ jobs:
     container: python:3.10-slim
     steps:
       - run: pip install flake8
-      - run: python -m flake src/
+      - run: python -m flake8 src/
   push_docker:
     runs-on: ubuntu-latest
     needs:
