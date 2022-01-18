@@ -34,7 +34,14 @@ def _check_size(url: str) -> Optional[int]:
         return None
 
     size = info.get("filesize_approx")
-    _LOG.debug("Got a file size of approx. %d MB for URL %s", round(float(size) / 1_000_000), url)
+    if size is None:
+        _LOG.debug("Got no file size for URL %s", url)
+    else:
+        _LOG.debug(
+            "Got a file size of approx. %d MB for URL %s",
+            round(float(size) / 1_000_000),
+            url,
+        )
     return size
 
 
