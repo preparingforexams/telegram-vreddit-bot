@@ -73,6 +73,9 @@ def upload_video(
         if thumb_path:
             with open(path, 'rb') as thumb_file:
                 response = _request(dict(video=file, thumb=thumb_file))
+                if response.status_code == 413:
+                    _LOG.warning("Got Entity Too Large response, retrying without thumbnail")
+                    return upload_video(chat_id, path, reply_to_message_id, None)
         else:
             response = _request(dict(video=file))
 
