@@ -18,7 +18,7 @@ from cancer.port.subscriber import Subscriber
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
-_MAX_FILE_SIZE = int(os.getenv("MAX_DOWNLOAD_FILE_SIZE", "20_000_000"))
+_MAX_FILE_SIZE = int(os.getenv("MAX_DOWNLOAD_FILE_SIZE", "40_000_000"))
 
 _LOG = logging.getLogger(__name__)
 
