@@ -135,7 +135,7 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
                 _LOG.info("Skipping thumbnail %s because its file size is too large", url)
                 continue
 
-            _LOG.debug("Found thumbnail with size %d", len(response.content), url)
+            _LOG.debug("Found thumbnail with size %d", len(response.content))
 
             thumb_path = os.path.join(cure_dir, 'thumb.jpg')
             with open(thumb_path, 'wb') as f:
@@ -148,9 +148,23 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
             return thumb_path
 
 
-def _upload_video(thumb_path: Optional[str], video_file: str) -> str:
+def _upload_video(thumb_path: Optional[str], video_file: str) -> Optional[str]:
     cure_path = _ensure_compatibility(video_file)
-    message = telegram.upload_video(_UPLOAD_CHAT, cure_path, thumb_path=thumb_path)
+    try:
+        message = telegram.upload_video(_UPLOAD_CHAT, cure_path, thumb_path=thumb_path)
+    except requests.exceptions.HTTPError as e:
+        response: Optional[requests.Response] = e.response
+        if response and response.status_code == 413:
+            _LOG.error(
+                "Could not upload video (entity too large). Initial size: %d, cured: %d",
+                os.path.getsize(video_file),
+                os.path.getsize(cure_path),
+                exc_info=e,
+            )
+            return None
+        else:
+            raise e
+
     video = message["video"]
     file_id = video["file_id"]
     return file_id
@@ -189,7 +203,7 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
             telegram.send_video_group(
                 chat_id=payload.chat_id,
                 reply_to_message_id=payload.message_id,
-                videos=video_ids,
+                videos=[video_id for video_id in video_ids if video_id is not None],
             )
 
             _LOG.info("Successfully handled payload")
