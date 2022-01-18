@@ -33,7 +33,7 @@ def _check_size(url: str) -> Optional[int]:
     except DownloadError:
         return None
 
-    size = info.get("filesize_approx")
+    size = info.get("filesize") or info.get("filesize_approx")
     if size is None:
         _LOG.debug("Got no file size for URL %s", url)
     else:
