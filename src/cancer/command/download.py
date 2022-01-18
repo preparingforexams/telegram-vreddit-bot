@@ -114,7 +114,7 @@ def _ensure_compatibility(original_path: str) -> str:
 
 
 def _get_dimensions(image_path: str) -> Tuple[int, int]:
-    image= Image.open(image_path)
+    image = Image.open(image_path)
     return image.size
 
 
