@@ -156,7 +156,7 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
                     url,
                     dimensions[0],
                     dimensions[1],
-                    len(response.content),
+                    os.path.getsize(thumb_path),
                 )
 
             return thumb_path
