@@ -128,16 +128,16 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
                 _LOG.info("Skipping thumbnail %s because it's too large", url)
                 continue
 
+            _LOG.debug("Found thumbnail with size %d", len(response.content))
+
             thumb_path = os.path.join(cure_dir, 'thumb.jpg')
             with open(thumb_path, 'wb') as f:
                 f.write(response.content)
             return thumb_path
 
 
-def _upload_video(info: VideoInfo, video_file: str) -> str:
+def _upload_video(thumb_path: Optional[str], video_file: str) -> str:
     cure_path = _ensure_compatibility(video_file)
-    cure_dir = os.path.dirname(video_file)
-    thumb_path = _download_thumb(cure_dir, info.thumbnails)
     message = telegram.upload_video(_UPLOAD_CHAT, cure_path, thumb_path=thumb_path)
     video = message["video"]
     file_id = video["file_id"]
@@ -155,14 +155,24 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                 if info.size is not None and info.size > _MAX_FILE_SIZE:
                     _LOG.info("Skipping URL %s because it's too large", url)
                     continue
+
+                thumb_file: Optional[str] = None
+                if info.thumbnails:
+                    _LOG.debug(
+                        "Found %d thumbnail candidates for URL %s",
+                        len(info.thumbnails),
+                        url,
+                    )
+                    thumb_file = _download_thumb(folder, info.thumbnails)
+
                 for file in _download_videos(folder, url):
-                    files.append((info, file))
+                    files.append((thumb_file, file))
 
             if not files:
                 _LOG.warning("Download returned no videos")
                 return Subscriber.Result.Ack
 
-            video_ids = [_upload_video(info, file) for info, file in files]
+            video_ids = [_upload_video(thumb_file, file) for thumb_file, file in files]
 
             telegram.send_video_group(
                 chat_id=payload.chat_id,
