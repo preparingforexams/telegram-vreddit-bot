@@ -142,8 +142,13 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
                 f.write(response.content)
 
             dimensions = _get_dimensions(thumb_path)
-            if max(dimensions) > 320:
-                _LOG.info("Skipping thumbnail %s because its dimensions are too large", url)
+            if max(dimensions) >= 320:
+                _LOG.info(
+                    "Skipping thumbnail %s because its dimensions (%d x %d) are too large",
+                    url,
+                    dimensions[0],
+                    dimensions[1],
+                )
                 continue
             else:
                 _LOG.debug(
