@@ -29,7 +29,7 @@ def _check_size(url: str) -> Optional[int]:
     ytdl = YoutubeDL()
     info = ytdl.extract_info(url, download=False)
     size = info.get("filesize_approx")
-    _LOG.debug(f"Got a file size of approx. {round(float(size) / 1_000_000)} MB for URL {url}")
+    _LOG.debug("Got a file size of approx. %d MB for URL %s", round(float(size) / 1_000_000), url)
     return size
 
 
@@ -98,12 +98,14 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
 
     with TemporaryDirectory(dir=_STORAGE_DIR) as folder:
         with _busy_lock:
-            files = [
-                file
-                for url in payload.urls
-                for file in _download_videos(folder, url)
-                if (_check_size(url) or 0) < _MAX_FILE_SIZE
-            ]
+            files = []
+            for url in payload.urls:
+                size = _check_size(url)
+                if size is not None and size > _MAX_FILE_SIZE:
+                    _LOG.info("Skipping URL %s because it's too large", url)
+                    continue
+                files.extend(_download_videos(folder, url))
+
             if not files:
                 _LOG.warning("Download returned no videos")
                 return Subscriber.Result.Ack
