@@ -20,7 +20,7 @@ spec:
       labels:
         app: youtube-downloader
     spec:
-      terminationGracePeriodSeconds: 240
+      terminationGracePeriodSeconds: 600
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
