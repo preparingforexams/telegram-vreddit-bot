@@ -27,7 +27,12 @@ _busy_lock = Lock()
 
 def _check_size(url: str) -> Optional[int]:
     ytdl = YoutubeDL()
-    info = ytdl.extract_info(url, download=False)
+
+    try:
+        info = ytdl.extract_info(url, download=False)
+    except DownloadError:
+        return None
+
     size = info.get("filesize_approx")
     _LOG.debug("Got a file size of approx. %d MB for URL %s", round(float(size) / 1_000_000), url)
     return size
