@@ -6,7 +6,7 @@ import sys
 import uuid
 from tempfile import TemporaryDirectory
 from threading import Lock
-from typing import List
+from typing import List, Optional
 
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import UnsupportedError, DownloadError
@@ -18,10 +18,17 @@ from cancer.port.subscriber import Subscriber
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
+_MAX_FILE_SIZE = int(os.getenv("MAX_DOWNLOAD_FILE_SIZE", "2000000"))
 
 _LOG = logging.getLogger(__name__)
 
 _busy_lock = Lock()
+
+
+def _check_size(url: str) -> Optional[int]:
+    ytdl = YoutubeDL()
+    info = ytdl.extract_info(url, download=False)
+    return info.get("filesize_approx")
 
 
 def _download_videos(base_folder: str, url: str) -> List[str]:
@@ -93,6 +100,7 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                 file
                 for url in payload.urls
                 for file in _download_videos(folder, url)
+                if (_check_size(url) or 0) < _MAX_FILE_SIZE
             ]
             if not files:
                 _LOG.warning("Download returned no videos")
