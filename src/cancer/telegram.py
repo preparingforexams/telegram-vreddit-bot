@@ -58,7 +58,7 @@ def upload_video(
     reply_to_message_id: Optional[int],
     thumb_path: Optional[str],
 ) -> dict:
-    _LOG.info("Uploading file %s", path)
+    _LOG.info("Uploading file %s with thumb %s", path, thumb_path)
     url = _build_url("sendVideo")
 
     def _request(files: dict):
