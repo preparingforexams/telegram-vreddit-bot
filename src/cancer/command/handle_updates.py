@@ -6,7 +6,6 @@ from typing import Optional, List, Dict
 from urllib.parse import urlparse, ParseResult
 
 from cancer import telegram
-from cancer.adapter.mqtt import MqttPublisher, MqttConfig
 from cancer.adapter.rabbit import RabbitPublisher, RabbitConfig
 from cancer.message import (
     Message,
@@ -153,14 +152,6 @@ def _handle_update(publisher: Publisher, update: dict):
         except Exception as e:
             _LOG.error("Could not publish event", exc_info=e)
             raise
-
-
-def _init_mqtt_publisher() -> Optional[Publisher]:
-    try:
-        return MqttPublisher(MqttConfig.from_env())
-    except ValueError as e:
-        _LOG.warning("Could not initialize MQTT", exc_info=e)
-        return None
 
 
 def _init_rabbit_publisher() -> Optional[Publisher]:

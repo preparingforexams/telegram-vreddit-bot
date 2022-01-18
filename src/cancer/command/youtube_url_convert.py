@@ -5,7 +5,6 @@ import sys
 from urllib.parse import urlparse
 
 from cancer import telegram
-from cancer.adapter.mqtt import MqttConfig, MqttSubscriber
 from cancer.adapter.rabbit import RabbitSubscriber, RabbitConfig
 from cancer.message import Topic
 from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
@@ -43,11 +42,7 @@ def run():
     topic = Topic.youtubeUrlConvert
     _LOG.debug("Subscribing to topic %s", topic)
 
-    subscriber: Subscriber
-    if os.getenv("BROKER_TYPE") == "mqtt":
-        subscriber = MqttSubscriber(MqttConfig.from_env())
-    else:
-        subscriber = RabbitSubscriber(RabbitConfig.from_env())
+    subscriber: Subscriber = RabbitSubscriber(RabbitConfig.from_env())
     subscriber.subscribe(
         topic,
         YoutubeUrlConvertMessage,

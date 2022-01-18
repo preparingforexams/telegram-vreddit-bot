@@ -12,7 +12,6 @@ from yt_dlp import YoutubeDL
 from yt_dlp.utils import UnsupportedError, DownloadError
 
 from cancer import telegram
-from cancer.adapter.mqtt import MqttSubscriber, MqttConfig
 from cancer.adapter.rabbit import RabbitConfig, RabbitSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
@@ -130,11 +129,7 @@ def run():
         topic = Topic.download
 
     _LOG.debug("Subscribing to topic %s", topic)
-    subscriber: Subscriber
-    if os.getenv("BROKER_TYPE") == "mqtt":
-        subscriber = MqttSubscriber(MqttConfig.from_env())
-    else:
-        subscriber = RabbitSubscriber(RabbitConfig.from_env())
+    subscriber: Subscriber = RabbitSubscriber(RabbitConfig.from_env())
 
     # readiness_server = ReadinessServer()
     # readiness_server.start(lambda: not _busy_lock.locked())
