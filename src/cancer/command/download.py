@@ -4,10 +4,11 @@ import signal
 import subprocess
 import sys
 import uuid
+from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from threading import Lock
 from typing import List, Optional
-
+import requests
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import UnsupportedError, DownloadError
 
@@ -25,13 +26,19 @@ _LOG = logging.getLogger(__name__)
 _busy_lock = Lock()
 
 
-def _check_size(url: str) -> Optional[int]:
+@dataclass
+class VideoInfo:
+    size: Optional[int]
+    thumbnails: List[str]
+
+
+def _get_info(url: str) -> VideoInfo:
     ytdl = YoutubeDL()
 
     try:
         info = ytdl.extract_info(url, download=False)
     except DownloadError:
-        return None
+        return VideoInfo(None, [])
 
     size = info.get("filesize") or info.get("filesize_approx")
     if size is None:
@@ -42,7 +49,14 @@ def _check_size(url: str) -> Optional[int]:
             round(float(size) / 1_000_000),
             url,
         )
-    return size
+
+    raw_thumbnails = info.get("thumbnails", [])
+    thumbnails = [
+        t["url"]
+        for t in sorted(raw_thumbnails, key=lambda t: t["preference"], reverse=True)
+    ]
+
+    return VideoInfo(size, thumbnails)
 
 
 def _download_videos(base_folder: str, url: str) -> List[str]:
@@ -97,9 +111,34 @@ def _ensure_compatibility(original_path: str) -> str:
     return converted_path
 
 
-def _upload_video(video_file: str) -> str:
+def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
+    for url in urls:
+        if not url.endswith(".jpg"):
+            continue
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            _LOG.error("Could not download thumbnail %s", url, exc_info=e)
+            continue
+        else:
+            # TODO: maybe don't download the whole content here
+            if len(response.content) > 200_000:
+                _LOG.info("Skipping thumbnail %s because it's too large", url)
+                continue
+
+            thumb_path = os.path.join(cure_dir, 'thumb.jpg')
+            with open(thumb_path, 'wb') as f:
+                f.write(response.content)
+            return thumb_path
+
+
+def _upload_video(info: VideoInfo, video_file: str) -> str:
     cure_path = _ensure_compatibility(video_file)
-    message = telegram.upload_video(_UPLOAD_CHAT, cure_path)
+    cure_dir = os.path.dirname(video_file)
+    thumb_path = _download_thumb(cure_dir, info.thumbnails)
+    message = telegram.upload_video(_UPLOAD_CHAT, cure_path, thumb_path=thumb_path)
     video = message["video"]
     file_id = video["file_id"]
     return file_id
@@ -112,17 +151,18 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
         with _busy_lock:
             files = []
             for url in payload.urls:
-                size = _check_size(url)
-                if size is not None and size > _MAX_FILE_SIZE:
+                info = _get_info(url)
+                if info.size is not None and info.size > _MAX_FILE_SIZE:
                     _LOG.info("Skipping URL %s because it's too large", url)
                     continue
-                files.extend(_download_videos(folder, url))
+                for file in _download_videos(folder, url):
+                    files.append((info, file))
 
             if not files:
                 _LOG.warning("Download returned no videos")
                 return Subscriber.Result.Ack
 
-            video_ids = [_upload_video(file) for file in files]
+            video_ids = [_upload_video(info, file) for info, file in files]
 
             telegram.send_video_group(
                 chat_id=payload.chat_id,
