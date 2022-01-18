@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from threading import Lock
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 import requests
 from PIL import Image
@@ -113,9 +113,9 @@ def _ensure_compatibility(original_path: str) -> str:
     return converted_path
 
 
-def _max_dimension(image_path: str) -> int:
-    image = Image.open(image_path)
-    return max(image.size)
+def _get_dimensions(image_path: str) -> Tuple[int, int]:
+    image= Image.open(image_path)
+    return image.size
 
 
 def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
@@ -141,9 +141,18 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
             with open(thumb_path, 'wb') as f:
                 f.write(response.content)
 
-            if _max_dimension(thumb_path) > 320:
+            dimensions = _get_dimensions(thumb_path)
+            if max(dimensions) > 320:
                 _LOG.info("Skipping thumbnail %s because its dimensions are too large", url)
                 continue
+            else:
+                _LOG.debug(
+                    "Using thumbnail %s with dimensions %d x %d and size %d",
+                    url,
+                    dimensions[0],
+                    dimensions[1],
+                    len(response.content),
+                )
 
             return thumb_path
 
