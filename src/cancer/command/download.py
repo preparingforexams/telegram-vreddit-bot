@@ -200,11 +200,16 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                 return Subscriber.Result.Ack
 
             video_ids = [_upload_video(thumb_file, file) for thumb_file, file in files]
+            video_ids = [video_id for video_id in video_ids if video_id is not None]
+
+            if not video_ids:
+                _LOG.warning("No videos were uploaded")
+                return Subscriber.Result.Ack
 
             telegram.send_video_group(
                 chat_id=payload.chat_id,
                 reply_to_message_id=payload.message_id,
-                videos=[video_id for video_id in video_ids if video_id is not None],
+                videos=video_ids,
             )
 
             _LOG.info("Successfully handled payload")
