@@ -3,11 +3,6 @@ telegram:
   apiKey: ${TELEGRAM_TOKEN}
 sentry:
   dsn: ${SENTRY_DSN}
-mqtt:
-  host: mqtt.mqtt
-  port: 1883
-  user: cancer
-  password: ${MQTT_PASSWORD}
 rabbit:
   host: rabbit.bjoernpetersen.net
   port: 5671
