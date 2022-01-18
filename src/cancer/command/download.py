@@ -154,7 +154,7 @@ def _upload_video(thumb_path: Optional[str], video_file: str) -> Optional[str]:
         message = telegram.upload_video(_UPLOAD_CHAT, cure_path, thumb_path=thumb_path)
     except requests.exceptions.HTTPError as e:
         response: Optional[requests.Response] = e.response
-        if response and response.status_code == 413:
+        if response is not None and response.status_code == 413:
             _LOG.error(
                 "Could not upload video (entity too large). Initial size: %d, cured: %d",
                 os.path.getsize(video_file),
@@ -164,8 +164,7 @@ def _upload_video(thumb_path: Optional[str], video_file: str) -> Optional[str]:
             return None
         else:
             _LOG.warning("Re-raising exception with response %s", response)
-            if response:
-                _LOG.warning("Response status: %d", response.status_code)
+            _LOG.warning("Response status: %d", response.status_code)
             raise e
 
     video = message["video"]
