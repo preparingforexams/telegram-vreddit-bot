@@ -163,7 +163,9 @@ def _upload_video(thumb_path: Optional[str], video_file: str) -> Optional[str]:
             )
             return None
         else:
-            _LOG.warning("Re-raising exception with repsonse %s", response)
+            _LOG.warning("Re-raising exception with response %s", response)
+            if response:
+                _LOG.warning("Response status: %d", response.status_code)
             raise e
 
     video = message["video"]
