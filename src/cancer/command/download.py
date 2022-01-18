@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from threading import Lock
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import requests
 from PIL import Image
@@ -148,10 +148,20 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
             return thumb_path
 
 
-def _upload_video(thumb_path: Optional[str], video_file: str) -> Optional[str]:
+def _upload_video(
+    chat_id: Union[str, int],
+    message_id: Optional[int],
+    thumb_path: Optional[str],
+    video_file: str,
+) -> Optional[str]:
     cure_path = _ensure_compatibility(video_file)
     try:
-        message = telegram.upload_video(_UPLOAD_CHAT, cure_path, thumb_path=thumb_path)
+        message = telegram.upload_video(
+            chat_id,
+            cure_path,
+            reply_to_message_id=message_id,
+            thumb_path=thumb_path,
+        )
     except requests.exceptions.HTTPError as e:
         response: Optional[requests.Response] = e.response
         if response is not None and response.status_code == 413:
@@ -199,18 +209,8 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                 _LOG.warning("Download returned no videos")
                 return Subscriber.Result.Ack
 
-            video_ids = [_upload_video(thumb_file, file) for thumb_file, file in files]
-            video_ids = [video_id for video_id in video_ids if video_id is not None]
-
-            if not video_ids:
-                _LOG.warning("No videos were uploaded")
-                return Subscriber.Result.Ack
-
-            telegram.send_video_group(
-                chat_id=payload.chat_id,
-                reply_to_message_id=payload.message_id,
-                videos=video_ids,
-            )
+            for thumb_file, file in files:
+                _upload_video(payload.chat_id, payload.message_id, thumb_file, file)
 
             _LOG.info("Successfully handled payload")
             return Subscriber.Result.Ack

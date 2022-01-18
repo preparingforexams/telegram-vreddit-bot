@@ -52,14 +52,19 @@ def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], Non
             _LOG.error("Could not handle update", exc_info=e)
 
 
-def upload_video(chat_id: Union[int, str], path: str, thumb_path: Optional[str]) -> dict:
+def upload_video(
+    chat_id: Union[int, str],
+    path: str,
+    reply_to_message_id: Optional[int],
+    thumb_path: Optional[str],
+) -> dict:
     _LOG.info("Uploading file %s", path)
     url = _build_url("sendVideo")
 
     def _request(files: dict):
         return requests.post(
             url,
-            data=dict(chat_id=chat_id),
+            data=dict(chat_id=chat_id, reply_to_message_id=reply_to_message_id),
             files=files,
         )
 
