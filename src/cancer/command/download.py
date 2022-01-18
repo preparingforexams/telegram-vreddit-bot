@@ -8,7 +8,9 @@ from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from threading import Lock
 from typing import List, Optional
+
 import requests
+from PIL import Image
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import UnsupportedError, DownloadError
 
@@ -111,6 +113,11 @@ def _ensure_compatibility(original_path: str) -> str:
     return converted_path
 
 
+def _max_dimension(image_path: str) -> int:
+    image = Image.open(image_path)
+    return max(image.size)
+
+
 def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
     for url in urls:
         if not url.endswith(".jpg"):
@@ -125,14 +132,19 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
         else:
             # TODO: maybe don't download the whole content here
             if len(response.content) > 200_000:
-                _LOG.info("Skipping thumbnail %s because it's too large", url)
+                _LOG.info("Skipping thumbnail %s because its file size is too large", url)
                 continue
 
-            _LOG.debug("Found thumbnail with size %d", len(response.content))
+            _LOG.debug("Found thumbnail with size %d", len(response.content), url)
 
             thumb_path = os.path.join(cure_dir, 'thumb.jpg')
             with open(thumb_path, 'wb') as f:
                 f.write(response.content)
+
+            if _max_dimension(thumb_path) > 320:
+                _LOG.info("Skipping thumbnail %s because its dimensions are too large", url)
+                continue
+
             return thumb_path
 
 

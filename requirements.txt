@@ -1,6 +1,7 @@
 click==8.0.3
 paho-mqtt==1.6.1
 pika==1.2.0
+Pillow==9.0.0
 requests==2.27.1
 sentry-sdk==1.5.2
 yt-dlp==2021.12.27
