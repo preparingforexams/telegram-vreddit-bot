@@ -57,7 +57,7 @@ def _get_info(url: str) -> VideoInfo:
         _LOG.debug(
             "Thumbnails for URL %s have the following keys: %s",
             url,
-            raw_thumbnails[0].keys(),
+            list(raw_thumbnails[0].keys()),
         )
     thumbnails = [
         t["url"]
