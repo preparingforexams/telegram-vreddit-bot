@@ -1,0 +1,50 @@
+---
+{{ if has "twitter_download" .Values.features  }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cancer-twitter-downloader
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: twitter-downloader
+  template:
+    metadata:
+      labels:
+        app: twitter-downloader
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          args:
+            - download
+          resources:
+            limits:
+              cpu: 800m
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          env:
+            - name: STORAGE_DIR
+              value: "/downloads"
+            - name: DOWNLOAD_TYPE
+              value: twitter
+          envFrom:
+            - configMapRef:
+                name: cancer-config
+            - secretRef:
+                name: cancer-secrets
+          volumeMounts:
+            - mountPath: "/downloads"
+              name: downloads
+      volumes:
+        - name: downloads
+          emptyDir: { }
+{{ end }}

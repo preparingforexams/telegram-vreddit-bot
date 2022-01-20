@@ -255,6 +255,8 @@ def run():
         topic = Topic.youtubeDownload
     elif download_type == "tiktok":
         topic = Topic.tiktokDownload
+    elif download_type == "twitter":
+        topic = Topic.twitterDownload
     else:
         topic = Topic.download
 
