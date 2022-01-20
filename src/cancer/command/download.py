@@ -53,9 +53,19 @@ def _get_info(url: str) -> VideoInfo:
         )
 
     raw_thumbnails = info.get("thumbnails", [])
+    if raw_thumbnails:
+        _LOG.debug(
+            "Thumbnails for URL %s have the following keys: %s",
+            url,
+            raw_thumbnails[0].keys(),
+        )
     thumbnails = [
         t["url"]
-        for t in sorted(raw_thumbnails, key=lambda t: t["preference"], reverse=True)
+        for t in sorted(
+            raw_thumbnails,
+            key=lambda t: t.get("preference") or t.get("filesize") or -999999,
+            reverse=True,
+        )
     ]
 
     return VideoInfo(size, thumbnails)
