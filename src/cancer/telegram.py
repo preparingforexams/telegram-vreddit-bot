@@ -84,8 +84,8 @@ def upload_video(
 
 def send_message(
     chat_id: int,
-    reply_to_message_id: Optional[int],
     text: str,
+    reply_to_message_id: Optional[int] = None,
 ) -> dict:
     return _get_actual_body(requests.post(
         _build_url("sendMessage"),
