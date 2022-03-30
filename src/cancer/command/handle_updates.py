@@ -32,6 +32,7 @@ _CANCERS = [
     Cancer(host="twitter.com", treatment=Topic.twitterDownload),
     Cancer("v.redd.it", Topic.download),
     Cancer("www.reddit.com", Topic.download),
+    Cancer("cdn.discordapp.com", Topic.download),
     Cancer("instagram.com", Topic.instaDownload),
     Cancer("www.instagram.com", Topic.instaDownload),
     Cancer("facebook.com", Topic.instaDownload),
