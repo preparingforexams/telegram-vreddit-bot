@@ -12,6 +12,13 @@
       "prConcurrentLimit": 1
     },
     {
+      "matchManagers": [
+        "poetry"
+      ],
+      "matchUpdateTypes": "patch",
+      "automerge": true
+    },
+    {
       "groupName": "requests",
       "matchPackageNames": [
         "requests",
