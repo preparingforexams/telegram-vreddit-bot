@@ -2,7 +2,7 @@ name: Workflow
 on: [ push ]
 
 jobs:
-  flake8:
+  lint:
     runs-on: ubuntu-latest
     container: python:3.10-slim
     steps:
@@ -10,11 +10,15 @@ jobs:
         run: pip install poetry
       - uses: actions/checkout@v3
       - run: poetry install
-      - run: poetry run flake8 src/
+      - name: Check coding standards
+        run: |
+          poetry run black --check src/
+          poetry run flake8 src/
+
   push_docker:
     runs-on: ubuntu-latest
     needs:
-      - flake8
+      - lint
     if: success() && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
@@ -28,6 +32,7 @@ jobs:
         run: docker build -t ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" .
       - name: Push the tagged Docker image
         run: docker push ghcr.io/preparingforexams/vredditbot:${GITHUB_SHA}
+
   deploy:
     runs-on: ubuntu-latest
     needs: push_docker
@@ -52,6 +57,7 @@ jobs:
         with:
           exec: helm upgrade bot . --install --namespace=cancer
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
+
   deploy_rancher:
     runs-on: ubuntu-latest
     needs: push_docker
