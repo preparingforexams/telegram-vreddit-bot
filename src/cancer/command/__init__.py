@@ -5,7 +5,7 @@ from . import (
 )
 
 __all__ = [
-    download,
-    handle_updates,
-    youtube_url_convert,
+    "download",
+    "handle_updates",
+    "youtube_url_convert",
 ]
