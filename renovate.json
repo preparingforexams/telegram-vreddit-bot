@@ -1,5 +1,28 @@
 {
   "extends": [
     "config:base"
+  ],
+  "packageRules": [
+    {
+      "groupName": "requests",
+      "matchPackageNames": [
+        "requests",
+        "types-requests"
+      ]
+    }, ,
+    {
+      "groupName": "pika",
+      "matchPackageNames": [
+        "pika",
+        "types-pika"
+      ]
+    },
+    {
+      "groupName": "pillow",
+      "matchPackageNames": [
+        "Pillow",
+        "types-Pillow"
+      ]
+    }
   ]
 }
