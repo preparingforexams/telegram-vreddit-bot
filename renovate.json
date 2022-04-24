@@ -1,6 +1,5 @@
 {
   "extends": [
-    "config:base",
     "github>preparingforexams/renovate-config"
   ],
   "packageRules": [
