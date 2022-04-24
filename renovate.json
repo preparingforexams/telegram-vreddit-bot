@@ -3,13 +3,21 @@
     "config:base"
   ],
   "prHourlyLimit": 0,
+  "automergeStrategy": "rebase",
   "packageRules": [
+    {
+      "matchManagers": [
+        "poetry"
+      ],
+      "prConcurrentLimit": 1
+    },
     {
       "groupName": "requests",
       "matchPackageNames": [
         "requests",
         "types-requests"
-      ]
+      ],
+      "automerge": true
     },
     {
       "groupName": "pika",
@@ -24,6 +32,12 @@
         "Pillow",
         "types-Pillow"
       ]
+    },
+    {
+      "matchPackageNames": [
+        "sentry-sdk"
+      ],
+      "automerge": true
     }
   ]
 }
