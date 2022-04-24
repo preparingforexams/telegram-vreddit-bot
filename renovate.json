@@ -1,50 +1,15 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    "github>preparingforexams/renovate-config"
   ],
-  "prHourlyLimit": 0,
-  "automergeStrategy": "rebase",
   "packageRules": [
-    {
-      "matchManagers": [
-        "poetry"
-      ],
-      "prConcurrentLimit": 1
-    },
-    {
-      "matchManagers": [
-        "poetry"
-      ],
-      "matchUpdateTypes": "patch",
-      "automerge": true
-    },
-    {
-      "groupName": "requests",
-      "matchPackageNames": [
-        "requests",
-        "types-requests"
-      ],
-      "automerge": true
-    },
     {
       "groupName": "pika",
       "matchPackageNames": [
         "pika",
         "types-pika"
       ]
-    },
-    {
-      "groupName": "pillow",
-      "matchPackageNames": [
-        "Pillow",
-        "types-Pillow"
-      ]
-    },
-    {
-      "matchPackageNames": [
-        "sentry-sdk"
-      ],
-      "automerge": true
     }
   ]
 }
