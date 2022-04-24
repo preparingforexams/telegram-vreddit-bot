@@ -7,21 +7,21 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "~3.10"
-click = "~8.0"
-paho-mqtt = "~1.0"
-pika = "~1.0"
-Pillow = "~9.0"
-requests = "~2.0"
+click = "8.1.2"
+paho-mqtt = "1.6.1"
+pika = "1.2.0"
+Pillow = "9.1.0"
+requests = "2.27.0"
 sentry-sdk = "1.5.9"
 yt-dlp = "2022.4.8"
 
 [tool.poetry.dev-dependencies]
-black = "~22.3"
-flake8 = "~4.0"
+black = "22.3.0"
+flake8 = "4.0.1"
 mypy = "0.942"
-types-requests = "~2.25"
+types-requests = "2.27.15"
 types-pika = "1.2.0b1"
-types-Pillow = "~9.0"
+types-Pillow = "9.0.13"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
