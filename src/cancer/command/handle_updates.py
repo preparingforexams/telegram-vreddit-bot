@@ -84,7 +84,7 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
     if entity["type"] == "url":
         offset = entity["offset"]
         length = entity["length"]
-        url = text[offset:offset + length]
+        url = text[offset : offset + length]
     elif entity["type"] == "text_link":
         url = entity["url"]
     else:
@@ -98,10 +98,10 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
 
 
 def _make_message(
-        chat_id: int,
-        message_id: int,
-        treatment: Topic,
-        diagnoses: List[Diagnosis],
+    chat_id: int,
+    message_id: int,
+    treatment: Topic,
+    diagnoses: List[Diagnosis],
 ) -> Message:
     return treatment.create_message(chat_id, message_id, [d.case for d in diagnoses])
 
@@ -146,7 +146,9 @@ def _handle_update(publisher: Publisher, update: dict):
             _LOG.debug("No diagnosed cases for treatment %s", treatment)
             continue
 
-        event = _make_message(message["chat"]["id"], message["message_id"], treatment, diagnoses)
+        event = _make_message(
+            message["chat"]["id"], message["message_id"], treatment, diagnoses
+        )
 
         try:
             publisher.publish(treatment, event)

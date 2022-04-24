@@ -32,11 +32,13 @@ def _request_updates(last_update_id: Optional[int]) -> List[dict]:
             "offset": last_update_id + 1,
             "timeout": 10,
         }
-    return _get_actual_body(requests.post(
-        _build_url("getUpdates"),
-        json=body,
-        timeout=12,
-    ))
+    return _get_actual_body(
+        requests.post(
+            _build_url("getUpdates"),
+            json=body,
+            timeout=12,
+        )
+    )
 
 
 def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], None]):
@@ -69,12 +71,14 @@ def upload_video(
         )
 
     response: requests.Response
-    with open(path, 'rb') as file:
+    with open(path, "rb") as file:
         if thumb_path:
-            with open(path, 'rb') as thumb_file:
+            with open(path, "rb") as thumb_file:
                 response = _request(dict(video=file, thumb=thumb_file))
                 if response.status_code == 413:
-                    _LOG.warning("Got Entity Too Large response, retrying without thumbnail")
+                    _LOG.warning(
+                        "Got Entity Too Large response, retrying without thumbnail"
+                    )
                     return upload_video(chat_id, path, reply_to_message_id, None)
         else:
             response = _request(dict(video=file))
@@ -87,18 +91,20 @@ def send_message(
     text: str,
     reply_to_message_id: Optional[int] = None,
 ) -> dict:
-    return _get_actual_body(requests.post(
-        _build_url("sendMessage"),
-        json={
-            "chat_id": chat_id,
-            "reply_to_message_id": reply_to_message_id,
-            "disable_notification": True,
-            "allow_sending_without_reply": True,
-            "disable_web_page_preview": True,
-            "text": text,
-        },
-        timeout=10,
-    ))
+    return _get_actual_body(
+        requests.post(
+            _build_url("sendMessage"),
+            json={
+                "chat_id": chat_id,
+                "reply_to_message_id": reply_to_message_id,
+                "disable_notification": True,
+                "allow_sending_without_reply": True,
+                "disable_web_page_preview": True,
+                "text": text,
+            },
+            timeout=10,
+        )
+    )
 
 
 def send_video_group(
@@ -106,20 +112,22 @@ def send_video_group(
     reply_to_message_id: Optional[int],
     videos: List[str],
 ) -> dict:
-    return _get_actual_body(requests.post(
-        _build_url("sendMediaGroup"),
-        json={
-            "chat_id": chat_id,
-            "reply_to_message_id": reply_to_message_id,
-            "disable_notification": True,
-            "allow_sending_without_reply": True,
-            "media": [
-                {
-                    "type": "video",
-                    "media": video_id,
-                }
-                for video_id in videos
-            ],
-        },
-        timeout=10,
-    ))
+    return _get_actual_body(
+        requests.post(
+            _build_url("sendMediaGroup"),
+            json={
+                "chat_id": chat_id,
+                "reply_to_message_id": reply_to_message_id,
+                "disable_notification": True,
+                "allow_sending_without_reply": True,
+                "media": [
+                    {
+                        "type": "video",
+                        "media": video_id,
+                    }
+                    for video_id in videos
+                ],
+            },
+            timeout=10,
+        )
+    )

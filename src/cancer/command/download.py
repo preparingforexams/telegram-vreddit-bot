@@ -76,9 +76,11 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
     cure_dir = os.path.join(base_folder, cure_id)
     os.mkdir(cure_dir)
 
-    ytdl = YoutubeDL(params={
-        "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
-    })
+    ytdl = YoutubeDL(
+        params={
+            "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
+        }
+    )
 
     try:
         return_code = ytdl.download([url])
@@ -96,19 +98,19 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
     cure_names = os.listdir(cure_dir)
     _LOG.debug("Downloaded files %s", cure_names)
 
-    return [
-        os.path.join(cure_dir, cure_name)
-        for cure_name in cure_names
-    ]
+    return [os.path.join(cure_dir, cure_name) for cure_name in cure_names]
 
 
 def _convert_cure(input_path: str, output_path: str):
     _LOG.info("Converting from %s to %s", input_path, output_path)
-    process = subprocess.Popen([
-        'ffmpeg',
-        '-i', input_path,
-        output_path,
-    ])
+    process = subprocess.Popen(
+        [
+            "ffmpeg",
+            "-i",
+            input_path,
+            output_path,
+        ]
+    )
     if process.wait() != 0:
         raise RuntimeError("Could not convert file!")
 
@@ -142,19 +144,22 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
         else:
             # TODO: maybe don't download the whole content here
             if len(response.content) > 200_000:
-                _LOG.info("Skipping thumbnail %s because its file size is too large", url)
+                _LOG.info(
+                    "Skipping thumbnail %s because its file size is too large", url
+                )
                 continue
 
             _LOG.debug("Found thumbnail with size %d", len(response.content))
 
-            thumb_path = os.path.join(cure_dir, 'thumb.jpg')
-            with open(thumb_path, 'wb') as f:
+            thumb_path = os.path.join(cure_dir, "thumb.jpg")
+            with open(thumb_path, "wb") as f:
                 f.write(response.content)
 
             dimensions = _get_dimensions(thumb_path)
             if max(dimensions) > 320:
                 _LOG.info(
-                    "Skipping thumbnail %s because its dimensions (%d x %d) are too large",
+                    "Skipping thumbnail %s because its"
+                    " dimensions (%d x %d) are too large",
                     url,
                     dimensions[0],
                     dimensions[1],
@@ -190,7 +195,8 @@ def _upload_video(
         response: Optional[requests.Response] = e.response
         if response is not None and response.status_code == 413:
             _LOG.error(
-                "Could not upload video (entity too large). Initial size: %d, cured: %d",
+                "Could not upload video (entity too large)."
+                " Initial size: %d, cured: %d",
                 os.path.getsize(video_file),
                 os.path.getsize(cure_path),
                 exc_info=e,
