@@ -9,7 +9,7 @@
         "requests",
         "types-requests"
       ]
-    }, ,
+    },
     {
       "groupName": "pika",
       "matchPackageNames": [
