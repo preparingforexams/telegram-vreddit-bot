@@ -23,11 +23,10 @@ def _setup_sentry():
     sentry_sdk.init(
         dsn,
         release=os.getenv("BUILD_SHA") or "dirty",
-
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=1.0
+        traces_sample_rate=1.0,
     )
 
 
@@ -51,7 +50,7 @@ def youtube_url_convert():
     command.youtube_url_convert.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _setup_logging()
     _setup_sentry()
 

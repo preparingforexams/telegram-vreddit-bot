@@ -100,7 +100,7 @@ class RabbitPublisher(Publisher):
                 properties=BasicProperties(
                     content_type="application/json",
                     delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE,
-                )
+                ),
             )
         _LOG.info("Published message to RabbitMQ queue %s", topic.value)
 
