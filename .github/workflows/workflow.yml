@@ -6,9 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     container: python:3.10-slim
     steps:
-      - run: pip install flake8
+      - name: Install Poetry
+        run: pip install poetry
       - uses: actions/checkout@v3
-      - run: python -m flake8 src/
+      - run: poetry install
+      - run: poetry run flake8 src/
   push_docker:
     runs-on: ubuntu-latest
     needs:

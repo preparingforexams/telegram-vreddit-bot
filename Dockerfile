@@ -9,9 +9,12 @@ RUN ln -s /bin/tar /usr/sbin/tar
 
 RUN apt-get update && apt-get install -y ffmpeg gcc make && apt-get clean
 
-COPY requirements.txt .
+RUN pip install poetry --no-cache
+RUN poetry config virtualenvs.create false
 
-RUN pip install -r requirements.txt --no-cache
+COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]
+
+RUN poetry install --no-dev
 
 COPY src .
 
