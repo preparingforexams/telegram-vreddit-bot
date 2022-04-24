@@ -137,7 +137,7 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
             response = requests.get(url)
             response.raise_for_status()
         except Exception as e:
-            _LOG.error("Could not download thumbnail %s", url, exc_info=e)
+            _LOG.warning("Could not download thumbnail %s", url, exc_info=e)
             continue
         else:
             # TODO: maybe don't download the whole content here
