@@ -96,6 +96,8 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
         if cancer.matches(symptoms):
             return Diagnosis(cancer, url)
 
+    return None
+
 
 def _make_message(
     chat_id: int,

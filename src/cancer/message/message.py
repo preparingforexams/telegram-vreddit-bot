@@ -1,10 +1,15 @@
 import abc
 import dataclasses
 import json
+from typing import List
 
 
 @dataclasses.dataclass
 class Message(abc.ABC):
+    chat_id: int
+    message_id: int
+    urls: List[str]
+
     def serialize(self) -> bytes:
         return json.dumps(dataclasses.asdict(self)).encode("utf-8")
 

@@ -175,6 +175,7 @@ def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
                 )
 
             return thumb_path
+    return None
 
 
 def _upload_video(
