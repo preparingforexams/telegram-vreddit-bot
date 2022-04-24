@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from ssl import SSLContext
 from threading import Thread
-from typing import Callable, Type
+from typing import Callable, Type, Iterator
 
 import pika
 from pika import PlainCredentials, BasicProperties
@@ -69,7 +69,7 @@ class RabbitPublisher(Publisher):
         self.config = config
 
     @contextmanager
-    def _connect(self) -> pika.BlockingConnection:
+    def _connect(self) -> Iterator[pika.BlockingConnection]:
         connection = pika.BlockingConnection(self.config.parameters)
         try:
             yield connection
