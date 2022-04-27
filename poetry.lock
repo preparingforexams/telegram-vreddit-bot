@@ -307,7 +307,7 @@ dev = ["flake8 (>=4.0.0,<4.1.0)", "flake8-pyi", "mypy (>=0.920)", "pyright", "pi
 
 [[package]]
 name = "types-pillow"
-version = "9.0.13"
+version = "9.0.14"
 description = "Typing stubs for Pillow"
 category = "dev"
 optional = false
@@ -380,7 +380,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "6aec384cb59e0d6d52139f1d3d8263c2442c4811af9caf9073d74ee19baac561"
+content-hash = "b2ccf680ac1e1f1eadeb7e3ec67db3d7d781190b91d8f30981ef5bf1259cabdc"
 
 [metadata.files]
 black = [
@@ -730,8 +730,8 @@ types-pika = [
     {file = "types_pika-1.2.0b1-py3-none-any.whl", hash = "sha256:d5522f5b17dbaf747e1a0e49dd0024c1656a5ffda890996daa40b43f824667bc"},
 ]
 types-pillow = [
-    {file = "types-Pillow-9.0.13.tar.gz", hash = "sha256:65d17f30d524d6014e4269ab577b60316db982bf464cbae30098ffacf038ff81"},
-    {file = "types_Pillow-9.0.13-py3-none-any.whl", hash = "sha256:1c09c154064b8786ed914a8a76116d6e80fe666130fc2c47716943ae631505d8"},
+    {file = "types-Pillow-9.0.14.tar.gz", hash = "sha256:d551fb223d70b1adf7605bc09bdc5de4ffd88183b0dd7cd1536f5403781624d1"},
+    {file = "types_Pillow-9.0.14-py3-none-any.whl", hash = "sha256:14d38fccac67ce50bf291d1b83e7ddbaf752ce43940de421237af6782160c4c5"},
 ]
 types-requests = [
     {file = "types-requests-2.27.20.tar.gz", hash = "sha256:63344573cde6c4efd44d867c0158d9fb7e6beb95721cbe9882f3f857ee8a5398"},
