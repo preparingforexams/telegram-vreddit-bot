@@ -380,7 +380,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "6aec384cb59e0d6d52139f1d3d8263c2442c4811af9caf9073d74ee19baac561"
+content-hash = "c2d8fd03f2ef1b030c0a4a5ab3a860f9035b95a33cf172b913cb4f00ff431568"
 
 [metadata.files]
 black = [
