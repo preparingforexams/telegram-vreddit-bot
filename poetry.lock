@@ -315,7 +315,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-requests"
-version = "2.27.20"
+version = "2.27.22"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -380,7 +380,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "6aec384cb59e0d6d52139f1d3d8263c2442c4811af9caf9073d74ee19baac561"
+content-hash = "057814690ecc6e633cab703dcce4af33d40b30830ef5ebe285de0fba2449b0e4"
 
 [metadata.files]
 black = [
@@ -734,8 +734,8 @@ types-pillow = [
     {file = "types_Pillow-9.0.13-py3-none-any.whl", hash = "sha256:1c09c154064b8786ed914a8a76116d6e80fe666130fc2c47716943ae631505d8"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.20.tar.gz", hash = "sha256:63344573cde6c4efd44d867c0158d9fb7e6beb95721cbe9882f3f857ee8a5398"},
-    {file = "types_requests-2.27.20-py3-none-any.whl", hash = "sha256:68b8de86552116424ec23b77afc925e111afb6496d3821b183b7d151b3b834d4"},
+    {file = "types-requests-2.27.22.tar.gz", hash = "sha256:2e81a74d2db1e6d06baa4a9e1896720543739297a23daac0436a34e2fc732574"},
+    {file = "types_requests-2.27.22-py3-none-any.whl", hash = "sha256:58730c31469fb959a21496d97d2e59c06ca6de2ccdfecb583cb924b83cb0811e"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.13.tar.gz", hash = "sha256:40f8fb5e8cd7d57e8aefdee3fdd5e930aa1a1bb4179cdadd55226cea588af790"},
