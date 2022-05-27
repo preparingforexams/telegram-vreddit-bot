@@ -307,7 +307,7 @@ dev = ["flake8 (>=4.0.0,<4.1.0)", "flake8-pyi", "mypy (>=0.920)", "pyright", "pi
 
 [[package]]
 name = "types-pillow"
-version = "9.0.16"
+version = "9.0.18"
 description = "Typing stubs for Pillow"
 category = "dev"
 optional = false
@@ -315,7 +315,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-requests"
-version = "2.27.27"
+version = "2.27.29"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -326,7 +326,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.14"
+version = "1.26.15"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
@@ -730,16 +730,16 @@ types-pika = [
     {file = "types_pika-1.2.0b1-py3-none-any.whl", hash = "sha256:d5522f5b17dbaf747e1a0e49dd0024c1656a5ffda890996daa40b43f824667bc"},
 ]
 types-pillow = [
-    {file = "types-Pillow-9.0.16.tar.gz", hash = "sha256:83385b550ed003016bd685cf47201595dce2a90cec0c430d4bf742da9ca52c91"},
-    {file = "types_Pillow-9.0.16-py3-none-any.whl", hash = "sha256:792227090a49e17e360c32a5b9f732c996b7b60dbcd2d4ee60381b8ab1650d3f"},
+    {file = "types-Pillow-9.0.18.tar.gz", hash = "sha256:6c55a6e573cac0561b4321f664f1ea696bed30e4c92b7dd112591cae7fca2dc6"},
+    {file = "types_Pillow-9.0.18-py3-none-any.whl", hash = "sha256:508d9134b33169aa6835f6f087f821f19d2dd571e0baecddb8fe74e1c198bac8"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.27.tar.gz", hash = "sha256:d618d9809fa32f514cf17cea8460814da671c56366fb1c908accca8bf183112b"},
-    {file = "types_requests-2.27.27-py3-none-any.whl", hash = "sha256:6d8463ffe1f6edcf2e5361740a6140e7a16d427c267d83c7c1d3d1298f4e67c5"},
+    {file = "types-requests-2.27.29.tar.gz", hash = "sha256:fb453b3a76a48eca66381cea8004feaaea12835e838196f5c7ac87c75c5c19ef"},
+    {file = "types_requests-2.27.29-py3-none-any.whl", hash = "sha256:014f4f82db7b96c41feea9adaea30e68cd64c230eeab34b70c29bebb26ec74ac"},
 ]
 types-urllib3 = [
-    {file = "types-urllib3-1.26.14.tar.gz", hash = "sha256:2a2578e4b36341ccd240b00fccda9826988ff0589a44ba4a664bbd69ef348d27"},
-    {file = "types_urllib3-1.26.14-py3-none-any.whl", hash = "sha256:5d2388aa76395b1e3999ff789ea5b3283677dad8e9bcf3d9117ba19271fd35d9"},
+    {file = "types-urllib3-1.26.15.tar.gz", hash = "sha256:c89283541ef92e344b7f59f83ea9b5a295b16366ceee3f25ecfc5593c79f794e"},
+    {file = "types_urllib3-1.26.15-py3-none-any.whl", hash = "sha256:6011befa13f901fc934f59bb1fd6973be6f3acf4ebfce427593a27e7f492918f"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.2.0-py3-none-any.whl", hash = "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708"},
