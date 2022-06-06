@@ -18,7 +18,7 @@ yt-dlp = "2022.5.18"
 [tool.poetry.dev-dependencies]
 black = "^22.0.0"
 flake8 = "^4.0.0"
-mypy = "0.960"
+mypy = "0.961"
 types-requests = "^2.0.0"
 types-pika = "1.2.0b1"
 types-Pillow = "^9.0.0"
