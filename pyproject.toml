@@ -12,7 +12,7 @@ paho-mqtt = "^1.0.0"
 pika = "^1.0.0"
 Pillow = "^9.0.0"
 requests = "^2.0.0"
-sentry-sdk = "1.6.0"
+sentry-sdk = "1.7.1"
 yt-dlp = "2022.6.29"
 
 [tool.poetry.dev-dependencies]
