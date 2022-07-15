@@ -258,7 +258,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "sentry-sdk"
-version = "1.7.1"
+version = "1.7.2"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
@@ -380,7 +380,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "76ed9f60107f4491f51a5fc4af92628cf39d4d515800bdee9857173e9d35c8b6"
+content-hash = "326bf571aeaef6cec8c66c8a033cce1e178fb99b19fd53714bec33acd158db3e"
 
 [metadata.files]
 black = [
@@ -755,8 +755,8 @@ requests = [
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
 ]
 sentry-sdk = [
-    {file = "sentry-sdk-1.7.1.tar.gz", hash = "sha256:e410026af0af8c373f8ac40b550c15c11b58e60ddc3f65fcc395ad263daefaf1"},
-    {file = "sentry_sdk-1.7.1-py2.py3-none-any.whl", hash = "sha256:560ce41420373b6949830831e8e11d96b311694ae58c8b145954bcb365bb035f"},
+    {file = "sentry-sdk-1.7.2.tar.gz", hash = "sha256:95fd321f583dfcfaf279a0b2cdc83d8d28c8b7cca4d2959fc4539bb4fecb56a0"},
+    {file = "sentry_sdk-1.7.2-py2.py3-none-any.whl", hash = "sha256:6f460da98b730d671510af18f119f96d01e3ba027ac0e985871abb3aede1c514"},
 ]
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
