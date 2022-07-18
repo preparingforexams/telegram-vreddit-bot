@@ -363,7 +363,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "yt-dlp"
-version = "2022.6.29"
+version = "2022.7.18"
 description = "A youtube-dl fork with additional features and patches"
 category = "main"
 optional = false
@@ -380,7 +380,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "326bf571aeaef6cec8c66c8a033cce1e178fb99b19fd53714bec33acd158db3e"
+content-hash = "58dd147c85791ca24a560f7420386fcf64e4a64fde2ca42aea16070e1af856dd"
 
 [metadata.files]
 black = [
@@ -837,6 +837,6 @@ websockets = [
     {file = "websockets-10.3.tar.gz", hash = "sha256:fc06cc8073c8e87072138ba1e431300e2d408f054b27047d047b549455066ff4"},
 ]
 yt-dlp = [
-    {file = "yt-dlp-2022.6.29.tar.gz", hash = "sha256:5fbfac72fd035d11bc2693e5d1cd6933b1bc0712f742f5082a261703810bb5c9"},
-    {file = "yt_dlp-2022.6.29-py2.py3-none-any.whl", hash = "sha256:a688f5cbc4a824456983774ccdd4a12befd379f6c92e25074fa85e7b8ce31704"},
+    {file = "yt-dlp-2022.7.18.tar.gz", hash = "sha256:0e7b81fc6ac8d1b7d3fffa79f9044ca4163784422582c9a3593305da2a69ec02"},
+    {file = "yt_dlp-2022.7.18-py2.py3-none-any.whl", hash = "sha256:d7d1f81d230756f094b4d9ee59b37b2c13b2e63ff5fb72cda53625edb072cdae"},
 ]
