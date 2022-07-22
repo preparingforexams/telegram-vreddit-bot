@@ -178,9 +178,9 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-gevent = ["gevent"]
-tornado = ["tornado"]
 twisted = ["twisted"]
+tornado = ["tornado"]
+gevent = ["gevent"]
 
 [[package]]
 name = "pillow"
