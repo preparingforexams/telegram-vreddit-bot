@@ -14,10 +14,10 @@ platformdirs = ">=2"
 tomli = {version = ">=1.1.0", markers = "python_full_version < \"3.11.0a7\""}
 
 [package.extras]
-colorama = ["colorama (>=0.4.3)"]
-d = ["aiohttp (>=3.7.4)"]
-jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
+jupyter = ["tokenize-rt (>=3.2.0)", "ipython (>=7.8.0)"]
+d = ["aiohttp (>=3.7.4)"]
+colorama = ["colorama (>=0.4.3)"]
 
 [[package]]
 name = "brotli"
@@ -191,8 +191,8 @@ optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-issues (>=3.0.1)", "sphinx-removed-in", "sphinxext-opengraph"]
-tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
+tests = ["pytest-timeout", "pytest-cov", "pytest", "pyroma", "packaging", "olefile", "markdown2", "defusedxml", "coverage", "check-manifest"]
+docs = ["sphinxext-opengraph", "sphinx-removed-in", "sphinx-issues (>=3.0.1)", "sphinx-copybutton", "sphinx (>=2.4)", "olefile", "furo"]
 
 [[package]]
 name = "platformdirs"
@@ -308,7 +308,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-dev = ["flake8 (>=4.0.0,<4.1.0)", "flake8-pyi", "mypy (>=0.920)", "pyright", "pika (==1.2.0)", "tornado", "twisted"]
+dev = ["twisted", "tornado", "pika (==1.2.0)", "pyright", "mypy (>=0.920)", "flake8-pyi", "flake8 (>=4.0.0,<4.1.0)"]
 
 [[package]]
 name = "types-pillow"
@@ -368,11 +368,11 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "yt-dlp"
-version = "2022.7.18"
+version = "2022.8.14"
 description = "A youtube-dl fork with additional features and patches"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 brotli = {version = "*", markers = "platform_python_implementation == \"CPython\""}
@@ -385,7 +385,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "78c5d2764d6c69abdbc2332484d74187aba692eab03f0606c4fd55ac47ddd5cc"
+content-hash = "6732b0914ff65ad906f957928b3a08904fc66be716481132f3639c7681951b9a"
 
 [metadata.files]
 black = [
@@ -842,6 +842,6 @@ websockets = [
     {file = "websockets-10.3.tar.gz", hash = "sha256:fc06cc8073c8e87072138ba1e431300e2d408f054b27047d047b549455066ff4"},
 ]
 yt-dlp = [
-    {file = "yt-dlp-2022.7.18.tar.gz", hash = "sha256:0e7b81fc6ac8d1b7d3fffa79f9044ca4163784422582c9a3593305da2a69ec02"},
-    {file = "yt_dlp-2022.7.18-py2.py3-none-any.whl", hash = "sha256:d7d1f81d230756f094b4d9ee59b37b2c13b2e63ff5fb72cda53625edb072cdae"},
+    {file = "yt-dlp-2022.8.14.tar.gz", hash = "sha256:9a2ceb76a4cc48aa80127eff8a853d9c8b7efe8be121c2123dcbfd3d06bc945f"},
+    {file = "yt_dlp-2022.8.14-py2.py3-none-any.whl", hash = "sha256:b84f94a01b0a743c14607cc27840b5a09daba16005372cce747455d8ca2f25fd"},
 ]
