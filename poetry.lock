@@ -308,7 +308,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-dev = ["twisted", "tornado", "pika (==1.2.0)", "pyright", "mypy (>=0.920)", "flake8-pyi", "flake8 (>=4.0.0,<4.1.0)"]
+dev = ["flake8 (>=4.0.0,<4.1.0)", "flake8-pyi", "mypy (>=0.920)", "pyright", "pika (==1.2.0)", "tornado", "twisted"]
 
 [[package]]
 name = "types-pillow"
@@ -320,7 +320,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-requests"
-version = "2.28.8"
+version = "2.28.9"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -385,7 +385,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "cb3faf0a4c19774ef69c8c3e906612167267d8b20ff9e96edb57568027db5c0f"
+content-hash = "43ec3a42f950647a1994c638153cc10999c2e3a688c6c2c78c59f48ed8ccc550"
 
 [metadata.files]
 black = [
@@ -776,8 +776,8 @@ types-pillow = [
     {file = "types_Pillow-9.2.1-py3-none-any.whl", hash = "sha256:d63743ef631e47f8d8669590ea976162321a9a7604588b424b6306533453fb63"},
 ]
 types-requests = [
-    {file = "types-requests-2.28.8.tar.gz", hash = "sha256:7a9f7b152d594a1c18dd4932cdd2596b8efbeedfd73caa4e4abb3755805b4685"},
-    {file = "types_requests-2.28.8-py3-none-any.whl", hash = "sha256:b0421f9f2d0dd0f8df2c75f974686517ca67473f05b466232d4c6384d765ad7a"},
+    {file = "types-requests-2.28.9.tar.gz", hash = "sha256:feaf581bd580497a47fe845d506fa3b91b484cf706ff27774e87659837de9962"},
+    {file = "types_requests-2.28.9-py3-none-any.whl", hash = "sha256:86cb66d3de2f53eac5c09adc42cf6547eefbd0c7e1210beca1ee751c35d96083"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.22.tar.gz", hash = "sha256:b05af90e73889e688094008a97ca95788db8bf3736e2776fd43fb6b171485d94"},
