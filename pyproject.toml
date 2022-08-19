@@ -13,7 +13,7 @@ pika = "^1.0.0"
 Pillow = "^9.0.0"
 requests = "2.28.1"
 sentry-sdk = "1.9.5"
-yt-dlp = "2022.8.14"
+yt-dlp = "2022.8.19"
 
 [tool.poetry.dev-dependencies]
 black = "^22.0.0"
