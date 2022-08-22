@@ -1,11 +1,25 @@
+import functools
 import logging
 import os
 from typing import Optional, List, Union, Callable
 
-import requests
+from requests import Session, Response
 
 _API_KEY = os.getenv("TELEGRAM_API_KEY")
 _LOG = logging.getLogger(__name__)
+
+
+def _build_session(default_timeout: float | int = 60) -> Session:
+    session = Session()
+    request_with_default_timeout = functools.partial(
+        session.request,
+        timeout=default_timeout,
+    )
+    session.request = request_with_default_timeout  # type: ignore
+    return session
+
+
+_session = _build_session()
 
 
 def check():
@@ -17,7 +31,7 @@ def _build_url(method: str) -> str:
     return f"https://api.telegram.org/bot{_API_KEY}/{method}"
 
 
-def _get_actual_body(response: requests.Response):
+def _get_actual_body(response: Response):
     response.raise_for_status()
     body = response.json()
     if body.get("ok"):
@@ -33,7 +47,7 @@ def _request_updates(last_update_id: Optional[int]) -> List[dict]:
             "timeout": 10,
         }
     return _get_actual_body(
-        requests.post(
+        _session.post(
             _build_url("getUpdates"),
             json=body,
             timeout=12,
@@ -64,13 +78,13 @@ def upload_video(
     url = _build_url("sendVideo")
 
     def _request(files: dict):
-        return requests.post(
+        return _session.post(
             url,
             data=dict(chat_id=chat_id, reply_to_message_id=reply_to_message_id),
             files=files,
         )
 
-    response: requests.Response
+    response: Response
     with open(path, "rb") as file:
         if thumb_path:
             with open(path, "rb") as thumb_file:
@@ -92,7 +106,7 @@ def send_message(
     reply_to_message_id: Optional[int] = None,
 ) -> dict:
     return _get_actual_body(
-        requests.post(
+        _session.post(
             _build_url("sendMessage"),
             json={
                 "chat_id": chat_id,
@@ -113,7 +127,7 @@ def send_video_group(
     videos: List[str],
 ) -> dict:
     return _get_actual_body(
-        requests.post(
+        _session.post(
             _build_url("sendMediaGroup"),
             json={
                 "chat_id": chat_id,
