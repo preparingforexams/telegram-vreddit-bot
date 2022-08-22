@@ -1,25 +1,15 @@
-import functools
 import logging
 import os
 from typing import Optional, List, Union, Callable
 
-from requests import Session, Response
+from requests import Response
+
+from cancer.session_util import build_session
 
 _API_KEY = os.getenv("TELEGRAM_API_KEY")
 _LOG = logging.getLogger(__name__)
 
-
-def _build_session(default_timeout: float | int = 60) -> Session:
-    session = Session()
-    request_with_default_timeout = functools.partial(
-        session.request,
-        timeout=default_timeout,
-    )
-    session.request = request_with_default_timeout  # type: ignore
-    return session
-
-
-_session = _build_session()
+_session = build_session()
 
 
 def check():

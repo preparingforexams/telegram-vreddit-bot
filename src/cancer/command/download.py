@@ -9,8 +9,9 @@ from tempfile import TemporaryDirectory
 from threading import Lock
 from typing import List, Optional, Union, Tuple
 
-import requests
 from PIL import Image
+from requests import Response, Session
+from requests.exceptions import HTTPError
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import UnsupportedError, DownloadError
 
@@ -18,6 +19,7 @@ from cancer import telegram
 from cancer.adapter.rabbit import RabbitConfig, RabbitSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
+from cancer.session_util import build_session
 
 _STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
@@ -130,13 +132,13 @@ def _get_dimensions(image_path: str) -> Tuple[int, int]:
     return image.size
 
 
-def _download_thumb(cure_dir: str, urls: List[str]) -> Optional[str]:
+def _download_thumb(session: Session, cure_dir: str, urls: List[str]) -> Optional[str]:
     for url in urls:
         if not url.endswith(".jpg"):
             continue
 
         try:
-            response = requests.get(url)
+            response = session.get(url)
             response.raise_for_status()
         except Exception as e:
             _LOG.warning("Could not download thumbnail %s", url, exc_info=e)
@@ -192,8 +194,8 @@ def _upload_video(
             reply_to_message_id=message_id,
             thumb_path=thumb_path,
         )
-    except requests.exceptions.HTTPError as e:
-        response: Optional[requests.Response] = e.response
+    except HTTPError as e:
+        response: Optional[Response] = e.response
         if response is not None and response.status_code == 413:
             _LOG.error(
                 "Could not upload video (entity too large)."
@@ -215,6 +217,8 @@ def _upload_video(
 def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
     _LOG.info("Received payload: %s", payload)
 
+    session = build_session()
+
     with TemporaryDirectory(dir=_STORAGE_DIR) as folder:
         with _busy_lock:
             files = []
@@ -231,7 +235,7 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                         len(info.thumbnails),
                         url,
                     )
-                    thumb_file = _download_thumb(folder, info.thumbnails)
+                    thumb_file = _download_thumb(session, folder, info.thumbnails)
 
                 for file in _download_videos(folder, url):
                     files.append((thumb_file, file))
