@@ -16,7 +16,7 @@ from yt_dlp import YoutubeDL
 from yt_dlp.utils import UnsupportedError, DownloadError
 
 from cancer import telegram
-from cancer.adapter.rabbit import RabbitConfig, RabbitSubscriber
+from cancer.adapter.pubsub import PubSubConfig, PubSubSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
 from cancer.session_util import build_session
@@ -272,7 +272,7 @@ def run():
         topic = Topic.download
 
     _LOG.debug("Subscribing to topic %s", topic)
-    subscriber: Subscriber = RabbitSubscriber(RabbitConfig.from_env())
+    subscriber: Subscriber = PubSubSubscriber(PubSubConfig.from_env())
 
     # readiness_server = ReadinessServer()
     # readiness_server.start(lambda: not _busy_lock.locked())

@@ -12,4 +12,8 @@ rabbit:
   password: ${RABBITMQ_PASSWORD}
   exchange: ""
 
+gcp:
+  gsaJson: ${GSA_JSON}
+  project: cancer-be-gone
+
 features: ${FEATURES}

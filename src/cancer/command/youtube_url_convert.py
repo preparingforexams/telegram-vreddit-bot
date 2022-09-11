@@ -4,7 +4,7 @@ import sys
 from urllib.parse import urlparse
 
 from cancer import telegram
-from cancer.adapter.rabbit import RabbitSubscriber, RabbitConfig
+from cancer.adapter.pubsub import PubSubConfig, PubSubSubscriber
 from cancer.message import Topic
 from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
 from cancer.port.subscriber import Subscriber
@@ -41,7 +41,7 @@ def run():
     topic = Topic.youtubeUrlConvert
     _LOG.debug("Subscribing to topic %s", topic)
 
-    subscriber: Subscriber = RabbitSubscriber(RabbitConfig.from_env())
+    subscriber: Subscriber = PubSubSubscriber(PubSubConfig.from_env())
     subscriber.subscribe(
         topic,
         YoutubeUrlConvertMessage,

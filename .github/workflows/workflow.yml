@@ -51,6 +51,7 @@ jobs:
             tiktok_download,
             twitter_download
             ]
+          GSA_JSON: ${{ secrets.GSA_JSON }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

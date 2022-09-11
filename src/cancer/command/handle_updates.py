@@ -1,4 +1,5 @@
 import logging
+import os
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
@@ -6,7 +7,7 @@ from typing import Optional, List, Dict
 from urllib.parse import urlparse, ParseResult
 
 from cancer import telegram
-from cancer.adapter.rabbit import RabbitPublisher, RabbitConfig
+from cancer.adapter.pubsub import PubSubConfig, PubSubPublisher
 from cancer.message import (
     Message,
     Topic,
@@ -160,18 +161,18 @@ def _handle_update(publisher: Publisher, update: dict):
             raise
 
 
-def _init_rabbit_publisher() -> Optional[Publisher]:
+def _init_publisher() -> Optional[Publisher]:
     try:
-        return RabbitPublisher(RabbitConfig.from_env())
+        return PubSubPublisher(PubSubConfig.from_env())
     except ValueError as e:
-        _LOG.warning("Could not initialize RabbitMQ", exc_info=e)
+        _LOG.warning("Could not initialize Publisher", exc_info=e)
         return None
 
 
 def run():
     telegram.check()
 
-    publisher: Publisher = _init_rabbit_publisher()
+    publisher: Publisher = _init_publisher()
 
     received_sigterm = False
 

@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import logging
+import os
 from concurrent import futures
+from dataclasses import dataclass
 from typing import Callable, Type
 
 from google.cloud.pubsub_v1 import PublisherClient, SubscriberClient
@@ -12,10 +16,30 @@ from cancer.port.subscriber import Subscriber, T
 _LOG = logging.getLogger(__name__)
 
 
-class PubSubEventPublisher(Publisher):
-    def __init__(self, project_id: str):
+@dataclass
+class PubSubConfig:
+    project_id: str
+
+    @staticmethod
+    def _get_required(key: str, allow_empty: bool = False) -> str:
+        result = os.getenv(key)
+
+        if result or (allow_empty and result is not None):
+            return result
+
+        raise ValueError(f"Missing key: {key}")
+
+    @classmethod
+    def from_env(cls) -> PubSubConfig:
+        return cls(
+            project_id=cls._get_required("GOOGLE_CLOUD_PROJECT"),
+        )
+
+
+class PubSubPublisher(Publisher):
+    def __init__(self, config: PubSubConfig):
         self.client = PublisherClient()
-        self.prefix = f"projects/{project_id}/topics/"
+        self.prefix = f"projects/{config.project_id}/topics/"
 
     def publish(self, topic: Topic, message: Message):
         _LOG.debug("Publishing event %s", message.message_id)
@@ -31,9 +55,10 @@ class PubSubEventPublisher(Publisher):
             raise PublishingException from e
 
 
-class PubSubEventSubscriber(Subscriber):
-    def __init__(self, project_id: str):
-        self.prefix = f"projects/{project_id}/subscriptions/"
+class PubSubSubscriber(Subscriber):
+    def __init__(self, config: PubSubConfig):
+
+        self.prefix = f"projects/{config.project_id}/subscriptions/"
         self.client = SubscriberClient()
 
     def subscribe(

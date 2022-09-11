@@ -9,3 +9,5 @@ data:
   RABBITMQ_USE_TLS: {{ quote .Values.rabbit.useTls }}
   RABBITMQ_EXCHANGE: {{ if (.Values.rabbit.exchange | empty) }} ""  {{ else }} {{ .Values.rabbit.exchange }} {{ end }}
   RABBITMQ_USER: {{ .Values.rabbit.user }}
+  GOOGLE_APPLICATION_CREDENTIALS: /gcp/gsa.json
+  GOOGLE_CLOUD_PROJECT: {{ .Values.gcp.project }}

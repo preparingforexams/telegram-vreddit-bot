@@ -20,6 +20,8 @@ spec:
       labels:
         app: youtube-converter
     spec:
+      volumes:
+{{ include "secrets.volume" . | indent 8 }}
       containers:
         - name: app
           image: {{ .Values.image }}
@@ -36,4 +38,6 @@ spec:
                 name: cancer-config
             - secretRef:
                 name: cancer-secrets
+          volumeMounts:
+{{ include "secrets.volumeMount" . | indent 12 }}
 {{ end }}
