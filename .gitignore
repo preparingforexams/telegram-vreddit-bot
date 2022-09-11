@@ -2,9 +2,6 @@
 __pycache__
 .venv
 
-# Conventional directory for build output.
-build/
-
 # IntelliJ IDEA
 .idea/
 
