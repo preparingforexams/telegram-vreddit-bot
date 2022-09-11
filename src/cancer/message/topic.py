@@ -6,7 +6,7 @@ from .message import Message
 from .youtube_url_convert import YoutubeUrlConvertMessage
 
 
-class Topic(Enum):
+class Topic(str, Enum):
     download = "download"
     instaDownload = "instaDownload"
     youtubeDownload = "youtubeDownload"

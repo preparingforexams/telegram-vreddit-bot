@@ -15,7 +15,7 @@ from pika.adapters.blocking_connection import BlockingChannel
 from pika.connection import Parameters, SSLOptions
 
 from cancer.message import Message, Topic
-from cancer.port.publisher import Publisher
+from cancer.port.publisher import Publisher, PublishingException
 from cancer.port.subscriber import Subscriber, T
 
 _LOG = logging.getLogger(__name__)
@@ -93,15 +93,18 @@ class RabbitPublisher(Publisher):
                 auto_delete=False,
                 arguments={"x-queue-type": "quorum"},
             )
-            channel.basic_publish(
-                exchange=self.config.exchange,
-                routing_key=topic.value,
-                body=message.serialize(),
-                properties=BasicProperties(
-                    content_type="application/json",
-                    delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE,
-                ),
-            )
+            try:
+                channel.basic_publish(
+                    exchange=self.config.exchange,
+                    routing_key=topic.value,
+                    body=message.serialize(),
+                    properties=BasicProperties(
+                        content_type="application/json",
+                        delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE,
+                    ),
+                )
+            except Exception as e:
+                raise PublishingException from e
         _LOG.info("Published message to RabbitMQ queue %s", topic.value)
 
 

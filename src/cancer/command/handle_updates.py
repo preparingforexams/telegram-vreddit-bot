@@ -11,7 +11,7 @@ from cancer.message import (
     Message,
     Topic,
 )
-from cancer.port.publisher import Publisher
+from cancer.port.publisher import Publisher, PublishingException
 
 _LOG = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ def _handle_update(publisher: Publisher, update: dict):
         try:
             publisher.publish(treatment, event)
             _LOG.info("Published event on topic %s", treatment.value)
-        except Exception as e:
+        except PublishingException as e:
             _LOG.error("Could not publish event", exc_info=e)
             raise
 
