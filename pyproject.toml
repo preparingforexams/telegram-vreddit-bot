@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "~3.10"
 click = "^8.0.0"
+google-cloud-pubsub = "^2.0.0"
 paho-mqtt = "^1.0.0"
 pika = "^1.0.0"
 Pillow = "^9.0.0"
@@ -26,6 +27,10 @@ types-Pillow = "^9.0.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.mypy.overrides]]
+module = "google.cloud.*"
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module="paho.*"
