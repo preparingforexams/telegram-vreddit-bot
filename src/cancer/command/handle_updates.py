@@ -1,5 +1,4 @@
 import logging
-import os
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
