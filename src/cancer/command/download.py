@@ -73,6 +73,10 @@ def _get_info(url: str) -> VideoInfo:
     return VideoInfo(size, thumbnails)
 
 
+class AccessDeniedException(Exception):
+    pass
+
+
 class TryAgainException(Exception):
     pass
 
@@ -108,7 +112,7 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
             if (
                 "rate-limit reached or login required" in cause.msg
             ):
-                raise TryAgainException(
+                raise AccessDeniedException(
                     f"Maybe we should include login data for {url}"
                 ) from e
 
@@ -257,7 +261,16 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                     )
                     thumb_file = _download_thumb(session, folder, info.thumbnails)
 
-                for file in _download_videos(folder, url):
+                try:
+                    download_result = _download_videos(folder, url)
+                except TryAgainException as e:
+                    _LOG.warning("Got exception during download", exc_info=e)
+                    return Subscriber.Result.Requeue
+                except AccessDeniedException as e:
+                    _LOG.error("Was denied access to service", exc_info=e)
+                    return Subscriber.Result.Requeue
+
+                for file in download_result:
                     files.append((thumb_file, file))
 
             if not files:
