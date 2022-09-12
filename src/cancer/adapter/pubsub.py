@@ -73,22 +73,22 @@ class PubSubSubscriber(Subscriber):
                 decoded = message_type.deserialize(message.data)
             except Exception as e:
                 _LOG.error("Could not decode message", exc_info=e)
-                message.ack()
+                message.nack_with_response()
                 return
 
             try:
                 result = handle(decoded)
             except Exception as e:
                 _LOG.error("Handler failed to handle message, requeuing", exc_info=e)
-                message.nack()
+                message.nack_with_response()
             else:
                 if result == Subscriber.Result.Ack:
-                    message.ack()
+                    message.ack_with_response().result()
                 elif result == Subscriber.Result.Drop:
                     _LOG.warning("Dropping message by acknowledging")
-                    message.ack()
+                    message.ack_with_response().result()
                 elif result == Subscriber.Result.Requeue:
-                    message.nack()
+                    message.nack_with_response().result()
                 else:
                     raise ValueError(f"Unknown event handler result: {result}")
 
