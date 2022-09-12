@@ -13,7 +13,7 @@ from PIL import Image
 from requests import Response, Session
 from requests.exceptions import HTTPError
 from yt_dlp import YoutubeDL
-from yt_dlp.utils import UnsupportedError, DownloadError
+from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
 from cancer import telegram
 from cancer.adapter.pubsub import PubSubConfig, PubSubSubscriber
@@ -87,12 +87,21 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
     try:
         return_code = ytdl.download([url])
     except DownloadError as e:
-        if e.exc_info is UnsupportedError:
+        cause = e.exc_info
+        if isinstance(cause, UnsupportedError):
             _LOG.warning("Download URL unsupported by youtube-dl: %s", url, exc_info=e)
             return []
 
-        _LOG.error("Downloading failed for URL %s", url, exc_info=e)
-        return []
+        if isinstance(cause, ExtractorError):
+            if (
+                cause.msg == "There's no video in this tweet."
+                and not cause.expected
+                and not cause.video_id
+            ):
+                _LOG.info("YouTubeDL did not find any videos at %s", url)
+                return []
+
+        raise
     if return_code != 0:
         _LOG.error("YTDL returned error code %d", return_code)
         return []
