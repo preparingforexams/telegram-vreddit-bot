@@ -5,6 +5,7 @@ resource "google_pubsub_topic" "topic" {
 
 resource "google_pubsub_topic" "dead_letter" {
   name = "${var.name}_dead_letter"
+  message_retention_duration = "86400s"
 }
 
 resource "google_pubsub_subscription" "subscription" {
@@ -28,3 +29,19 @@ resource "google_pubsub_subscription" "subscription" {
     max_delivery_attempts = 20
   }
 }
+
+
+resource "google_pubsub_subscription" "dead_letter" {
+  name  = "${var.name}_dead_letter"
+  topic = google_pubsub_topic.dead_letter.id
+
+  expiration_policy {
+    ttl = ""
+  }
+
+  retry_policy {
+    minimum_backoff = "30s"
+    maximum_backoff = "600s"
+  }
+}
+
