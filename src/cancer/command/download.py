@@ -109,9 +109,7 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
                 _LOG.info("YouTubeDL did not find any videos at %s", url)
                 return []
 
-            if (
-                "rate-limit reached or login required" in cause.msg
-            ):
+            if "rate-limit reached or login required" in cause.msg:
                 raise AccessDeniedException(
                     f"Maybe we should include login data for {url}"
                 ) from e
