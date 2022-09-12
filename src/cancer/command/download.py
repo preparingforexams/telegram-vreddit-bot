@@ -73,6 +73,10 @@ def _get_info(url: str) -> VideoInfo:
     return VideoInfo(size, thumbnails)
 
 
+class TryAgainException(Exception):
+    pass
+
+
 def _download_videos(base_folder: str, url: str) -> List[str]:
     cure_id = str(uuid.uuid4())
     cure_dir = os.path.join(base_folder, cure_id)
@@ -101,7 +105,14 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
                 _LOG.info("YouTubeDL did not find any videos at %s", url)
                 return []
 
-        raise
+            if (
+                "rate-limit reached or login required" in cause.msg
+            ):
+                raise TryAgainException(
+                    f"Maybe we should include login data for {url}"
+                ) from e
+
+        raise TryAgainException from e
     if return_code != 0:
         _LOG.error("YTDL returned error code %d", return_code)
         return []
