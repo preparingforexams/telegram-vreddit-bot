@@ -22,19 +22,3 @@ resource "google_project_iam_member" "service_account_publisher" {
   role    = "roles/pubsub.publisher"
   member  = "serviceAccount:${google_service_account.service_account.email}"
 }
-
-locals {
-  pubsub_agent_email = "service-622242716592@gcp-sa-pubsub.iam.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "pubsub_agent_consumer" {
-  project = google_service_account.service_account.project
-  role    = google_project_iam_custom_role.consumer.id
-  member  = "serviceAccount:${local.pubsub_agent_email}"
-}
-
-resource "google_project_iam_member" "pubsub_agent_publisher" {
-  project = google_service_account.service_account.project
-  role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:${local.pubsub_agent_email}"
-}
