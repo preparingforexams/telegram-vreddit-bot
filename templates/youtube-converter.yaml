@@ -29,9 +29,9 @@ spec:
             - youtube_url_convert
           resources:
             limits:
-              cpu: 10m
+              cpu: 20m
             requests:
-              cpu: 1m
+              cpu: 10m
               memory: 16Mi
           envFrom:
             - configMapRef:
