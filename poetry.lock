@@ -20,7 +20,7 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
-name = "Brotli"
+name = "brotli"
 version = "1.0.9"
 description = "Python bindings for the Brotli compression library"
 category = "main"
@@ -74,7 +74,7 @@ optional = false
 python-versions = ">=3.6.0"
 
 [package.extras]
-unicode_backport = ["unicodedata2"]
+unicode-backport = ["unicodedata2"]
 
 [[package]]
 name = "click"
@@ -110,7 +110,7 @@ pyflakes = ">=2.5.0,<2.6.0"
 
 [[package]]
 name = "google-api-core"
-version = "2.10.1"
+version = "2.10.2"
 description = "Google API client core library"
 category = "main"
 optional = false
@@ -121,7 +121,7 @@ google-auth = ">=1.25.0,<3.0dev"
 googleapis-common-protos = ">=1.56.2,<2.0dev"
 grpcio = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
 grpcio-status = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
-protobuf = ">=3.20.1,<5.0.0dev"
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
 requests = ">=2.18.0,<3.0.0dev"
 
 [package.extras]
@@ -145,13 +145,13 @@ six = ">=1.9.0"
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)", "requests (>=2.20.0,<3.0.0dev)"]
-enterprise_cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
+enterprise-cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
 pyopenssl = ["pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 
 [[package]]
 name = "google-cloud-pubsub"
-version = "2.13.7"
+version = "2.13.10"
 description = "Google Cloud Pub/Sub API client library"
 category = "main"
 optional = false
@@ -163,7 +163,7 @@ grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
 grpcio = ">=1.38.1,<2.0dev"
 grpcio-status = ">=1.16.0"
 proto-plus = ">=1.22.0,<2.0.0dev"
-protobuf = ">=3.19.0,<5.0.0dev"
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
 
 [package.extras]
 libcst = ["libcst (>=0.3.10)"]
@@ -240,11 +240,11 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "mutagen"
-version = "1.45.1"
+version = "1.46.0"
 description = "read and write audio tags for many formats"
 category = "main"
 optional = false
-python-versions = ">=3.5, <4"
+python-versions = ">=3.7"
 
 [[package]]
 name = "mypy"
@@ -305,7 +305,7 @@ tornado = ["tornado"]
 twisted = ["twisted"]
 
 [[package]]
-name = "Pillow"
+name = "pillow"
 version = "9.2.0"
 description = "Python Imaging Library (Fork)"
 category = "main"
@@ -417,7 +417,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rsa"
@@ -453,7 +453,7 @@ falcon = ["falcon (>=1.4)"]
 fastapi = ["fastapi (>=0.79.0)"]
 flask = ["blinker (>=1.1)", "flask (>=0.11)"]
 httpx = ["httpx (>=0.16.0)"]
-pure_eval = ["asttokens", "executing", "pure-eval"]
+pure-eval = ["asttokens", "executing", "pure-eval"]
 pyspark = ["pyspark (>=2.4.4)"]
 quart = ["blinker (>=1.1)", "quart (>=0.16.1)"]
 rq = ["rq (>=0.6)"]
@@ -490,8 +490,8 @@ python-versions = "*"
 dev = ["flake8 (>=4.0.0,<4.1.0)", "flake8-pyi", "mypy (>=0.920)", "pika (==1.2.0)", "pyright", "tornado", "twisted"]
 
 [[package]]
-name = "types-Pillow"
-version = "9.2.2"
+name = "types-pillow"
+version = "9.2.2.1"
 description = "Typing stubs for Pillow"
 category = "dev"
 optional = false
@@ -590,7 +590,7 @@ black = [
     {file = "black-22.10.0-py3-none-any.whl", hash = "sha256:c957b2b4ea88587b46cf49d1dc17681c1e672864fd7af32fc1e9664d572b3458"},
     {file = "black-22.10.0.tar.gz", hash = "sha256:f513588da599943e0cde4e32cc9879e825d58720d6557062d1098c5ad80080e1"},
 ]
-Brotli = [
+brotli = [
     {file = "Brotli-1.0.9-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:268fe94547ba25b58ebc724680609c8ee3e5a843202e9a381f6f9c5e8bdb5c70"},
     {file = "Brotli-1.0.9-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:c2415d9d082152460f2bd4e382a1e85aed233abc92db5a3880da2257dc7daf7b"},
     {file = "Brotli-1.0.9-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:5913a1177fc36e30fcf6dc868ce23b0453952c78c04c266d3149b3d39e1410d6"},
@@ -777,16 +777,16 @@ flake8 = [
     {file = "flake8-5.0.4.tar.gz", hash = "sha256:6fbe320aad8d6b95cec8b8e47bc933004678dc63095be98528b7bdd2a9f510db"},
 ]
 google-api-core = [
-    {file = "google-api-core-2.10.1.tar.gz", hash = "sha256:e16c15a11789bc5a3457afb2818a3540a03f341e6e710d7f9bbf6cde2ef4a7c8"},
-    {file = "google_api_core-2.10.1-py3-none-any.whl", hash = "sha256:92d17123cfe399b5ef7e026c63babf978d8475e1ac877919eb7933e25dea2273"},
+    {file = "google-api-core-2.10.2.tar.gz", hash = "sha256:10c06f7739fe57781f87523375e8e1a3a4674bf6392cd6131a3222182b971320"},
+    {file = "google_api_core-2.10.2-py3-none-any.whl", hash = "sha256:34f24bd1d5f72a8c4519773d99ca6bf080a6c4e041b4e9f024fe230191dda62e"},
 ]
 google-auth = [
     {file = "google-auth-2.12.0.tar.gz", hash = "sha256:f12d86502ce0f2c0174e2e70ecc8d36c69593817e67e1d9c5e34489120422e4b"},
     {file = "google_auth-2.12.0-py2.py3-none-any.whl", hash = "sha256:98f601773978c969e1769f97265e732a81a8e598da3263895023958d456ee625"},
 ]
 google-cloud-pubsub = [
-    {file = "google-cloud-pubsub-2.13.7.tar.gz", hash = "sha256:650a1f55d1662b446cf70eed757ee8a752058252b4047daf8638ddbe7504d326"},
-    {file = "google_cloud_pubsub-2.13.7-py2.py3-none-any.whl", hash = "sha256:f682c7f2cbac28ee4225bb23412d547ffa220e2b61e52f2e55ec6d38eeeb740c"},
+    {file = "google-cloud-pubsub-2.13.10.tar.gz", hash = "sha256:3e746a1a97c96bdc63fc5499529ed7262f1464f6de8c8bae6238c12200919ac0"},
+    {file = "google_cloud_pubsub-2.13.10-py2.py3-none-any.whl", hash = "sha256:1a29795265ddb2eff23b4e4c2c4594a56f5a861827fe1cc72c53de42a3a13def"},
 ]
 googleapis-common-protos = [
     {file = "googleapis-common-protos-1.56.4.tar.gz", hash = "sha256:c25873c47279387cfdcbdafa36149887901d36202cb645a0e4f29686bf6e4417"},
@@ -856,8 +856,8 @@ mccabe = [
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 mutagen = [
-    {file = "mutagen-1.45.1-py3-none-any.whl", hash = "sha256:9c9f243fcec7f410f138cb12c21c84c64fde4195481a30c9bfb05b5f003adfed"},
-    {file = "mutagen-1.45.1.tar.gz", hash = "sha256:6397602efb3c2d7baebd2166ed85731ae1c1d475abca22090b7141ff5034b3e1"},
+    {file = "mutagen-1.46.0-py3-none-any.whl", hash = "sha256:8af0728aa2d5c3ee5a727e28d0627966641fddfe804c23eabb5926a4d770aed5"},
+    {file = "mutagen-1.46.0.tar.gz", hash = "sha256:6e5f8ba84836b99fe60be5fb27f84be4ad919bbb6b49caa6ae81e70584b55e58"},
 ]
 mypy = [
     {file = "mypy-0.982-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:5085e6f442003fa915aeb0a46d4da58128da69325d8213b4b35cc7054090aed5"},
@@ -900,7 +900,7 @@ pika = [
     {file = "pika-1.3.0-py3-none-any.whl", hash = "sha256:9195f37aed089862b205fd8f8ce1cc6ea0a7ee3cd80f58e6eea6cb9d8411a647"},
     {file = "pika-1.3.0.tar.gz", hash = "sha256:15357ddc47a5c28f0b07d80e93d504cbbf7a1ad5e1cd129ecd27afe76472c529"},
 ]
-Pillow = [
+pillow = [
     {file = "Pillow-9.2.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:a9c9bc489f8ab30906d7a85afac4b4944a572a7432e00698a7239f44a44e6efb"},
     {file = "Pillow-9.2.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:510cef4a3f401c246cfd8227b300828715dd055463cdca6176c2e4036df8bd4f"},
     {file = "Pillow-9.2.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7888310f6214f19ab2b6df90f3f06afa3df7ef7355fc025e78a3044737fab1f5"},
@@ -1060,9 +1060,9 @@ types-pika = [
     {file = "types-pika-1.2.0b1.tar.gz", hash = "sha256:338f56ced7cfe17bce5237764fb5561fb209be2ef7eb32712f58608f55b1dc5b"},
     {file = "types_pika-1.2.0b1-py3-none-any.whl", hash = "sha256:d5522f5b17dbaf747e1a0e49dd0024c1656a5ffda890996daa40b43f824667bc"},
 ]
-types-Pillow = [
-    {file = "types-Pillow-9.2.2.tar.gz", hash = "sha256:6b525b0951ada076f3aefe2347e0bff6231283ce959ad8577a4416604acc673c"},
-    {file = "types_Pillow-9.2.2-py3-none-any.whl", hash = "sha256:bfe14afa1e9047a52b3dc326c93b4f57db72641794e194f11b511f68b0061814"},
+types-pillow = [
+    {file = "types-Pillow-9.2.2.1.tar.gz", hash = "sha256:85c139e06e1c46ec5f9c634d5c54a156b0958d5d0e8be024ed353db0c804b426"},
+    {file = "types_Pillow-9.2.2.1-py3-none-any.whl", hash = "sha256:3a6a871cade8428433a21ef459bb0a65532b87d05f9e836a0664431ce445bdcf"},
 ]
 types-requests = [
     {file = "types-requests-2.28.11.2.tar.gz", hash = "sha256:fdcd7bd148139fb8eef72cf4a41ac7273872cad9e6ada14b11ff5dfdeee60ed3"},
