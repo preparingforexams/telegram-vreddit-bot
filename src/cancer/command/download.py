@@ -139,10 +139,13 @@ def _convert_cure(input_path: str, output_path: str):
         raise RuntimeError("Could not convert file!")
 
 
-def _ensure_compatibility(original_path: str) -> str:
+def _ensure_compatibility(original_path: str) -> str | None:
     base, ext = os.path.splitext(original_path)
     if ext == ".mp4":
         return original_path
+
+    if ext in [".png", ".jpg"]:
+        return None
 
     converted_path = f"{base}.mp4"
     _convert_cure(original_path, converted_path)
