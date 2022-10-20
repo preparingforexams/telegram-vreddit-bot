@@ -212,6 +212,11 @@ def _upload_video(
     video_file: str,
 ) -> Optional[str]:
     cure_path = _ensure_compatibility(video_file)
+
+    if not cure_path:
+        _LOG.info("Not uploading incompatible file %s", video_file)
+        return
+
     try:
         message = telegram.upload_video(
             chat_id,
