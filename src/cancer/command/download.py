@@ -215,7 +215,7 @@ def _upload_video(
 
     if not cure_path:
         _LOG.info("Not uploading incompatible file %s", video_file)
-        return
+        return None
 
     try:
         message = telegram.upload_video(
