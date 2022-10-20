@@ -3,14 +3,6 @@ telegram:
   apiKey: ${TELEGRAM_TOKEN}
 sentry:
   dsn: ${SENTRY_DSN}
-rabbit:
-  host: rabbit.bjoernpetersen.net
-  port: 5671
-  virtualHost: cancer
-  useTls: true
-  user: cancer
-  password: ${RABBITMQ_PASSWORD}
-  exchange: ""
 
 gcp:
   gsaJson: ${GSA_JSON}

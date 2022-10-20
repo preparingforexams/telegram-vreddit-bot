@@ -9,8 +9,6 @@ license = "MIT"
 python = "~3.10"
 click = "^8.0.0"
 google-cloud-pubsub = "^2.0.0"
-paho-mqtt = "^1.0.0"
-pika = "^1.0.0"
 Pillow = "^9.0.0"
 requests = "2.28.1"
 sentry-sdk = "1.9.10"
@@ -21,7 +19,6 @@ black = "^22.0.0"
 flake8 = "^5.0.0"
 mypy = "0.982"
 types-requests = "2.28.11.2"
-types-pika = "1.2.0b1"
 types-Pillow = "^9.0.0"
 
 [build-system]
@@ -30,10 +27,6 @@ build-backend = "poetry.core.masonry.api"
 
 [[tool.mypy.overrides]]
 module = "google.cloud.*"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module="paho.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

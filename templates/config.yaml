@@ -3,11 +3,5 @@ kind: ConfigMap
 metadata:
   name: cancer-config
 data:
-  RABBITMQ_HOST: {{ .Values.rabbit.host }}
-  RABBITMQ_VIRTUAL_HOST: {{ .Values.rabbit.virtualHost }}
-  RABBITMQ_PORT: {{ quote .Values.rabbit.port }}
-  RABBITMQ_USE_TLS: {{ quote .Values.rabbit.useTls }}
-  RABBITMQ_EXCHANGE: {{ if (.Values.rabbit.exchange | empty) }} ""  {{ else }} {{ .Values.rabbit.exchange }} {{ end }}
-  RABBITMQ_USER: {{ .Values.rabbit.user }}
   GOOGLE_APPLICATION_CREDENTIALS: /gcp/gsa.json
   GOOGLE_CLOUD_PROJECT: {{ .Values.gcp.project }}
