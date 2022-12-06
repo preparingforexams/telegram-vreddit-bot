@@ -21,6 +21,7 @@ class Cancer:
     host: str
     treatment: Topic
     path: Optional[str] = None
+    is_innocuous: bool = False
 
     def matches(self, symptoms: ParseResult) -> bool:
         if symptoms.netloc.startswith(self.host):
@@ -52,16 +53,19 @@ _CANCERS = [
     Cancer(
         host="youtu.be",
         treatment=Topic.youtubeDownload,
+        is_innocuous=True,
     ),
     Cancer(
         host="www.youtube.com",
         path="/watch",
         treatment=Topic.youtubeDownload,
+        is_innocuous=True,
     ),
     Cancer(
         host="youtube.com",
         path="/watch",
         treatment=Topic.youtubeDownload,
+        is_innocuous=True,
     ),
 ]
 
@@ -84,11 +88,15 @@ class Drug:
     cancer: str
 
 
-def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
+def _diagnose_cancer(
+    text: str,
+    entity: dict,
+    is_direct_chat: bool,
+) -> Optional[Diagnosis]:
     if entity["type"] == "url":
         offset = entity["offset"]
         length = entity["length"]
-        url = text[offset : offset + length]
+        url = text[offset: offset + length]
     elif entity["type"] == "text_link":
         url = entity["url"]
     else:
@@ -98,7 +106,8 @@ def _diagnose_cancer(text: str, entity: dict) -> Optional[Diagnosis]:
     symptoms = urlparse(url)
     for cancer in _CANCERS:
         if cancer.matches(symptoms):
-            return Diagnosis(cancer, url)
+            if not cancer.is_innocuous or is_direct_chat:
+                return Diagnosis(cancer, url)
 
     return None
 
@@ -119,6 +128,9 @@ def _handle_update(publisher: Publisher, update: dict):
         _LOG.debug("Skipping non-message update")
         return
 
+    chat_id = message["chat"]["id"]
+    user_id = message["from"]["id"]
+
     text: str
     entities: Optional[List[dict]]
 
@@ -138,7 +150,7 @@ def _handle_update(publisher: Publisher, update: dict):
 
     diagnosis_by_treatment: Dict[Topic, List[Diagnosis]] = defaultdict(list)
     for entity in entities:
-        diagnosis = _diagnose_cancer(text, entity)
+        diagnosis = _diagnose_cancer(text, entity, is_direct_chat=chat_id == user_id)
         if diagnosis:
             diagnosis_by_treatment[diagnosis.cancer.treatment].append(diagnosis)
 
@@ -153,7 +165,7 @@ def _handle_update(publisher: Publisher, update: dict):
             continue
 
         event = _make_message(
-            message["chat"]["id"], message["message_id"], treatment, diagnoses
+            chat_id, message["message_id"], treatment, diagnoses
         )
 
         try:
