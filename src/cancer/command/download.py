@@ -290,13 +290,13 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
             return Subscriber.Result.Ack
 
 
-def run():
+def run() -> None:
     telegram.check()
 
     if not os.path.exists(_STORAGE_DIR):
         os.mkdir(_STORAGE_DIR)
 
-    signal.signal(signal.SIGTERM, lambda _: sys.exit(0))
+    signal.signal(signal.SIGTERM, lambda _, __: sys.exit(0))
 
     download_type = os.getenv("DOWNLOAD_TYPE")
     if download_type == "insta":

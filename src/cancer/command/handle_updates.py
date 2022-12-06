@@ -174,15 +174,15 @@ def _handle_update(publisher: Publisher, update: dict):
             raise
 
 
-def _init_publisher() -> Optional[Publisher]:
+def _init_publisher() -> Publisher:
     try:
         return PubSubPublisher(PubSubConfig.from_env())
     except ValueError as e:
         _LOG.warning("Could not initialize Publisher", exc_info=e)
-        return None
+        raise
 
 
-def run():
+def run() -> None:
     telegram.check()
 
     publisher: Publisher = _init_publisher()
