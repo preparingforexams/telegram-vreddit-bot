@@ -45,6 +45,11 @@ def download():
     command.download.run()
 
 
+@app.command("telegram_audio_convert")
+def telegram_audio_convert():
+    command.telegram_audio_convert.run()
+
+
 @app.command("youtube_url_convert")
 def youtube_url_convert():
     command.youtube_url_convert.run()

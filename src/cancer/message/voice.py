@@ -4,5 +4,6 @@ from .message import Message
 
 
 @dataclass
-class YoutubeUrlConvertMessage(Message):
-    urls: list[str]
+class VoiceMessage(Message):
+    file_id: str
+    file_size: int

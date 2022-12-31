@@ -7,4 +7,4 @@ from .message import Message
 
 @dataclass
 class DownloadMessage(Message):
-    pass
+    urls: list[str]

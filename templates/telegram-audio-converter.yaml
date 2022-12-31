@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cancer-telegram-audio-converter
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: telegram-audio-converter
+  template:
+    metadata:
+      labels:
+        app: telegram-audio-converter
+    spec:
+      volumes:
+{{ include "secrets.volume" . | indent 8 }}
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          args:
+            - telegram_audio_convert
+          resources:
+            limits:
+              cpu: 20m
+            requests:
+              cpu: 10m
+              memory: 16Mi
+          envFrom:
+            - configMapRef:
+                name: cancer-config
+            - secretRef:
+                name: cancer-secrets
+          volumeMounts:
+{{ include "secrets.volumeMount" . | indent 12 }}

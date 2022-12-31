@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import Type, List
+from typing import List
 
 from .download import DownloadMessage
-from .message import Message
+from .voice import VoiceMessage
 from .youtube_url_convert import YoutubeUrlConvertMessage
 
 
@@ -16,9 +16,16 @@ class Topic(str, Enum):
     voiceDownload = "voiceDownload"
 
     def create_message(self, chat_id: int, message_id: int, urls: List[str]):
-        clazz: Type[Message]
         if self == Topic.youtubeUrlConvert:
-            clazz = YoutubeUrlConvertMessage
+            return YoutubeUrlConvertMessage(chat_id, message_id, urls)
+        elif self == Topic.voiceDownload:
+            file_id, file_size = urls[0].rsplit("::", maxsplit=1)
+            return VoiceMessage(
+                chat_id=chat_id,
+                message_id=message_id,
+                file_id=file_id,
+                file_size=int(file_size),
+            )
         elif self in {
             Topic.download,
             Topic.instaDownload,
@@ -26,8 +33,6 @@ class Topic(str, Enum):
             Topic.tiktokDownload,
             Topic.twitterDownload,
         }:
-            clazz = DownloadMessage
+            return DownloadMessage(chat_id, message_id, urls)
         else:
             raise ValueError(f"Unknown message for type {self}")
-
-        return clazz(chat_id, message_id, urls)
