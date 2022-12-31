@@ -141,7 +141,7 @@ def send_audio_message(
                 "allow_sending_without_reply": True,
                 "disable_web_page_preview": True,
             },
-            files=dict(audio=audio),
+            files=dict(audio=(f"{chat_id}.ogg", audio)),
             timeout=10,
         )
     )
