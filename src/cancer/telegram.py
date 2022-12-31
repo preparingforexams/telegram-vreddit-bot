@@ -121,7 +121,8 @@ def download_file(file_id: str, file: IO[bytes]):
         )
     )
 
-    response = _session.get(response["file_path"])
+    url = _build_url(response["file_path"])
+    response = _session.get(url)
     file.write(response.content)
 
 
