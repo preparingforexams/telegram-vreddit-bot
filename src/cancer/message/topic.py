@@ -13,6 +13,7 @@ class Topic(str, Enum):
     youtubeUrlConvert = "youtubeUrlConvert"
     tiktokDownload = "tiktokDownload"
     twitterDownload = "twitterDownload"
+    voiceDownload = "voiceDownload"
 
     def create_message(self, chat_id: int, message_id: int, urls: List[str]):
         clazz: Type[Message]

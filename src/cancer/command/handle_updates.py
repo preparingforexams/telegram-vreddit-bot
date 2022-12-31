@@ -136,28 +136,41 @@ def _handle_update(publisher: Publisher, update: dict):
     chat_id = message["chat"]["id"]
     user_id = message["from"]["id"]
 
-    text: str
+    text: str | None
     entities: Optional[List[dict]]
+    voice: dict | None
 
     if "text" in message:
         text = message["text"]
         entities = message.get("entities")
+        voice = None
     elif "caption" in message:
         text = message["caption"]
         entities = message.get("caption_entities")
+        voice = None
+    elif "voice" in message:
+        text = message.get("caption")
+        entities = message.get("caption_entities")
+        voice = message["voice"]
     else:
         _LOG.debug("Not a text or caption")
         return
 
-    if not entities:
-        _LOG.debug("No entities found in message")
-        return
-
     diagnosis_by_treatment: Dict[Topic, List[Diagnosis]] = defaultdict(list)
-    for entity in entities:
-        diagnosis = _diagnose_cancer(text, entity, is_direct_chat=chat_id == user_id)
-        if diagnosis:
-            diagnosis_by_treatment[diagnosis.cancer.treatment].append(diagnosis)
+    is_direct_chat = chat_id == user_id
+    if text and entities:
+        for entity in entities:
+            diagnosis = _diagnose_cancer(text, entity, is_direct_chat=is_direct_chat)
+            if diagnosis:
+                diagnosis_by_treatment[diagnosis.cancer.treatment].append(diagnosis)
+
+    if is_direct_chat and voice:
+        diagnosis_by_treatment[Topic.voiceDownload].append(
+            Diagnosis(
+                cancer=None,  # type: ignore
+                case=f"{voice['file_id']}::{voice['file_size']}",
+            )
+        )
 
     if not diagnosis_by_treatment:
         _LOG.debug("Message was healthy")
