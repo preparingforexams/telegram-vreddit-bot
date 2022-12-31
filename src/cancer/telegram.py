@@ -133,6 +133,7 @@ def download_file(file_id: str, file: IO[bytes]):
 
 def send_audio_message(
     chat_id: int,
+    name: str,
     audio: IO[bytes],
     reply_to_message_id: Optional[int] = None,
 ) -> dict:
@@ -147,7 +148,7 @@ def send_audio_message(
                 "disable_web_page_preview": True,
                 "disable_content_type_detection": True,
             },
-            files=dict(document=(f"{chat_id}.oga", audio)),
+            files=dict(document=(f"{name}.oga", audio)),
             timeout=10,
         )
     )

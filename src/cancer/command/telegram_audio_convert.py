@@ -29,6 +29,7 @@ def _handle_payload(payload: VoiceMessage) -> Subscriber.Result:
             chat_id=payload.chat_id,
             reply_to_message_id=payload.message_id,
             audio=file,
+            name=f"voice-{payload.file_id}",
         )
 
     return Subscriber.Result.Ack
