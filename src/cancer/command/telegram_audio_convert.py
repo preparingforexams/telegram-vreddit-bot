@@ -1,6 +1,7 @@
 import logging
 import signal
 import sys
+import tempfile
 
 from cancer import telegram
 from cancer.adapter.pubsub import PubSubSubscriber, PubSubConfig
@@ -13,11 +14,22 @@ _LOG = logging.getLogger(__name__)
 def _handle_payload(payload: VoiceMessage) -> Subscriber.Result:
     _LOG.info("Received payload: %s", payload)
 
-    telegram.send_audio_message(
-        chat_id=payload.chat_id,
-        reply_to_message_id=payload.message_id,
-        audio=payload.file_id,
-    )
+    if payload.file_size > 20_000_000:
+        _LOG.info("Skipping because file is too large")
+        return Subscriber.Result.Ack
+
+    with tempfile.TemporaryFile() as file:
+        telegram.download_file(payload.file_id, file)
+
+        _LOG.info("Downloaded file of size %d", file.tell())
+
+        file.seek(0)
+
+        telegram.send_audio_message(
+            chat_id=payload.chat_id,
+            reply_to_message_id=payload.message_id,
+            audio=file,
+        )
 
     return Subscriber.Result.Ack
 

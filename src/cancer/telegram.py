@@ -133,21 +133,21 @@ def download_file(file_id: str, file: IO[bytes]):
 
 def send_audio_message(
     chat_id: int,
-    audio: str,
+    audio: IO[bytes],
     reply_to_message_id: Optional[int] = None,
 ) -> dict:
     return _get_actual_body(
         _session.post(
             _build_url("sendDocument"),
-            json={
+            data={
                 "chat_id": chat_id,
                 "reply_to_message_id": reply_to_message_id,
                 "disable_notification": True,
                 "allow_sending_without_reply": True,
                 "disable_web_page_preview": True,
                 "disable_content_type_detection": True,
-                "document": audio,
             },
+            files=dict(document=(f"{chat_id}.oga", audio)),
             timeout=10,
         )
     )
