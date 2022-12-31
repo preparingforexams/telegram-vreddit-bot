@@ -21,6 +21,8 @@ def _handle_payload(payload: VoiceMessage) -> Subscriber.Result:
     with tempfile.TemporaryFile() as file:
         telegram.download_file(payload.file_id, file)
 
+        _LOG.info("Downloaded file of size %d", len(file))
+
         file.seek(0)
 
         telegram.send_audio_message(

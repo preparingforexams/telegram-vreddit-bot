@@ -123,6 +123,7 @@ def download_file(file_id: str, file: IO[bytes]):
 
     url = _build_url(response["file_path"])
     response = _session.get(url)
+    response.raise_for_status()
     file.write(response.content)
 
 
