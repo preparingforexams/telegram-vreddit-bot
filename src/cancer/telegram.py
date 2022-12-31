@@ -21,6 +21,10 @@ def _build_url(method: str) -> str:
     return f"https://api.telegram.org/bot{_API_KEY}/{method}"
 
 
+def _build_file_url(file_path: str) -> str:
+    return f"https://api.telegram.org/file/bot{_API_KEY}/{file_path}"
+
+
 def _get_actual_body(response: Response):
     response.raise_for_status()
     body = response.json()
@@ -121,7 +125,7 @@ def download_file(file_id: str, file: IO[bytes]):
         )
     )
 
-    url = _build_url(response["file_path"])
+    url = _build_file_url(response["file_path"])
     response = _session.get(url)
     response.raise_for_status()
     file.write(response.content)
