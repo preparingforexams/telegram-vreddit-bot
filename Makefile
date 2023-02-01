@@ -1,6 +1,6 @@
-.PHONY: coding_standards
+.PHONY: nice
 
-coding_standards:
+nice:
 	poetry run black src/
 	poetry run flake8 --exit-zero src/
 	poetry run mypy src/
