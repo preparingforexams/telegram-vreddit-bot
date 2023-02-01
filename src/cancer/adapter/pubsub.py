@@ -57,7 +57,6 @@ class PubSubPublisher(Publisher):
 
 class PubSubSubscriber(Subscriber):
     def __init__(self, config: PubSubConfig):
-
         self.prefix = f"projects/{config.project_id}/subscriptions/"
         self.client = SubscriberClient()
 
