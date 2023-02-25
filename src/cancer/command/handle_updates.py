@@ -72,6 +72,16 @@ _CANCERS = [
         host="gfycat.com",
         treatment=Topic.download,
     ),
+    Cancer(
+        host="www.linkedin.com",
+        treatment=Topic.download,
+        path="/posts",
+    ),
+    Cancer(
+        host="linkedin.com",
+        treatment=Topic.download,
+        path="/posts",
+    ),
 ]
 
 
