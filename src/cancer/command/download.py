@@ -86,11 +86,15 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
     cure_dir = os.path.join(base_folder, cure_id)
     os.mkdir(cure_dir)
 
-    ytdl = YoutubeDL(
-        params={
-            "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
-        }
-    )
+    params = {
+        "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
+    }
+
+    if (username := os.getenv("USERNAME")) and (password := os.getenv("PASSWORD")):
+        params['username'] = username
+        params['password'] = password
+
+    ytdl = YoutubeDL(params=params)
 
     try:
         return_code = ytdl.download([url])

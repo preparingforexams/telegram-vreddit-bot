@@ -9,3 +9,7 @@ gcp:
   project: cancer-be-gone
 
 features: ${FEATURES}
+
+instagram:
+  user: ${INSTA_PASSWORD}
+  password: ${INSTA_USER}

@@ -41,6 +41,8 @@ spec:
                 name: cancer-config
             - secretRef:
                 name: cancer-secrets
+            - secretRef:
+                name: insta
           volumeMounts:
 {{ include "secrets.volumeMount" . | indent 12 }}
             - mountPath: "/downloads"
