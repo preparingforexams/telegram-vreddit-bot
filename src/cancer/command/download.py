@@ -91,8 +91,8 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
     }
 
     if (username := os.getenv("USERNAME")) and (password := os.getenv("PASSWORD")):
-        params['username'] = username
-        params['password'] = password
+        params["username"] = username
+        params["password"] = password
 
     ytdl = YoutubeDL(params=params)
 
