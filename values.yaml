@@ -11,5 +11,5 @@ gcp:
 features: ${FEATURES}
 
 instagram:
-  user: ${INSTA_PASSWORD}
-  password: ${INSTA_USER}
+  user: ${INSTA_USER}
+  password: ${INSTA_PASSWORD}
