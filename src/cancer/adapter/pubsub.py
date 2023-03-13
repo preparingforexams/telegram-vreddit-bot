@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import logging
 import os
 from concurrent import futures
 from dataclasses import dataclass
-from typing import Callable, Type
+from typing import Callable, Type, Self
 
 from google.cloud.pubsub_v1 import PublisherClient, SubscriberClient
 from google.cloud.pubsub_v1.subscriber.message import Message as PubSubMessage
@@ -30,7 +28,7 @@ class PubSubConfig:
         raise ValueError(f"Missing key: {key}")
 
     @classmethod
-    def from_env(cls) -> PubSubConfig:
+    def from_env(cls) -> Self:
         return cls(
             project_id=cls._get_required("GOOGLE_CLOUD_PROJECT"),
         )
