@@ -9,7 +9,7 @@ RUN ln -s /bin/tar /usr/sbin/tar
 
 RUN apt-get update && apt-get install -y ffmpeg gcc make && apt-get clean
 
-RUN pip install poetry==1.4.0
+RUN pip install poetry==1.4.1
 
 WORKDIR /app
 
