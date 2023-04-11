@@ -5,7 +5,7 @@ terraform {
 
   required_providers {
     google = {
-      version = "~> 4.60.0"
+      version = "~> 4.61.0"
     }
   }
 }
