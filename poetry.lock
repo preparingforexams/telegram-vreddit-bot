@@ -595,6 +595,7 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
+    {file = "grpcio-status-1.54.2.tar.gz", hash = "sha256:3255cbec5b7c706caa3d4dd584606c080e6415e15631bb2f6215e2b70055836d"},
     {file = "grpcio_status-1.54.2-py3-none-any.whl", hash = "sha256:2a7cb4838225f1b53bd0448a3008c5b5837941e1f3a0b13fa38768f08a7b68c2"},
 ]
 
