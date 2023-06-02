@@ -185,14 +185,14 @@ cffi = ">=1.0.0"
 
 [[package]]
 name = "cachetools"
-version = "5.3.0"
+version = "5.3.1"
 description = "Extensible memoizing collections and decorators"
 category = "main"
 optional = false
-python-versions = "~=3.7"
+python-versions = ">=3.7"
 files = [
-    {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
-    {file = "cachetools-5.3.0.tar.gz", hash = "sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14"},
+    {file = "cachetools-5.3.1-py3-none-any.whl", hash = "sha256:95ef631eeaea14ba2e36f06437f36463aac3a096799e876ee55e5cdccb102590"},
+    {file = "cachetools-5.3.1.tar.gz", hash = "sha256:dce83f2d9b4e1f732a8cd44af8e8fab2dbe46201467fc98b3ef8f269092bf62b"},
 ]
 
 [[package]]
@@ -446,22 +446,21 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "2.19.0"
+version = "2.17.3"
 description = "Google Authentication Library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 files = [
-    {file = "google-auth-2.19.0.tar.gz", hash = "sha256:f39d528077ac540793dd3c22a8706178f157642a67d874db25c640b7fead277e"},
-    {file = "google_auth-2.19.0-py2.py3-none-any.whl", hash = "sha256:be617bfaf77774008e9d177573f782e109188c8a64ae6e744285df5cea3e7df6"},
+    {file = "google-auth-2.17.3.tar.gz", hash = "sha256:ce311e2bc58b130fddf316df57c9b3943c2a7b4f6ec31de9663a9333e4064efc"},
+    {file = "google_auth-2.17.3-py2.py3-none-any.whl", hash = "sha256:f586b274d3eb7bd932ea424b1c702a30e0393a2e2bc4ca3eae8263ffd8be229f"},
 ]
 
 [package.dependencies]
 cachetools = ">=2.0.0,<6.0"
 pyasn1-modules = ">=0.2.1"
-rsa = ">=3.1.4,<5"
+rsa = {version = ">=3.1.4,<5", markers = "python_version >= \"3.6\""}
 six = ">=1.9.0"
-urllib3 = "<2.0"
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)", "requests (>=2.20.0,<3.0.0dev)"]
@@ -1003,19 +1002,19 @@ pyasn1 = ">=0.1.3"
 
 [[package]]
 name = "sentry-sdk"
-version = "1.24.0"
+version = "1.25.0"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "sentry-sdk-1.24.0.tar.gz", hash = "sha256:0bbcecda9f51936904c1030e7fef0fe693e633888f02a14d1cb68646a50e83b3"},
-    {file = "sentry_sdk-1.24.0-py2.py3-none-any.whl", hash = "sha256:56d6d9d194c898d853a7c1dd99bed92ce82334ee1282292c15bcc967ff1a49b5"},
+    {file = "sentry-sdk-1.25.0.tar.gz", hash = "sha256:5be3296fc574fa8a4d9b213b4dcf8c8d0246c08f8bd78315c6286f386c37555a"},
+    {file = "sentry_sdk-1.25.0-py2.py3-none-any.whl", hash = "sha256:fe85cf5d0b3d0aa3480df689f9f6dc487de783defb0a95043368375dc893645e"},
 ]
 
 [package.dependencies]
 certifi = "*"
-urllib3 = {version = ">=1.26.11,<2.0.0", markers = "python_version >= \"3.6\""}
+urllib3 = {version = ">=1.26.11", markers = "python_version >= \"3.6\""}
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.5)"]
@@ -1070,14 +1069,14 @@ files = [
 
 [[package]]
 name = "types-requests"
-version = "2.31.0.0"
+version = "2.31.0.1"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-requests-2.31.0.0.tar.gz", hash = "sha256:c1c29d20ab8d84dff468d7febfe8e0cb0b4664543221b386605e14672b44ea25"},
-    {file = "types_requests-2.31.0.0-py3-none-any.whl", hash = "sha256:7c5cea7940f8e92ec560bbc468f65bf684aa3dcf0554a6f8c4710f5f708dc598"},
+    {file = "types-requests-2.31.0.1.tar.gz", hash = "sha256:3de667cffa123ce698591de0ad7db034a5317457a596eb0b4944e5a9d9e8d1ac"},
+    {file = "types_requests-2.31.0.1-py3-none-any.whl", hash = "sha256:afb06ef8f25ba83d59a1d424bd7a5a939082f94b94e90ab5e6116bd2559deaa3"},
 ]
 
 [package.dependencies]
@@ -1097,32 +1096,33 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.6.2"
+version = "4.6.3"
 description = "Backported and Experimental Type Hints for Python 3.7+"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "typing_extensions-4.6.2-py3-none-any.whl", hash = "sha256:3a8b36f13dd5fdc5d1b16fe317f5668545de77fa0b8e02006381fd49d731ab98"},
-    {file = "typing_extensions-4.6.2.tar.gz", hash = "sha256:06006244c70ac8ee83fa8282cb188f697b8db25bc8b4df07be1873c43897060c"},
+    {file = "typing_extensions-4.6.3-py3-none-any.whl", hash = "sha256:88a4153d8505aabbb4e13aacb7c486c2b4a33ca3b3f807914a9b4c844c471c26"},
+    {file = "typing_extensions-4.6.3.tar.gz", hash = "sha256:d91d5919357fe7f681a9f2b5b4cb2a5f1ef0a1e9f59c4d8ff0d3491e05c0ffd5"},
 ]
 
 [[package]]
 name = "urllib3"
-version = "1.26.16"
+version = "2.0.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+python-versions = ">=3.7"
 files = [
-    {file = "urllib3-1.26.16-py2.py3-none-any.whl", hash = "sha256:8d36afa7616d8ab714608411b4a3b13e58f463aee519024578e062e141dce20f"},
-    {file = "urllib3-1.26.16.tar.gz", hash = "sha256:8f135f6502756bde6b2a9b28989df5fbe87c9970cecaa69041edcce7f0589b14"},
+    {file = "urllib3-2.0.2-py3-none-any.whl", hash = "sha256:d055c2f9d38dc53c808f6fdc8eab7360b6fdbbde02340ed25cfbcd817c62469e"},
+    {file = "urllib3-2.0.2.tar.gz", hash = "sha256:61717a1095d7e155cdb737ac7bb2f4324a858a1e2e6466f6d03ff630ca68d3cc"},
 ]
 
 [package.extras]
-brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)", "brotlipy (>=0.6.0)"]
-secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)", "urllib3-secure-extra"]
-socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
+secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.1.0)", "urllib3-secure-extra"]
+socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
+zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "websockets"
