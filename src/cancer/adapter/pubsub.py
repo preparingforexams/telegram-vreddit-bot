@@ -2,7 +2,7 @@ import logging
 import os
 from concurrent import futures
 from dataclasses import dataclass
-from typing import Callable, Type, Self
+from typing import Callable, Self, Type
 
 from google.cloud.pubsub_v1 import PublisherClient, SubscriberClient
 from google.cloud.pubsub_v1.subscriber.message import Message as PubSubMessage

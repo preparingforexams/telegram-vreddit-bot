@@ -1,6 +1,6 @@
 import abc
 from enum import Enum, auto
-from typing import Callable, TypeVar, Type
+from typing import Callable, Type, TypeVar
 
 from cancer.message import Message, Topic
 

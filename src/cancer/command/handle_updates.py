@@ -2,15 +2,12 @@ import logging
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Optional, List, Dict
-from urllib.parse import urlparse, ParseResult
+from typing import Dict, List, Optional
+from urllib.parse import ParseResult, urlparse
 
 from cancer import telegram
 from cancer.adapter.pubsub import PubSubConfig, PubSubPublisher
-from cancer.message import (
-    Message,
-    Topic,
-)
+from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher, PublishingException
 
 _LOG = logging.getLogger(__name__)

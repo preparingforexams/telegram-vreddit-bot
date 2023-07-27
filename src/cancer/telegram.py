@@ -1,15 +1,13 @@
 import logging
 import os
-from typing import Optional, List, Union, Callable, IO
+from typing import IO, Callable, List, Optional, Union
 
-from requests import Response
-
-from cancer.session_util import build_session
+from httpx import Client, Response
 
 _API_KEY = os.getenv("TELEGRAM_API_KEY")
 _LOG = logging.getLogger(__name__)
 
-_session = build_session()
+_client = Client(timeout=60)
 
 
 def check():
@@ -41,7 +39,7 @@ def _request_updates(last_update_id: Optional[int]) -> List[dict]:
             "timeout": 10,
         }
     return _get_actual_body(
-        _session.post(
+        _client.post(
             _build_url("getUpdates"),
             json=body,
             timeout=12,
@@ -72,7 +70,7 @@ def upload_video(
     url = _build_url("sendVideo")
 
     def _request(files: dict):
-        return _session.post(
+        return _client.post(
             url,
             data=dict(chat_id=chat_id, reply_to_message_id=reply_to_message_id),
             files=files,
@@ -100,7 +98,7 @@ def send_message(
     reply_to_message_id: Optional[int] = None,
 ) -> dict:
     return _get_actual_body(
-        _session.post(
+        _client.post(
             _build_url("sendMessage"),
             json={
                 "chat_id": chat_id,
@@ -110,14 +108,13 @@ def send_message(
                 "disable_web_page_preview": True,
                 "text": text,
             },
-            timeout=10,
         )
     )
 
 
 def download_file(file_id: str, file: IO[bytes]):
     response = _get_actual_body(
-        _session.post(
+        _client.post(
             _build_url("getFile"),
             json={
                 "file_id": file_id,
@@ -126,7 +123,7 @@ def download_file(file_id: str, file: IO[bytes]):
     )
 
     url = _build_file_url(response["file_path"])
-    response = _session.get(url)
+    response = _client.get(url)
     response.raise_for_status()
     file.write(response.content)
 
@@ -138,7 +135,7 @@ def send_audio_message(
     reply_to_message_id: Optional[int] = None,
 ) -> dict:
     return _get_actual_body(
-        _session.post(
+        _client.post(
             _build_url("sendDocument"),
             data={
                 "chat_id": chat_id,
@@ -149,7 +146,6 @@ def send_audio_message(
                 "disable_content_type_detection": True,
             },
             files=dict(document=(f"{name}.oga", audio)),
-            timeout=10,
         )
     )
 
@@ -160,7 +156,7 @@ def send_video_group(
     videos: List[str],
 ) -> dict:
     return _get_actual_body(
-        _session.post(
+        _client.post(
             _build_url("sendMediaGroup"),
             json={
                 "chat_id": chat_id,
@@ -175,6 +171,5 @@ def send_video_group(
                     for video_id in videos
                 ],
             },
-            timeout=10,
         )
     )

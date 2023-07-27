@@ -4,7 +4,7 @@ import sys
 import tempfile
 
 from cancer import telegram
-from cancer.adapter.pubsub import PubSubSubscriber, PubSubConfig
+from cancer.adapter.pubsub import PubSubConfig, PubSubSubscriber
 from cancer.message import Topic, VoiceMessage
 from cancer.port.subscriber import Subscriber
 
