@@ -1,7 +1,12 @@
-.PHONY: nice
+.PHONY: check
+check: lint test
 
-nice:
+.PHONY: lint
+lint:
 	poetry run black src/
-	poetry run flake8 --exit-zero src/
 	poetry run isort src/
 	poetry run mypy src/
+
+.PHONY: test
+test:
+	poetry run pytest src/
