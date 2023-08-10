@@ -84,7 +84,6 @@ jobs:
             handle_updates,
             download,
             youtube_url_convert,
-            tiktok_download,
             twitter_download,
             youtube_download
             ]
@@ -99,11 +98,40 @@ jobs:
           exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
 
+  deploy-home:
+    needs: push-container-image
+    concurrency: production-home
+    container: ghcr.io/bjoernpetersen/helm:latest
+    runs-on:
+      labels:
+        - ipv6
+    steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - uses: actions/checkout@v3
+      - name: Substitute environment variables in values.yaml
+        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
+        env:
+          FEATURES: >
+            [
+            tiktok_download
+            ]
+          GSA_JSON: ${{ secrets.GSA_JSON }}
+          IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}"
+          INSTA_PASSWORD: ${{secrets.INSTA_PASSWORD }}
+          INSTA_USER: ${{secrets.INSTA_USER }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      - uses: WyriHaximus/github-action-helm3@v3
+        with:
+          exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
+          kubeconfig: '${{ secrets.BORN_KUBECONFIG_RAW }}'
+
   clean:
     runs-on: ubuntu-latest
     concurrency: cleanup
     continue-on-error: true
-    needs: [ deploy ]
+    needs: [ deploy, deploy-home ]
     steps:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
