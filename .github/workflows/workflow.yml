@@ -84,7 +84,6 @@ jobs:
             handle_updates,
             download,
             youtube_url_convert,
-            insta_download,
             tiktok_download,
             twitter_download,
             youtube_download
