@@ -21,16 +21,6 @@ spec:
         app: youtube-downloader
     spec:
       terminationGracePeriodSeconds: 600
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: "kubernetes.io/hostname"
-                    operator: In
-                    values:
-                      - rke2-agent-0
-                      - rke2-agent-1
       containers:
         - name: app
           image: {{ .Values.image }}
