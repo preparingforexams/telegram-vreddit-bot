@@ -1,4 +1,5 @@
 ---
+{{ if has "telegram_audio_convert" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,3 +40,4 @@ spec:
                 name: cancer-secrets
           volumeMounts:
 {{ include "secrets.volumeMount" . | indent 12 }}
+{{ end }}

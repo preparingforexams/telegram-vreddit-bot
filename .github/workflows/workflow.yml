@@ -152,6 +152,7 @@ jobs:
             handle_updates,
             download,
             youtube_url_convert,
+            telegram_audio_convert,
             twitter_download,
             youtube_download
             ]
