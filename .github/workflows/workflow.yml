@@ -97,7 +97,7 @@ jobs:
       - uses: WyriHaximus/github-action-helm3@v3
         with:
           exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
-          kubeconfig: '${{ secrets.KUBECONFIG_RANCHER_RAW }}'
+          kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
 
   clean:
     runs-on: ubuntu-latest
