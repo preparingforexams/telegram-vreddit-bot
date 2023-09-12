@@ -8,7 +8,7 @@ ReadinessProbe = Callable[[], bool]
 
 
 class _RequestHandler(BaseHTTPRequestHandler):
-    check_readiness: ReadinessProbe = lambda: True
+    check_readiness: ReadinessProbe = lambda: True  # noqa: E731
 
     # noinspection PyPep8Naming
     def do_GET(self):

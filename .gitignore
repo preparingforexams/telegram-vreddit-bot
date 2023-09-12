@@ -8,7 +8,9 @@ __pycache__
 # TMP dirs
 downloads/
 
+.mypy_cache/
 .pytest_cache/
+.ruff_cache/
 
 *.env
 
