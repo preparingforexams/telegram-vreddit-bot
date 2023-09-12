@@ -17,24 +17,25 @@ class Topic(str, Enum):
     voiceDownload = "voiceDownload"
 
     def create_message(self, chat_id: int, message_id: int, urls: List[str]):
-        if self == Topic.youtubeUrlConvert:
-            return YoutubeUrlConvertMessage(chat_id, message_id, urls)
-        elif self == Topic.voiceDownload:
-            file_id, file_size = urls[0].rsplit("::", maxsplit=1)
-            return VoiceMessage(
-                chat_id=chat_id,
-                message_id=message_id,
-                file_id=file_id,
-                file_size=int(file_size),
-            )
-        elif self in {
-            Topic.download,
-            Topic.instaDownload,
-            Topic.youtubeDownload,
-            Topic.tiktokDownload,
-            Topic.twitterDownload,
-            Topic.vimeoDownload,
-        }:
-            return DownloadMessage(chat_id, message_id, urls)
-        else:
-            raise ValueError(f"Unknown message for type {self}")
+        match self:
+            case Topic.youtubeUrlConvert:
+                return YoutubeUrlConvertMessage(chat_id, message_id, urls)
+            case Topic.voiceDownload:
+                file_id, file_size = urls[0].rsplit("::", maxsplit=1)
+                return VoiceMessage(
+                    chat_id=chat_id,
+                    message_id=message_id,
+                    file_id=file_id,
+                    file_size=int(file_size),
+                )
+            case (
+                Topic.download
+                | Topic.instaDownload
+                | Topic.youtubeDownload
+                | Topic.tiktokDownload
+                | Topic.twitterDownload
+                | Topic.vimeoDownload
+            ):
+                return DownloadMessage(chat_id, message_id, urls)
+            case _:
+                raise ValueError(f"Unknown message for type {self}")
