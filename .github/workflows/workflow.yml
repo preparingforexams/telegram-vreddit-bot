@@ -154,6 +154,7 @@ jobs:
             youtube_url_convert,
             telegram_audio_convert,
             twitter_download,
+            vimeo_download,
             youtube_download
             ]
           GSA_JSON: ${{ secrets.GSA_JSON }}

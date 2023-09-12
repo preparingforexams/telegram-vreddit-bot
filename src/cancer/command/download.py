@@ -300,17 +300,23 @@ def run() -> None:
 
     signal.signal(signal.SIGTERM, lambda _, __: sys.exit(0))
 
-    download_type = os.getenv("DOWNLOAD_TYPE")
-    if download_type == "insta":
-        topic = Topic.instaDownload
-    elif download_type == "youtube":
-        topic = Topic.youtubeDownload
-    elif download_type == "tiktok":
-        topic = Topic.tiktokDownload
-    elif download_type == "twitter":
-        topic = Topic.twitterDownload
-    else:
-        topic = Topic.download
+    topic: Topic
+    match os.getenv("DOWNLOAD_TYPE"):
+        case "insta":
+            topic = Topic.instaDownload
+        case "youtube":
+            topic = Topic.youtubeDownload
+        case "tiktok":
+            topic = Topic.tiktokDownload
+        case "twitter":
+            topic = Topic.twitterDownload
+        case "vimeo":
+            topic = Topic.vimeoDownload
+        case download_type:
+            _LOG.info(
+                "Using generic download topic for download type %s", download_type
+            )
+            topic = Topic.download
 
     _LOG.debug("Subscribing to topic %s", topic)
     subscriber: Subscriber = PubSubSubscriber(PubSubConfig.from_env())

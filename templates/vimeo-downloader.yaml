@@ -1,0 +1,53 @@
+---
+{{ if has "vimeo_download" .Values.features  }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cancer-vimeo-downloader
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: vimeo-downloader
+  template:
+    metadata:
+      labels:
+        app: vimeo-downloader
+    spec:
+      terminationGracePeriodSeconds: 600
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          args:
+            - download
+          resources:
+            limits:
+              cpu: "3"
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          env:
+            - name: STORAGE_DIR
+              value: "/downloads"
+            - name: DOWNLOAD_TYPE
+              value: vimeo
+          envFrom:
+            - configMapRef:
+                name: cancer-config
+            - secretRef:
+                name: cancer-secrets
+          volumeMounts:
+{{ include "secrets.volumeMount" . | indent 12 }}
+            - mountPath: "/downloads"
+              name: downloads
+      volumes:
+{{ include "secrets.volume" . | indent 8 }}
+        - name: downloads
+          emptyDir: { }
+{{ end }}

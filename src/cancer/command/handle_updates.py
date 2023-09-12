@@ -79,6 +79,11 @@ _CANCERS = [
         treatment=Topic.download,
         path="/posts",
     ),
+    Cancer(
+        host="vimeo.com",
+        treatment=Topic.vimeoDownload,
+        is_innocuous=True,
+    ),
 ]
 
 
