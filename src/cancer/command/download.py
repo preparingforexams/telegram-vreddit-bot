@@ -229,7 +229,7 @@ def _upload_video(
     except HTTPStatusError as e:
         response: Response = e.response
         if response.status_code == 413:
-            _LOG.error(
+            _LOG.warning(
                 "Could not upload video (entity too large)."
                 " Initial size: %d, cured: %d",
                 os.path.getsize(video_file),
