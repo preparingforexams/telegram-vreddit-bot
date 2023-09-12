@@ -13,6 +13,7 @@ class Topic(str, Enum):
     youtubeUrlConvert = "youtubeUrlConvert"
     tiktokDownload = "tiktokDownload"
     twitterDownload = "twitterDownload"
+    vimeoDownload = "vimeoDownload"
     voiceDownload = "voiceDownload"
 
     def create_message(self, chat_id: int, message_id: int, urls: List[str]):
@@ -32,6 +33,7 @@ class Topic(str, Enum):
             Topic.youtubeDownload,
             Topic.tiktokDownload,
             Topic.twitterDownload,
+            Topic.vimeoDownload,
         }:
             return DownloadMessage(chat_id, message_id, urls)
         else:
