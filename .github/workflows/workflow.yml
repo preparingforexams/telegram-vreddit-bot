@@ -179,6 +179,7 @@ jobs:
         env:
           FEATURES: >
             [
+            insta_download,
             tiktok_download
             ]
           GSA_JSON: ${{ secrets.GSA_JSON }}
