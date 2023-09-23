@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "cancer"
+name = "cancerbot"
 description = "Cures cancer"
 version = "1.0.0"
 authors = ["OpenAlcoholics <team@openalcoholics.group>"]
 license = "MIT"
+packages = [
+    { include = "cancer", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "~3.11"
