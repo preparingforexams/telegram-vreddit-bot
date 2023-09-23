@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: cancer-config
 data:
-  GOOGLE_APPLICATION_CREDENTIALS: /gcp/gsa.json
-  GOOGLE_CLOUD_PROJECT: {{ .Values.gcp.project }}
+  GOOGLE_APPLICATION_CREDENTIALS: "/gcp/gsa.json"
+  GOOGLE_CLOUD_PROJECT: "{{ .Values.gcp.project }}"

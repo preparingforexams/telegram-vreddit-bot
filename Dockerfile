@@ -1,27 +1,38 @@
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm AS base
 
-WORKDIR /app/build
+RUN groupadd --system --gid 500 app
+RUN useradd --system --uid 500 --gid app --create-home --home-dir /app -s /bin/bash app
 
-RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split
-RUN ln -s /usr/bin/dpkg-deb /usr/sbin/dpkg-deb
-RUN ln -s /bin/rm /usr/sbin/rm
-RUN ln -s /bin/tar /usr/sbin/tar
+RUN apt-get update -qq \
+    && apt-get install -y --no-install-recommends \
+      curl \
+      ffmpeg  \
+      tini  \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-RUN apt-get update && apt-get install -y ffmpeg gcc make && apt-get clean
+# renovate: datasource=pypi depName=poetry
+ENV POETRY_VERSION=1.6.1
+ENV POETRY_HOME="/opt/poetry"
+ENV POETRY_VIRTUALENVS_IN_PROJECT=false
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
-RUN pip install poetry==1.6.1
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
+USER app
 WORKDIR /app
 
-RUN poetry config virtualenvs.create false
+FROM base AS prod
 
 COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]
 
-RUN poetry install --only=main
+RUN poetry install --no-interaction --ansi --only=main --no-root
 
-COPY src .
+COPY src/cancer ./src/cancer
+
+RUN poetry install --no-interaction --ansi --only=main
 
 ARG build
 ENV BUILD_SHA=$build
 
-ENTRYPOINT [ "python", "-m", "cancer" ]
+ENTRYPOINT [ "tini", "--", "poetry", "run", "python", "-m", "cancer" ]
