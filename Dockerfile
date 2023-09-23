@@ -30,7 +30,7 @@ RUN poetry install --no-interaction --ansi --only=main --no-root
 
 COPY src/cancer ./src/cancer
 
-RUN poetry install --no-interaction --ansi --only=main
+RUN poetry install --no-interaction --ansi --only-root
 
 ARG build
 ENV BUILD_SHA=$build

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cancerbot"
+name = "cancer"
 description = "Cures cancer"
 version = "1.0.0"
 authors = ["OpenAlcoholics <team@openalcoholics.group>"]
