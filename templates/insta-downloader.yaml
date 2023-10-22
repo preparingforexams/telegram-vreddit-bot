@@ -1,25 +1,42 @@
----
 {{ if has "insta_download" .Values.features  }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cancer-insta
+spec:
+  clusterIP: None
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: cancer-insta-downloader
 spec:
   revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 100%
-      maxUnavailable: 100%
+  serviceName: cancer-insta
   selector:
     matchLabels:
       app: insta-downloader
+  replicas: 1
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind:
+        PersistentVolumeClaim
+      metadata:
+        name: cancer-insta-cookie-jar
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
   template:
     metadata:
       labels:
         app: insta-downloader
     spec:
+      securityContext:
+        fsGroup: 500
       containers:
         - name: app
           image: {{ .Values.image }}
@@ -47,6 +64,8 @@ spec:
 {{ include "secrets.volumeMount" . | indent 12 }}
             - mountPath: "/downloads"
               name: downloads
+            - mountPath: /cookies
+              name: cancer-insta-cookie-jar
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
         - name: downloads
