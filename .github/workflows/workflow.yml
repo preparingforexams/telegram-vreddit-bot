@@ -185,6 +185,7 @@ jobs:
           GSA_JSON: ${{ secrets.GSA_JSON }}
           INSTA_PASSWORD: ${{secrets.INSTA_PASSWORD }}
           INSTA_USER: ${{secrets.INSTA_USER }}
+          INSTA_COOKIES: ${{ secrets.INSTA_COOKIES }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       - uses: WyriHaximus/github-action-helm3@v3

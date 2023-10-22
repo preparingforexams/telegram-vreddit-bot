@@ -60,16 +60,18 @@ spec:
                 name: cancer-config
             - secretRef:
                 name: cancer-secrets
-            - secretRef:
-                name: insta
           volumeMounts:
 {{ include "secrets.volumeMount" . | indent 12 }}
             - mountPath: "/downloads"
               name: downloads
-            - mountPath: /cookies
-              name: cancer-insta-cookie-jar
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
         - name: downloads
           emptyDir: { }
+        - name: cookie
+          secret:
+            secretName: insta
+            items:
+              - key: COOKIES
+                path: /cookies/insta-cookies.dat
 {{ end }}

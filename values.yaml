@@ -13,3 +13,4 @@ features: ${FEATURES}
 instagram:
   user: ${INSTA_USER}
   password: ${INSTA_PASSWORD}
+  cookies: ${INSTA_COOKIES}
