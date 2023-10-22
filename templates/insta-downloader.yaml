@@ -66,6 +66,8 @@ spec:
               name: downloads
             - mountPath: "/cookies"
               name: cookie-jar
+            - mountPath: "/static-cookies"
+              name: cookie
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
         - name: downloads
@@ -75,5 +77,5 @@ spec:
             secretName: insta
             items:
               - key: COOKIES
-                path: /static-cookies/insta-cookies.dat
+                path: insta-cookies.dat
 {{ end }}
