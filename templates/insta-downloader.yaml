@@ -17,7 +17,7 @@ spec:
   selector:
     matchLabels:
       app: insta-downloader
-  replicas: 1
+  replicas: 0
   volumeClaimTemplates:
     - apiVersion: v1
       kind:
