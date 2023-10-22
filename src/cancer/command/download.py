@@ -92,6 +92,9 @@ def _download_videos(base_folder: str, url: str) -> List[str]:
         params["username"] = username
         params["password"] = password
 
+    if cookie_file := os.getenv("COOKIE_FILE"):
+        params["cookies"] = cookie_file
+
     ytdl = YoutubeDL(params=params)
 
     try:

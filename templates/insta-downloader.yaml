@@ -53,6 +53,8 @@ spec:
               value: "/downloads"
             - name: DOWNLOAD_TYPE
               value: insta
+            - name: COOKIE_FILE
+              value: /cookies/insta-cookies.dat
           envFrom:
             - configMapRef:
                 name: cancer-config
