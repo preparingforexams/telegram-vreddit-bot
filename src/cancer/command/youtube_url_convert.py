@@ -23,11 +23,10 @@ def _handle_payload(payload: YoutubeUrlConvertMessage) -> Subscriber.Result:
 
     rewritten_urls = [_rewrite_youtube_url(url) for url in payload.urls]
     url_list_text = "\n".join(rewritten_urls)
-    text = f"I cured that cancer of yours:\n{url_list_text}"
     telegram.send_message(
         chat_id=payload.chat_id,
         reply_to_message_id=payload.message_id,
-        text=text,
+        text=(url_list_text),
     )
 
     return Subscriber.Result.Ack
