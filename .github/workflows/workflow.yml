@@ -8,6 +8,9 @@ env:
   IMAGE_NAME: ghcr.io/preparingforexams/telegram-vreddit-bot
 
 jobs:
+  validate-renovate-config:
+    uses: BlindfoldedSurgery/renovate-config/.github/workflows/validate.yml@main
+
   lint:
     runs-on: ubuntu-latest
     container: python:3.11-slim-bookworm
