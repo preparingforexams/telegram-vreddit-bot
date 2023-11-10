@@ -19,7 +19,7 @@ yt-dlp = "2023.07.06"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.0.0"
-mypy = "~1.6"
+mypy = "~1.7"
 pytest = "^7.4.0"
 ruff = "0.1.5"
 types-requests = "^2.28.11"
