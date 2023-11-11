@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         platform: ["arm64", "amd64"]
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v3
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@fix-multi-platform-build
     with:
       digest-artifact-name: digests
       platform: "linux/${{ matrix.platform }}"
