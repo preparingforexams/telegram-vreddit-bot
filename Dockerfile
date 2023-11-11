@@ -1,10 +1,12 @@
 FROM ghcr.io/blindfoldedsurgery/poetry:1.1.1-pipx-3.11-bookworm
 
+USER root
 RUN apt-get update -qq \
     && apt-get install -y --no-install-recommends \
       ffmpeg  \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+USER app
 
 COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]
 
