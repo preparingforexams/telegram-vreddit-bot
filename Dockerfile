@@ -32,7 +32,7 @@ COPY src/cancer ./src/cancer
 
 RUN poetry install --no-interaction --ansi --only-root
 
-ARG build
-ENV BUILD_SHA=$build
+ARG APP_VERSION
+ENV BUILD_SHA=$APP_VERSION
 
 ENTRYPOINT [ "tini", "--", "poetry", "run", "python", "-m", "cancer" ]
