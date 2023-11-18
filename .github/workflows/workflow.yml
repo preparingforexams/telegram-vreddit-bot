@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         platform: ["arm64", "amd64"]
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v3
+    uses: preparingforexams/actions-container/.github/workflows/build-image-docker.yml@v3
     with:
       digest-artifact-name: digests
       platform: "linux/${{ matrix.platform }}"
@@ -39,7 +39,7 @@ jobs:
     if: success() && github.ref_name == github.event.repository.default_branch
     needs:
       - build-container-image
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/merge-manifests.yml@v3
+    uses: preparingforexams/actions-container/.github/workflows/merge-manifests.yml@v3
     with:
       variant-digests: digests
 
