@@ -75,7 +75,7 @@ jobs:
   deploy-home:
     needs: merge-container-image
     concurrency: production-home
-    container: ghcr.io/bjoernpetersen/helm:latest
+    container: ghcr.io/bjoernpetersen/helm:2.0.1
     runs-on: born-prep
     steps:
       - uses: actions/checkout@v4
