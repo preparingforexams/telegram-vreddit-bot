@@ -27,7 +27,7 @@ jobs:
       - test
     strategy:
       matrix:
-        runner: [ "ubuntu-latest", "born-prep" ]
+        runner: [ "ubuntu-latest", "born-bs" ]
     uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-kaniko.yml@v3
     with:
       digest-artifact-name: digests
