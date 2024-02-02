@@ -134,7 +134,7 @@ def _diagnose_cancer(
     if entity["type"] == "url":
         offset = entity["offset"]
         length = entity["length"]
-        url = text[offset: offset + length]
+        url = text[offset : offset + length]
     elif entity["type"] == "text_link":
         url = entity["url"]
     else:
