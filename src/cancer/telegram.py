@@ -173,3 +173,29 @@ def send_video_group(
             },
         )
     )
+
+
+def set_message_reaction(
+    *,
+    chat_id: int,
+    message_id: int,
+    emoji: str | None,
+) -> None:
+    request_body = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+    }
+
+    if emoji is not None:
+        request_body["reaction"] = [
+            {
+                "type": "emoji",
+                "emoji": emoji,
+            }
+        ]
+    _get_actual_body(
+        _client.post(
+            _build_url("setMessageReaction"),
+            json=request_body,
+        )
+    )

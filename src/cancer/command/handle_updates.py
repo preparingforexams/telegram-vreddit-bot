@@ -134,7 +134,7 @@ def _diagnose_cancer(
     if entity["type"] == "url":
         offset = entity["offset"]
         length = entity["length"]
-        url = text[offset : offset + length]
+        url = text[offset: offset + length]
     elif entity["type"] == "text_link":
         url = entity["url"]
     else:
@@ -216,6 +216,16 @@ def _handle_update(publisher: Publisher, update: dict):
     if not diagnosis_by_treatment:
         _LOG.debug("Message was healthy")
         return
+
+    try:
+        telegram.set_message_reaction(
+            chat_id=chat_id,
+            message_id=message["message_id"],
+            emoji="🫡" if is_direct_chat else "😡",
+        )
+    except Exception as e:
+        # Don't really care if this fails.
+        _LOG.error("Could not set message reaction", exc_info=e)
 
     for treatment in Topic:
         diagnoses = diagnosis_by_treatment[treatment]
