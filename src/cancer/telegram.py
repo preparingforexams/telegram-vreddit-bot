@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import IO, Callable, List, Optional, Union
+from typing import IO, Any, Callable, List, Optional, Union
 
 from httpx import Client, Response
 
@@ -181,7 +181,7 @@ def set_message_reaction(
     message_id: int,
     emoji: str | None,
 ) -> None:
-    request_body = {
+    request_body: dict[str, Any] = {
         "chat_id": chat_id,
         "message_id": message_id,
     }
