@@ -15,7 +15,7 @@ from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
 from cancer import telegram
-from cancer.adapter.pubsub import PubSubConfig, PubSubSubscriber
+from cancer.adapter.publisher_pubsub import PubSubConfig, PubSubSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
 

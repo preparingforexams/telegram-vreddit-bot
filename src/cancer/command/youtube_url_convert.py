@@ -4,7 +4,7 @@ import sys
 from urllib.parse import urlparse
 
 from cancer import telegram
-from cancer.adapter.pubsub import PubSubConfig, PubSubSubscriber
+from cancer.adapter.publisher_pubsub import PubSubConfig, PubSubSubscriber
 from cancer.message import Topic
 from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
 from cancer.port.subscriber import Subscriber

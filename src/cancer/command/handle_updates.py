@@ -1,4 +1,5 @@
 import logging
+import os
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
@@ -6,7 +7,7 @@ from typing import Dict, List, Optional
 from urllib.parse import ParseResult, urlparse
 
 from cancer import telegram
-from cancer.adapter.pubsub import PubSubConfig, PubSubPublisher
+from cancer.adapter.publisher_pubsub import PubSubConfig, PubSubPublisher
 from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher, PublishingException
 
@@ -16,14 +17,20 @@ _LOG = logging.getLogger(__name__)
 @dataclass
 class Cancer:
     host: str
-    treatment: Topic
+    treatment: Topic | None
+    private_treatment: Topic | None = None
     path: Optional[str] = None
-    is_innocuous: bool = False
 
     def matches(self, symptoms: ParseResult) -> bool:
         if symptoms.netloc.startswith(self.host):
             return not self.path or symptoms.path.startswith(self.path)
         return False
+
+    def get_treatment(self, *, is_private: bool) -> Topic | None:
+        if is_private:
+            return self.private_treatment or self.treatment
+
+        return self.treatment
 
 
 _CANCERS = [
@@ -42,28 +49,30 @@ _CANCERS = [
         host="youtube.com",
         path="/shorts/",
         treatment=Topic.youtubeUrlConvert,
+        private_treatment=Topic.youtubeDownload,
     ),
     Cancer(
         host="www.youtube.com",
         path="/shorts/",
         treatment=Topic.youtubeUrlConvert,
+        private_treatment=Topic.youtubeDownload,
     ),
     Cancer(
         host="youtu.be",
-        treatment=Topic.youtubeDownload,
-        is_innocuous=True,
+        private_treatment=Topic.youtubeDownload,
+        treatment=None,
     ),
     Cancer(
         host="www.youtube.com",
         path="/watch",
-        treatment=Topic.youtubeDownload,
-        is_innocuous=True,
+        private_treatment=Topic.youtubeDownload,
+        treatment=None,
     ),
     Cancer(
         host="youtube.com",
         path="/watch",
-        treatment=Topic.youtubeDownload,
-        is_innocuous=True,
+        private_treatment=Topic.youtubeDownload,
+        treatment=None,
     ),
     Cancer(
         host="gfycat.com",
@@ -81,8 +90,8 @@ _CANCERS = [
     ),
     Cancer(
         host="vimeo.com",
-        treatment=Topic.vimeoDownload,
-        is_innocuous=True,
+        treatment=None,
+        private_treatment=Topic.vimeoDownload,
     ),
 ]
 
@@ -90,7 +99,19 @@ _CANCERS = [
 @dataclass
 class Diagnosis:
     cancer: Cancer
+    is_private: bool
     case: str
+
+    @property
+    def has_treatment(self) -> bool:
+        return self.cancer.get_treatment(is_private=self.is_private) is not None
+
+    @property
+    def treatment(self) -> Topic:
+        treatment = self.cancer.get_treatment(is_private=self.is_private)
+        if treatment is None:
+            raise ValueError
+        return treatment
 
 
 @dataclass
@@ -109,7 +130,7 @@ def _diagnose_cancer(
     text: str,
     entity: dict,
     is_direct_chat: bool,
-) -> Optional[Diagnosis]:
+) -> Diagnosis | None:
     if entity["type"] == "url":
         offset = entity["offset"]
         length = entity["length"]
@@ -123,8 +144,15 @@ def _diagnose_cancer(
     symptoms = urlparse(url)
     for cancer in _CANCERS:
         if cancer.matches(symptoms):
-            if not cancer.is_innocuous or is_direct_chat:
-                return Diagnosis(cancer, url)
+            diagnosis = Diagnosis(
+                cancer=cancer,
+                case=url,
+                is_private=is_direct_chat,
+            )
+            if not diagnosis.has_treatment:
+                continue
+
+            return diagnosis
 
     return None
 
@@ -174,13 +202,14 @@ def _handle_update(publisher: Publisher, update: dict):
         for entity in entities:
             diagnosis = _diagnose_cancer(text, entity, is_direct_chat=is_direct_chat)
             if diagnosis:
-                diagnosis_by_treatment[diagnosis.cancer.treatment].append(diagnosis)
+                diagnosis_by_treatment[diagnosis.treatment].append(diagnosis)
 
     if is_direct_chat and voice:
         diagnosis_by_treatment[Topic.voiceDownload].append(
             Diagnosis(
                 cancer=None,  # type: ignore
                 case=f"{voice['file_id']}::{voice['file_size']}",
+                is_private=True,
             )
         )
 
@@ -205,6 +234,11 @@ def _handle_update(publisher: Publisher, update: dict):
 
 
 def _init_publisher() -> Publisher:
+    if os.getenv("PUBLISHER_STUB") == "true":
+        from cancer.adapter.publisher_stub import StubPublisher
+
+        return StubPublisher()
+
     try:
         return PubSubPublisher(PubSubConfig.from_env())
     except ValueError as e:
