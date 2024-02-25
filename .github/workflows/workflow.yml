@@ -67,7 +67,7 @@ jobs:
           INSTA_USER: ${{secrets.INSTA_USER }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-      - uses: WyriHaximus/github-action-helm3@v3
+      - uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
@@ -93,7 +93,7 @@ jobs:
           INSTA_COOKIES: ${{ secrets.INSTA_COOKIES }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-      - uses: WyriHaximus/github-action-helm3@v3
+      - uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
           kubeconfig: '${{ secrets.BORN_KUBECONFIG_RAW }}'
