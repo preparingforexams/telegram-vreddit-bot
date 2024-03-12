@@ -44,9 +44,10 @@ jobs:
       variant-digests: digests
 
   deploy:
-    runs-on: ubuntu-latest
     needs: merge-container-image
-    concurrency: production
+    concurrency: production-home
+    container: ghcr.io/bjoernpetersen/helm:2.0.1
+    runs-on: born-prep
     steps:
       - uses: actions/checkout@v4
       - name: Substitute environment variables in values.yaml
@@ -60,30 +61,7 @@ jobs:
             telegram_audio_convert,
             twitter_download,
             vimeo_download,
-            youtube_download
-            ]
-          GSA_JSON: ${{ secrets.GSA_JSON }}
-          INSTA_PASSWORD: ${{secrets.INSTA_PASSWORD }}
-          INSTA_USER: ${{secrets.INSTA_USER }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-      - uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
-          kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
-
-  deploy-home:
-    needs: merge-container-image
-    concurrency: production-home
-    container: ghcr.io/bjoernpetersen/helm:2.0.1
-    runs-on: born-prep
-    steps:
-      - uses: actions/checkout@v4
-      - name: Substitute environment variables in values.yaml
-        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
-        env:
-          FEATURES: >
-            [
+            youtube_download,
             insta_download,
             tiktok_download
             ]
@@ -102,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: cleanup
     continue-on-error: true
-    needs: [ deploy, deploy-home ]
+    needs: [ deploy ]
     steps:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
