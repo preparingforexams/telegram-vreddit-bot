@@ -62,8 +62,7 @@ jobs:
             twitter_download,
             vimeo_download,
             youtube_download,
-            insta_download,
-            tiktok_download
+            insta_download
             ]
           GSA_JSON: ${{ secrets.GSA_JSON }}
           INSTA_PASSWORD: ${{secrets.INSTA_PASSWORD }}
