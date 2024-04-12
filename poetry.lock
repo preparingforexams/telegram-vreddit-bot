@@ -36,6 +36,7 @@ files = [
     {file = "black-24.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5cd5b4f76056cecce3e69b0d4c228326d2595f506797f40b9233424e2524c070"},
     {file = "black-24.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:64578cf99b6b46a6301bc28bdb89f9d6f9b592b1c5837818a177c98525dbe397"},
     {file = "black-24.4.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:f95cece33329dc4aa3b0e1a771c41075812e46cf3d6e3f1dfe3d91ff09826ed2"},
+    {file = "black-24.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:4396ca365a4310beef84d446ca5016f671b10f07abdba3e4e4304218d2c71d33"},
     {file = "black-24.4.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:44d99dfdf37a2a00a6f7a8dcbd19edf361d056ee51093b2445de7ca09adac965"},
     {file = "black-24.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:21f9407063ec71c5580b8ad975653c66508d6a9f57bd008bb8691d273705adcd"},
     {file = "black-24.4.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:652e55bb722ca026299eb74e53880ee2315b181dfdd44dca98e43448620ddec1"},
