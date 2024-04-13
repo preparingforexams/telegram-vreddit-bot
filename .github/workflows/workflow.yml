@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_name == github.event.repository.default_branch
     needs:
-      - build-container-image
+      - merge-container-image
     steps:
       - uses: actions/checkout@v4
         with:
