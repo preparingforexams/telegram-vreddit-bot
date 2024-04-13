@@ -39,7 +39,7 @@ spec:
         fsGroup: 500
       containers:
         - name: app
-          image: {{ .Values.image }}
+          image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - download
           resources:

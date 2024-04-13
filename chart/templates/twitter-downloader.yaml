@@ -1,9 +1,9 @@
 ---
-{{ if has "vimeo_download" .Values.features  }}
+{{ if has "twitter_download" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cancer-vimeo-downloader
+  name: cancer-twitter-downloader
 spec:
   replicas: 1
   revisionHistoryLimit: 1
@@ -14,29 +14,28 @@ spec:
       maxUnavailable: 100%
   selector:
     matchLabels:
-      app: vimeo-downloader
+      app: twitter-downloader
   template:
     metadata:
       labels:
-        app: vimeo-downloader
+        app: twitter-downloader
     spec:
-      terminationGracePeriodSeconds: 600
       containers:
         - name: app
-          image: {{ .Values.image }}
+          image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - download
           resources:
             limits:
-              cpu: "3"
+              cpu: 800m
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 128Mi
           env:
             - name: STORAGE_DIR
               value: "/downloads"
             - name: DOWNLOAD_TYPE
-              value: vimeo
+              value: twitter
           envFrom:
             - configMapRef:
                 name: cancer-config

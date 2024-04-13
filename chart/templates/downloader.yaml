@@ -1,12 +1,11 @@
 ---
-{{ if has "youtube_download" .Values.features  }}
+{{ if has "download" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cancer-youtube-downloader
+  name: cancer-downloader
 spec:
   replicas: 1
-  revisionHistoryLimit: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -14,29 +13,26 @@ spec:
       maxUnavailable: 100%
   selector:
     matchLabels:
-      app: youtube-downloader
+      app: downloader
   template:
     metadata:
       labels:
-        app: youtube-downloader
+        app: downloader
     spec:
-      terminationGracePeriodSeconds: 600
       containers:
         - name: app
-          image: {{ .Values.image }}
+          image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - download
           resources:
             limits:
-              cpu: "3"
+              cpu: "1"
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 128Mi
           env:
             - name: STORAGE_DIR
               value: "/downloads"
-            - name: DOWNLOAD_TYPE
-              value: youtube
           envFrom:
             - configMapRef:
                 name: cancer-config

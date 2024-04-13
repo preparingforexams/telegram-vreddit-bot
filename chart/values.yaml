@@ -1,0 +1,15 @@
+appVersion: latest
+image: ghcr.io/preparingforexams/telegram-vreddit-bot
+
+gcp:
+  project: cancer-be-gone
+
+features:
+  - handle_updates
+  - download
+  - youtube_url_convert
+  - telegram_audio_convert
+  - twitter_download
+  - vimeo_download
+  - youtube_download
+  - insta_download

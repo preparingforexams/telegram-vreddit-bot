@@ -1,9 +1,9 @@
 ---
-{{ if has "youtube_url_convert" .Values.features  }}
+{{ if has "telegram_audio_convert" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cancer-youtube-converter
+  name: cancer-telegram-audio-converter
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -14,19 +14,19 @@ spec:
       maxUnavailable: 100%
   selector:
     matchLabels:
-      app: youtube-converter
+      app: telegram-audio-converter
   template:
     metadata:
       labels:
-        app: youtube-converter
+        app: telegram-audio-converter
     spec:
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
       containers:
         - name: app
-          image: {{ .Values.image }}
+          image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
-            - youtube_url_convert
+            - telegram_audio_convert
           resources:
             limits:
               cpu: 20m

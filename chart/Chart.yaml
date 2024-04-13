@@ -1,7 +1,5 @@
 apiVersion: v2
 name: vreddit-bot
 description: "Downloads v.reddit links"
-
 type: application
-
-version: 0.1.0
+version: 1.0.0

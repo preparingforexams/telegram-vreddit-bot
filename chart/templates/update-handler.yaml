@@ -28,7 +28,7 @@ spec:
 {{ include "secrets.volume" . | indent 8 }}
       containers:
         - name: app
-          image: {{ .Values.image }}
+          image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - handle_updates
           resources:

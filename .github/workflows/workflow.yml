@@ -44,48 +44,17 @@ jobs:
       variant-digests: digests
 
   deploy:
-    needs: merge-container-image
-    concurrency: production-home
-    container: ghcr.io/bjoernpetersen/helm:2.1.0
-    runs-on: born-prep
+    runs-on: ubuntu-latest
+    if: github.ref_name == github.event.repository.default_branch
+    needs:
+      - build-container-image
     steps:
       - uses: actions/checkout@v4
-      - name: Substitute environment variables in values.yaml
-        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
-        env:
-          FEATURES: >
-            [
-            handle_updates,
-            download,
-            youtube_url_convert,
-            telegram_audio_convert,
-            twitter_download,
-            vimeo_download,
-            youtube_download,
-            insta_download
-            ]
-          GSA_JSON: ${{ secrets.GSA_JSON }}
-          INSTA_PASSWORD: ${{secrets.INSTA_PASSWORD }}
-          INSTA_USER: ${{secrets.INSTA_USER }}
-          INSTA_COOKIES: ${{ secrets.INSTA_COOKIES }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-      - uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm upgrade cancerbot . --install --namespace=cancerbot --atomic
-          kubeconfig: '${{ secrets.BORN_KUBECONFIG_RAW }}'
+          fetch-depth: 0
+      - run: git push origin main:release
 
   clean:
-    runs-on: ubuntu-latest
     concurrency: cleanup
-    continue-on-error: true
     needs: [ deploy ]
-    steps:
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
-      - name: Clean up old app container images
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
-          package-type: container
-          min-versions-to-keep: 10
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/clean.yml@v3
