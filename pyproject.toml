@@ -20,7 +20,7 @@ yt-dlp = "2023.07.06"
 [tool.poetry.group.dev.dependencies]
 mypy = "~1.10"
 pytest = "^8.0.0"
-ruff = "0.5.0"
+ruff = "0.5.1"
 types-requests = "^2.28.11"
 types-Pillow = "^9.0.0"
 
