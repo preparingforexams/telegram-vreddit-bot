@@ -5,6 +5,7 @@ import subprocess
 import sys
 import uuid
 from dataclasses import dataclass
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Lock
 
@@ -18,7 +19,7 @@ from cancer.adapter.publisher_pubsub import PubSubConfig, PubSubSubscriber
 from cancer.message import DownloadMessage, Topic
 from cancer.port.subscriber import Subscriber
 
-_STORAGE_DIR = os.getenv("STORAGE_DIR", "downloads")
+_STORAGE_DIR = Path(os.getenv("STORAGE_DIR", "downloads"))
 _UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
 _MAX_FILE_SIZE = int(os.getenv("MAX_DOWNLOAD_FILE_SIZE", "40_000_000"))
 
@@ -78,10 +79,10 @@ class TryAgainException(Exception):
     pass
 
 
-def _download_videos(base_folder: str, url: str) -> list[str]:
+def _download_videos(base_folder: Path, url: str) -> list[Path]:
     cure_id = str(uuid.uuid4())
-    cure_dir = os.path.join(base_folder, cure_id)
-    os.mkdir(cure_dir)
+    cure_dir = base_folder / cure_id
+    cure_dir.mkdir()
 
     params = {
         "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
@@ -126,10 +127,10 @@ def _download_videos(base_folder: str, url: str) -> list[str]:
     cure_names = os.listdir(cure_dir)
     _LOG.debug("Downloaded files %s", cure_names)
 
-    return [os.path.join(cure_dir, cure_name) for cure_name in cure_names]
+    return [cure_dir / cure_name for cure_name in cure_names]
 
 
-def _convert_cure(input_path: str, output_path: str):
+def _convert_cure(input_path: Path, output_path: Path) -> None:
     _LOG.info("Converting from %s to %s", input_path, output_path)
     process = subprocess.Popen(
         [
@@ -143,25 +144,25 @@ def _convert_cure(input_path: str, output_path: str):
         raise RuntimeError("Could not convert file!")
 
 
-def _ensure_compatibility(original_path: str) -> str | None:
-    base, ext = os.path.splitext(original_path)
+def _ensure_compatibility(original_path: Path) -> Path | None:
+    ext = original_path.suffix
     if ext == ".mp4":
         return original_path
 
     if ext in [".png", ".jpg"]:
         return None
 
-    converted_path = f"{base}.mp4"
+    converted_path = original_path.with_suffix(".mp4")
     _convert_cure(original_path, converted_path)
     return converted_path
 
 
-def _get_dimensions(image_path: str) -> tuple[int, int]:
+def _get_dimensions(image_path: Path) -> tuple[int, int]:
     image = Image.open(image_path)
     return image.size
 
 
-def _download_thumb(client: Client, cure_dir: str, urls: list[str]) -> str | None:
+def _download_thumb(client: Client, cure_dir: Path, urls: list[str]) -> Path | None:
     for url in urls:
         if not url.endswith(".jpg"):
             continue
@@ -182,8 +183,8 @@ def _download_thumb(client: Client, cure_dir: str, urls: list[str]) -> str | Non
 
             _LOG.debug("Found thumbnail with size %d", len(response.content))
 
-            thumb_path = os.path.join(cure_dir, "thumb.jpg")
-            with open(thumb_path, "wb") as f:
+            thumb_path = cure_dir / "thumb.jpg"
+            with thumb_path.open("wb") as f:
                 f.write(response.content)
 
             dimensions = _get_dimensions(thumb_path)
@@ -202,7 +203,7 @@ def _download_thumb(client: Client, cure_dir: str, urls: list[str]) -> str | Non
                     url,
                     dimensions[0],
                     dimensions[1],
-                    os.path.getsize(thumb_path),
+                    thumb_path.stat().st_size,
                 )
 
             return thumb_path
@@ -212,9 +213,9 @@ def _download_thumb(client: Client, cure_dir: str, urls: list[str]) -> str | Non
 def _upload_video(
     chat_id: str | int,
     message_id: int | None,
-    thumb_path: str | None,
-    video_file: str,
-) -> str | None:
+    thumb_path: Path | None,
+    video_file: Path,
+) -> Path | None:
     cure_path = _ensure_compatibility(video_file)
 
     if not cure_path:
@@ -234,8 +235,8 @@ def _upload_video(
             _LOG.warning(
                 "Could not upload video (entity too large)."
                 " Initial size: %d, cured: %d",
-                os.path.getsize(video_file),
-                os.path.getsize(cure_path),
+                video_file.stat().st_size,
+                cure_path.stat().st_size,
                 exc_info=e,
             )
             return None
@@ -253,16 +254,17 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
 
     client = Client(timeout=60)
 
-    with TemporaryDirectory(dir=_STORAGE_DIR) as folder:
+    with TemporaryDirectory(dir=str(_STORAGE_DIR)) as folder_path:
+        folder = Path(folder_path)
         with _busy_lock:
-            files = []
+            files: list[tuple[Path | None, Path]] = []
             for url in payload.urls:
                 info = _get_info(url)
                 if info.size is not None and info.size > _MAX_FILE_SIZE:
                     _LOG.info("Skipping URL %s because it's too large", url)
                     continue
 
-                thumb_file: str | None = None
+                thumb_file: Path | None = None
                 if info.thumbnails:
                     _LOG.debug(
                         "Found %d thumbnail candidates for URL %s",
@@ -297,8 +299,8 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
 def run() -> None:
     telegram.check()
 
-    if not os.path.exists(_STORAGE_DIR):
-        os.mkdir(_STORAGE_DIR)
+    if not _STORAGE_DIR.exists():
+        _STORAGE_DIR.mkdir()
 
     signal.signal(signal.SIGTERM, lambda _, __: sys.exit(0))
 

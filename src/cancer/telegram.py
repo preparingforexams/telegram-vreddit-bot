@@ -1,6 +1,7 @@
 import logging
 import os
 from collections.abc import Callable
+from pathlib import Path
 from typing import IO, Any
 
 from httpx import Client, Response
@@ -63,9 +64,9 @@ def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], Non
 
 def upload_video(
     chat_id: int | str,
-    path: str,
+    path: Path,
     reply_to_message_id: int | None,
-    thumb_path: str | None,
+    thumb_path: Path | None,
 ) -> dict:
     _LOG.info("Uploading file %s with thumb %s", path, thumb_path)
     url = _build_url("sendVideo")
@@ -78,9 +79,9 @@ def upload_video(
         )
 
     response: Response
-    with open(path, "rb") as file:
+    with path.open("rb") as file:
         if thumb_path:
-            with open(path, "rb") as thumb_file:
+            with thumb_path.open("rb") as thumb_file:
                 response = _request(dict(video=file, thumb=thumb_file))
                 if response.status_code == 413:
                     _LOG.warning(
