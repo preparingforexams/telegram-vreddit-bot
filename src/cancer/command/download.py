@@ -7,7 +7,6 @@ import uuid
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from threading import Lock
-from typing import List, Optional, Tuple, Union
 
 from httpx import Client, HTTPStatusError, Response
 from PIL import Image
@@ -30,8 +29,8 @@ _busy_lock = Lock()
 
 @dataclass
 class VideoInfo:
-    size: Optional[int]
-    thumbnails: List[str]
+    size: int | None
+    thumbnails: list[str]
 
 
 def _get_info(url: str) -> VideoInfo:
@@ -79,7 +78,7 @@ class TryAgainException(Exception):
     pass
 
 
-def _download_videos(base_folder: str, url: str) -> List[str]:
+def _download_videos(base_folder: str, url: str) -> list[str]:
     cure_id = str(uuid.uuid4())
     cure_dir = os.path.join(base_folder, cure_id)
     os.mkdir(cure_dir)
@@ -157,12 +156,12 @@ def _ensure_compatibility(original_path: str) -> str | None:
     return converted_path
 
 
-def _get_dimensions(image_path: str) -> Tuple[int, int]:
+def _get_dimensions(image_path: str) -> tuple[int, int]:
     image = Image.open(image_path)
     return image.size
 
 
-def _download_thumb(client: Client, cure_dir: str, urls: List[str]) -> Optional[str]:
+def _download_thumb(client: Client, cure_dir: str, urls: list[str]) -> str | None:
     for url in urls:
         if not url.endswith(".jpg"):
             continue
@@ -211,11 +210,11 @@ def _download_thumb(client: Client, cure_dir: str, urls: List[str]) -> Optional[
 
 
 def _upload_video(
-    chat_id: Union[str, int],
-    message_id: Optional[int],
-    thumb_path: Optional[str],
+    chat_id: str | int,
+    message_id: int | None,
+    thumb_path: str | None,
     video_file: str,
-) -> Optional[str]:
+) -> str | None:
     cure_path = _ensure_compatibility(video_file)
 
     if not cure_path:
@@ -263,7 +262,7 @@ def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
                     _LOG.info("Skipping URL %s because it's too large", url)
                     continue
 
-                thumb_file: Optional[str] = None
+                thumb_file: str | None = None
                 if info.thumbnails:
                     _LOG.debug(
                         "Found %d thumbnail candidates for URL %s",

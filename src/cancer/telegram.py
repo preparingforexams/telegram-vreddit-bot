@@ -1,6 +1,7 @@
 import logging
 import os
-from typing import IO, Any, Callable, List, Optional, Union
+from collections.abc import Callable
+from typing import IO, Any
 
 from httpx import Client, Response
 
@@ -31,8 +32,8 @@ def _get_actual_body(response: Response):
     raise ValueError(f"Body was not ok! {body}")
 
 
-def _request_updates(last_update_id: Optional[int]) -> List[dict]:
-    body: Optional[dict] = None
+def _request_updates(last_update_id: int | None) -> list[dict]:
+    body: dict | None = None
     if last_update_id:
         body = {
             "offset": last_update_id + 1,
@@ -48,7 +49,7 @@ def _request_updates(last_update_id: Optional[int]) -> List[dict]:
 
 
 def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], None]):
-    last_update_id: Optional[int] = None
+    last_update_id: int | None = None
     while should_run():
         updates = _request_updates(last_update_id)
         try:
@@ -61,10 +62,10 @@ def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], Non
 
 
 def upload_video(
-    chat_id: Union[int, str],
+    chat_id: int | str,
     path: str,
-    reply_to_message_id: Optional[int],
-    thumb_path: Optional[str],
+    reply_to_message_id: int | None,
+    thumb_path: str | None,
 ) -> dict:
     _LOG.info("Uploading file %s with thumb %s", path, thumb_path)
     url = _build_url("sendVideo")
@@ -95,7 +96,7 @@ def upload_video(
 def send_message(
     chat_id: int,
     text: str,
-    reply_to_message_id: Optional[int] = None,
+    reply_to_message_id: int | None = None,
 ) -> dict:
     return _get_actual_body(
         _client.post(
@@ -132,7 +133,7 @@ def send_audio_message(
     chat_id: int,
     name: str,
     audio: IO[bytes],
-    reply_to_message_id: Optional[int] = None,
+    reply_to_message_id: int | None = None,
 ) -> dict:
     return _get_actual_body(
         _client.post(
@@ -152,8 +153,8 @@ def send_audio_message(
 
 def send_video_group(
     chat_id: int,
-    reply_to_message_id: Optional[int],
-    videos: List[str],
+    reply_to_message_id: int | None,
+    videos: list[str],
 ) -> dict:
     return _get_actual_body(
         _client.post(

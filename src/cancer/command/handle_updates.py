@@ -3,7 +3,6 @@ import os
 import signal
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 from urllib.parse import ParseResult, urlparse
 
 from cancer import telegram
@@ -19,7 +18,7 @@ class Cancer:
     host: str
     treatment: Topic | None
     private_treatment: Topic | None = None
-    path: Optional[str] = None
+    path: str | None = None
 
     def matches(self, symptoms: ParseResult) -> bool:
         if symptoms.netloc.startswith(self.host):
@@ -161,13 +160,13 @@ def _make_message(
     chat_id: int,
     message_id: int,
     treatment: Topic,
-    diagnoses: List[Diagnosis],
+    diagnoses: list[Diagnosis],
 ) -> Message:
     return treatment.create_message(chat_id, message_id, [d.case for d in diagnoses])
 
 
 def _handle_update(publisher: Publisher, update: dict):
-    message: Optional[dict] = update.get("message")
+    message: dict | None = update.get("message")
 
     if not message:
         _LOG.debug("Skipping non-message update")
@@ -177,7 +176,7 @@ def _handle_update(publisher: Publisher, update: dict):
     user_id = message["from"]["id"]
 
     text: str | None
-    entities: Optional[List[dict]]
+    entities: list[dict] | None
     voice: dict | None
 
     if "text" in message:
@@ -196,7 +195,7 @@ def _handle_update(publisher: Publisher, update: dict):
         _LOG.debug("Not a text or caption")
         return
 
-    diagnosis_by_treatment: Dict[Topic, List[Diagnosis]] = defaultdict(list)
+    diagnosis_by_treatment: dict[Topic, list[Diagnosis]] = defaultdict(list)
     is_direct_chat = chat_id == user_id
     if text and entities:
         for entity in entities:

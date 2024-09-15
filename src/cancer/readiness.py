@@ -1,7 +1,7 @@
 import logging
+from collections.abc import Callable
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-from typing import Callable
 
 _LOG = logging.getLogger(__name__)
 ReadinessProbe = Callable[[], bool]

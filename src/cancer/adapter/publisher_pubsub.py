@@ -1,8 +1,9 @@
 import logging
 import os
+from collections.abc import Callable
 from concurrent import futures
 from dataclasses import dataclass
-from typing import Callable, Self, Type
+from typing import Self
 
 from google.cloud.pubsub_v1 import PublisherClient, SubscriberClient
 from google.cloud.pubsub_v1.subscriber.message import Message as PubSubMessage
@@ -61,7 +62,7 @@ class PubSubSubscriber(Subscriber):
     def subscribe(
         self,
         topic: Topic,
-        message_type: Type[T],
+        message_type: type[T],
         handle: Callable[[T], Subscriber.Result],
     ):
         def _handle_message(message: PubSubMessage):

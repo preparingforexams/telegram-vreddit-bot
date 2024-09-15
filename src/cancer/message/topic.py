@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List
 
 from .download import DownloadMessage
 from .voice import VoiceMessage
@@ -16,7 +15,7 @@ class Topic(str, Enum):
     vimeoDownload = "vimeoDownload"
     voiceDownload = "voiceDownload"
 
-    def create_message(self, chat_id: int, message_id: int, urls: List[str]):
+    def create_message(self, chat_id: int, message_id: int, urls: list[str]):
         match self:
             case Topic.youtubeUrlConvert:
                 return YoutubeUrlConvertMessage(chat_id, message_id, urls)

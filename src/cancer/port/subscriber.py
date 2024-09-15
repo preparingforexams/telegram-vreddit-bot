@@ -1,6 +1,7 @@
 import abc
+from collections.abc import Callable
 from enum import Enum, auto
-from typing import Callable, Type, TypeVar
+from typing import TypeVar
 
 from cancer.message import Message, Topic
 
@@ -15,6 +16,6 @@ class Subscriber(abc.ABC):
 
     @abc.abstractmethod
     def subscribe(
-        self, topic: Topic, message_type: Type[T], handle: Callable[[T], Result]
+        self, topic: Topic, message_type: type[T], handle: Callable[[T], Result]
     ):
         pass
