@@ -35,6 +35,15 @@ spec:
       labels:
         app: insta-downloader
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: bjoernpetersen.net/local-storage
+                    operator: In
+                    values:
+                      - "true"
       securityContext:
         fsGroup: 500
       containers:
