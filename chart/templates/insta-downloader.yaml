@@ -20,11 +20,11 @@ spec:
   replicas: 1
   volumeClaimTemplates:
     - apiVersion: v1
-      kind:
-        PersistentVolumeClaim
+      kind: PersistentVolumeClaim
       metadata:
         name: cookie-jar
       spec:
+        storageClassName: longhorn-crypto
         accessModes:
           - ReadWriteOnce
         resources:
@@ -35,15 +35,6 @@ spec:
       labels:
         app: insta-downloader
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: bjoernpetersen.net/local-storage
-                    operator: In
-                    values:
-                      - "true"
       securityContext:
         fsGroup: 500
       containers:
