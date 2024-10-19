@@ -5,7 +5,7 @@ requires-python = "==3.12.*"
 name = "cancerbot"
 description = "Cures cancer"
 version = "1.0.0"
-authors = ["OpenAlcoholics <team@openalcoholics.group>"]
+authors = ["BlindfoldedSurgyer <team@blindfolded.surger>"]
 license = "MIT"
 packages = [
     { include = "cancer", from = "src" }
