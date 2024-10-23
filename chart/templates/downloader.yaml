@@ -5,6 +5,7 @@ kind: Deployment
 metadata:
   name: cancer-downloader
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: RollingUpdate
