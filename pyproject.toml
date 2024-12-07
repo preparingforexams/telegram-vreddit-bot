@@ -18,7 +18,7 @@ google-cloud-pubsub = "^2.0.0"
 httpx = "^0.28.0"
 Pillow = "^11.0.0"
 sentry-sdk = "^2.0.0"
-yt-dlp = { version = "2024.12.3", extras = ["default"] }
+yt-dlp = { version = "2024.12.6", extras = ["default"] }
 
 [tool.poetry.group.dev.dependencies]
 mypy = "~1.13"
