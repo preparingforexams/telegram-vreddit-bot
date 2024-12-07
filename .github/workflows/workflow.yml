@@ -31,7 +31,7 @@ jobs:
     uses: preparingforexams/actions-container/.github/workflows/build-image-kaniko.yml@v4
     with:
       digest-artifact-name: digests
-      runner-name-build: ${{ (matrix.platform == 'arm64') && 'warp-ubuntu-latest-arm64-2x' || 'ubuntu-latest' }}
+      runner-name-build: ${{ (matrix.platform == 'arm64') && 'warp-ubuntu-2404-arm64-2x' || 'ubuntu-24.04' }}
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
       tag-suffix: -${{ matrix.platform }}
 
@@ -44,7 +44,7 @@ jobs:
       variant-digests: digests
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.ref_name == github.event.repository.default_branch
     needs:
       - merge-container-image
