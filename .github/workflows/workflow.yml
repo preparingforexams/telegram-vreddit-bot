@@ -39,7 +39,7 @@ jobs:
     if: success() && github.ref_name == github.event.repository.default_branch
     needs:
       - build-container-image
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/merge-manifests.yml@v4
+    uses: preparingforexams/actions-container/.github/workflows/merge-manifests.yml@v4
     with:
       variant-digests: digests
 
@@ -57,4 +57,4 @@ jobs:
   clean:
     concurrency: cleanup
     needs: [ deploy ]
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/clean.yml@v4
+    uses: preparingforexams/actions-container/.github/workflows/clean.yml@v4
