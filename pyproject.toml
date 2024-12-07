@@ -23,7 +23,7 @@ yt-dlp = { version = "2024.12.3", extras = ["default"] }
 [tool.poetry.group.dev.dependencies]
 mypy = "~1.13"
 pytest = "^8.0.0"
-ruff = "0.8.1"
+ruff = "0.8.2"
 types-requests = "^2.28.11"
 types-Pillow = "^9.0.0"
 
