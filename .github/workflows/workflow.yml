@@ -8,8 +8,8 @@ env:
   IMAGE_NAME: ghcr.io/preparingforexams/telegram-vreddit-bot
 
 jobs:
-  validate-renovate-config:
-    uses: BlindfoldedSurgery/renovate-config/.github/workflows/validate.yml@main
+  required-meta:
+    uses: BlindfoldedSurgery/actions-meta/.github/workflows/required.yml@v1
 
   lint:
     uses: BlindfoldedSurgery/actions-python/.github/workflows/lint.yml@v2
