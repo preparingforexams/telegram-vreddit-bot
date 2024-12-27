@@ -20,12 +20,20 @@ spec:
       labels:
         app: youtube-downloader
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       terminationGracePeriodSeconds: 600
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - download
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           resources:
             limits:
               cpu: "3"

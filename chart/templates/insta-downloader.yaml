@@ -36,12 +36,19 @@ spec:
         app: insta-downloader
     spec:
       securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
         fsGroup: 500
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - download
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           resources:
             limits:
               cpu: "2"

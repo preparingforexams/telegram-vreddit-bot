@@ -20,11 +20,19 @@ spec:
       labels:
         app: downloader
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - download
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           resources:
             limits:
               cpu: "1"

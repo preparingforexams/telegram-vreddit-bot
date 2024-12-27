@@ -20,6 +20,10 @@ spec:
       labels:
         app: telegram-audio-converter
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
       containers:
@@ -27,6 +31,10 @@ spec:
           image: {{ .Values.image }}:{{ .Values.appVersion }}
           args:
             - telegram_audio_convert
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           resources:
             limits:
               cpu: 20m
