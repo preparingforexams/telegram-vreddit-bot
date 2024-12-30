@@ -77,9 +77,8 @@ spec:
             - mountPath: "/static-cookies"
               name: cookie
       volumes:
-{{ include "secrets.volume" . | indent 8 }}
-        - name: downloads
-          emptyDir: { }
+        - {{ include "downloads.volume" $ | toJson }}
+        - {{ include "secrets.volume" $ | toJson }}
         - name: cookie
           secret:
             secretName: insta

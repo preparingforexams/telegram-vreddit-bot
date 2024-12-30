@@ -56,7 +56,6 @@ spec:
             - mountPath: "/downloads"
               name: downloads
       volumes:
-{{ include "secrets.volume" . | indent 8 }}
-        - name: downloads
-          emptyDir: { }
+        - {{ include "downloads.volume" $ | toJson }}
+        - {{ include "secrets.volume" $ | toJson }}
 {{ end }}

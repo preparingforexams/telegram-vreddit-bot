@@ -49,5 +49,5 @@ spec:
             - secretRef:
                 name: cancer-secrets
           volumeMounts:
-{{ include "secrets.volumeMount" . | indent 12 }}
+            - {{ include "secrets.volume" $ | toJson }}
 {{ end }}

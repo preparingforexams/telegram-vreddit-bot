@@ -13,3 +13,7 @@ features:
   - vimeo_download
   - youtube_download
   - insta_download
+
+scratch:
+  storageclass: longhorn-temp
+  size: 2Gi
