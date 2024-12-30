@@ -8,7 +8,7 @@ secret:
 {{- end }}
 
 {{- define "secrets.volumeMount" -}}
-- name: secrets
-  mountPath: /gcp
-  readOnly: true
+name: secrets
+mountPath: /gcp
+readOnly: true
 {{- end }}

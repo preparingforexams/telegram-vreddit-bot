@@ -49,5 +49,5 @@ spec:
             - secretRef:
                 name: cancer-secrets
           volumeMounts:
-            - {{ include "secrets.volume" $ | fromYaml | toJson }}
+            - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
 {{ end }}

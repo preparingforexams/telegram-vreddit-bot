@@ -69,7 +69,7 @@ spec:
             - secretRef:
                 name: cancer-secrets
           volumeMounts:
-{{ include "secrets.volumeMount" . | indent 12 }}
+            - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
             - mountPath: "/downloads"
               name: downloads
             - mountPath: "/cookies"
