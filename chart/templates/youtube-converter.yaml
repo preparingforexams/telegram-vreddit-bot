@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
         fsGroup: 1000
       volumes:
-{{ include "secrets.volume" . | indent 8 }}
+        - {{ include "secrets.volume" $ | fromYaml | toJson }}
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
