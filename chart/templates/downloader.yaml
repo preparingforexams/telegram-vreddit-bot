@@ -54,6 +54,6 @@ spec:
             - mountPath: "/downloads"
               name: downloads
       volumes:
-        - {{ include "downloads.volume" $ | toJson }}
-        - {{ include "secrets.volume" $ | toJson }}
+        - {{ include "downloads.volume" $ | fromYaml | toJson }}
+        - {{ include "secrets.volume" $ | fromYaml | toJson }}
 {{ end }}

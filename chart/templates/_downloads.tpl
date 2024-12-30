@@ -9,4 +9,4 @@ ephemeral:
       resources:
         requests:
           storage: {{ .Values.scratch.size }}
-{{- end -}}
+{{- end }}

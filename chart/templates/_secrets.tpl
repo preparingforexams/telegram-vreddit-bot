@@ -5,10 +5,10 @@ secret:
   items:
     - key: GSA_JSON
       path: ./gsa.json
-{{- end -}}
+{{- end }}
 
 {{- define "secrets.volumeMount" -}}
 - name: secrets
   mountPath: /gcp
   readOnly: true
-{{- end -}}
+{{- end }}
