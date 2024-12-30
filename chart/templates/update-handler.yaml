@@ -31,7 +31,7 @@ spec:
           type: RuntimeDefault
         fsGroup: 1000
       volumes:
-{{ include "secrets.volume" . | indent 8 }}
+        - {{ include "secrets.volume" $ | toJson }}
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
@@ -53,5 +53,5 @@ spec:
             - secretRef:
                 name: cancer-secrets
           volumeMounts:
-            - {{ include "secrets.volume" $ | toJson }}
+{{ include "secrets.volumeMount" . | indent 12 }}
 {{- end }}
