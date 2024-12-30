@@ -6,7 +6,7 @@ metadata:
   name: cancer-vimeo-downloader
 spec:
   replicas: 1
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,10 +20,12 @@ spec:
       labels:
         app: vimeo-downloader
     spec:
+      serviceAccountName: cancer
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+        fsGroup: 1000
       terminationGracePeriodSeconds: 600
       containers:
         - name: app

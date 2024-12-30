@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: cancer-downloader
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -20,10 +20,12 @@ spec:
       labels:
         app: downloader
     spec:
+      serviceAccountName: cancer
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+        fsGroup: 1000
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}

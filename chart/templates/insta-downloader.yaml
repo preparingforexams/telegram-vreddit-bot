@@ -12,7 +12,7 @@ kind: StatefulSet
 metadata:
   name: cancer-insta-downloader
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   serviceName: cancer-insta
   selector:
     matchLabels:
@@ -35,11 +35,12 @@ spec:
       labels:
         app: insta-downloader
     spec:
+      serviceAccountName: cancer
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
-        fsGroup: 500
+        fsGroup: 1000
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}

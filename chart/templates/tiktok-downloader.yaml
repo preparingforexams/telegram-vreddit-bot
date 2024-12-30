@@ -6,7 +6,7 @@ metadata:
   name: cancer-tiktok-downloader
 spec:
   replicas: 1
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,10 +20,12 @@ spec:
       labels:
         app: tiktok-downloader
     spec:
+      serviceAccountName: cancer
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+        fsGroup: 1000
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}

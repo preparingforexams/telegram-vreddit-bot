@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: cancer-telegram-audio-converter
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -20,10 +20,12 @@ spec:
       labels:
         app: telegram-audio-converter
     spec:
+      serviceAccountName: cancer
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+        fsGroup: 1000
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
       containers:

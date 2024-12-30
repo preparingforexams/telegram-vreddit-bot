@@ -12,7 +12,7 @@ kind: StatefulSet
 metadata:
   name: cancer-update-handler
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   replicas: 1
   minReadySeconds: 5
   serviceName: update-handler
@@ -24,10 +24,12 @@ spec:
       labels:
         app: update-handler
     spec:
+      serviceAccountName: cancer
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+        fsGroup: 1000
       volumes:
 {{ include "secrets.volume" . | indent 8 }}
       containers:
