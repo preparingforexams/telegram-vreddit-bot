@@ -39,10 +39,10 @@ spec:
               drop: [ALL]
           resources:
             limits:
-              cpu: 20m
+              cpu: 30m
             requests:
               cpu: 10m
-              memory: 16Mi
+              memory: 64Mi
           envFrom:
             - configMapRef:
                 name: cancer-config
