@@ -26,8 +26,6 @@ spec:
         seccompProfile:
           type: RuntimeDefault
         fsGroup: 1000
-      volumes:
-        - {{ include "secrets.volume" $ | fromYaml | toJson }}
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
@@ -50,4 +48,11 @@ spec:
                 name: cancer-secrets
           volumeMounts:
             - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
+            - mountPath: "/tmp"
+              name: downloads
+      affinity:
+        nodeAffinity: {{ include "downloads.nodeAffinity" $ | fromYaml | toJson }}
+      volumes:
+        - {{ include "downloads.volume" $ | fromYaml | toJson }}
+        - {{ include "secrets.volume" $ | fromYaml | toJson }}
 {{ end }}
