@@ -55,6 +55,8 @@ spec:
             - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
             - mountPath: "/downloads"
               name: downloads
+      affinity:
+        nodeAffinity: {{ include "downloads.nodeAffinity" $ | fromYaml | toJson }}
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
         - {{ include "secrets.volume" $ | fromYaml | toJson }}

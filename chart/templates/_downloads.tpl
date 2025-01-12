@@ -10,3 +10,14 @@ ephemeral:
         requests:
           storage: {{ .Values.scratch.size }}
 {{- end }}
+
+
+{{- define "downloads.nodeAffinity" -}}
+requiredDuringSchedulingIgnoredDuringExecution:
+  nodeSelectorTerms:
+    - matchExpressions:
+        - key: node-role.kubernetes.io/master
+          operator: In
+          values:
+            - "true"
+{{- end }}
