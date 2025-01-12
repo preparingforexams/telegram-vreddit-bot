@@ -16,7 +16,7 @@ ephemeral:
 requiredDuringSchedulingIgnoredDuringExecution:
   nodeSelectorTerms:
     - matchExpressions:
-        - key: node-role.kubernetes.io/master
+        - key: node-role.kubernetes.io/control-plane
           operator: In
           values:
             - "true"
