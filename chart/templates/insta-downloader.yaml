@@ -29,7 +29,11 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 100Mi
+        dataSource:
+          name: tmp
+          kind: VolumeSnapshot
+          apiGroup: snapshot.storage.k8s.io
   template:
     metadata:
       labels:
