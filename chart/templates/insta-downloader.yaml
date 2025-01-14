@@ -76,8 +76,6 @@ spec:
               name: cookie-jar
             - mountPath: "/static-cookies"
               name: cookie
-      affinity:
-        nodeAffinity: {{ include "downloads.nodeAffinity" $ | fromYaml | toJson }}
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
         - {{ include "secrets.volume" $ | fromYaml | toJson }}
