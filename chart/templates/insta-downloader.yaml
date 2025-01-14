@@ -30,10 +30,6 @@ spec:
         resources:
           requests:
             storage: 1Gi
-        dataSource:
-          name: tmp
-          kind: VolumeSnapshot
-          apiGroup: snapshot.storage.k8s.io
   template:
     metadata:
       labels:
