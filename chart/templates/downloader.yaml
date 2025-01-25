@@ -6,7 +6,7 @@ metadata:
   name: cancer-downloader
 spec:
   revisionHistoryLimit: 0
-  replicas: 1
+  replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: cancer-twitter-downloader
 spec:
-  replicas: 1
+  replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
   revisionHistoryLimit: 0
   strategy:
     type: RollingUpdate

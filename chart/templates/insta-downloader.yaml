@@ -17,7 +17,7 @@ spec:
   selector:
     matchLabels:
       app: insta-downloader
-  replicas: 1
+  replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim

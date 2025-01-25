@@ -1,6 +1,8 @@
 appVersion: latest
 image: ghcr.io/preparingforexams/telegram-vreddit-bot
 
+isEnabled: true
+
 gcp:
   project: cancer-be-gone
 
