@@ -26,6 +26,7 @@ jobs:
       - test
     uses: preparingforexams/actions-container/.github/workflows/build-dual-image-kaniko.yml@v6
     with:
+      arm-runner-name: ubuntu-24.04-arm
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
 
   post-build-container-image:
