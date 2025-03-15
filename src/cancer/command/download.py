@@ -124,10 +124,10 @@ def _download_videos(base_folder: Path, url: str) -> list[Path]:
         _LOG.error("YTDL returned error code %d", return_code)
         return []
 
-    cure_names = os.listdir(cure_dir)
+    cure_names = Path.iterdir(cure_dir)
     _LOG.debug("Downloaded files %s", cure_names)
 
-    return [cure_dir / cure_name for cure_name in cure_names]
+    return list(cure_names)
 
 
 def _convert_cure(input_path: Path, output_path: Path) -> None:
