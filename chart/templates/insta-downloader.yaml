@@ -18,6 +18,9 @@ spec:
     matchLabels:
       app: insta-downloader
   replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Retain
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
