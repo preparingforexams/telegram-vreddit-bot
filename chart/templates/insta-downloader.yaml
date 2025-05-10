@@ -70,7 +70,7 @@ spec:
             - configMapRef:
                 name: cancer-config
             - secretRef:
-                name: cancer-secrets
+                name: base
           volumeMounts:
             - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
             - mountPath: "/downloads"
@@ -84,8 +84,5 @@ spec:
         - {{ include "secrets.volume" $ | fromYaml | toJson }}
         - name: cookie
           secret:
-            secretName: insta
-            items:
-              - key: COOKIES
-                path: insta-cookies.dat
+            secretName: insta-cookies
 {{ end }}

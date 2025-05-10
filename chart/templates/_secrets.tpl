@@ -1,14 +1,11 @@
 {{- define "secrets.volume" -}}
-name: secrets
+name: gsa-json
 secret:
-  secretName: cancer-secrets
-  items:
-    - key: GSA_JSON
-      path: ./gsa.json
+  secretName: gsa
 {{- end }}
 
 {{- define "secrets.volumeMount" -}}
-name: secrets
+name: gsa-json
 mountPath: /gcp
 readOnly: true
 {{- end }}
