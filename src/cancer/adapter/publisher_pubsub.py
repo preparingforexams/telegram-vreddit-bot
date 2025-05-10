@@ -56,7 +56,7 @@ class PubSubSubscriber(Subscriber):
     ) -> None:
         loop = asyncio.get_running_loop()
 
-        def _handle_message(message: PubSubMessage):
+        def _handle_message(message: PubSubMessage) -> None:
             _LOG.debug("Received a Pub/Sub message")
             try:
                 decoded = message_type.deserialize(message.data)
