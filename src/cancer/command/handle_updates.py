@@ -248,6 +248,11 @@ class _CancerBot:
 
 
 def _init_publisher(config: EventConfig) -> Publisher:
+    if nats_config := config.nats:
+        from cancer.adapter.publisher_nats import NatsPublisher
+
+        return NatsPublisher(nats_config)
+
     if pubsub_config := config.pub_sub:
         from cancer.adapter.publisher_pubsub import PubSubPublisher
 

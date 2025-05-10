@@ -98,6 +98,34 @@ class TelegramConfig:
 
 
 @dataclass
+class EventNatsConfig:
+    endpoint: str
+    credentials: str
+    stream_name: str
+
+    @property
+    def prefix(self):
+        return f"{self.stream_name}."
+
+    def get_publish_subject(self, topic: Topic) -> str:
+        return f"{self.stream_name}.{topic.value}"
+
+    def get_consumer_name(self, topic: Topic) -> str:
+        return topic.value
+
+    @classmethod
+    def from_env(cls, env: Env) -> Self | None:
+        try:
+            return cls(
+                endpoint=env.get_string("ENDPOINT", required=True),
+                credentials=env.get_string("CREDENTIALS", required=True),
+                stream_name=env.get_string("STREAM_NAME", required=True),
+            )
+        except ValueError:
+            return None
+
+
+@dataclass
 class EventPubSubConfig:
     project_id: str
 
@@ -113,11 +141,13 @@ class EventPubSubConfig:
 
 @dataclass
 class EventConfig:
+    nats: EventNatsConfig | None
     pub_sub: EventPubSubConfig | None
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
+            nats=EventNatsConfig.from_env(env.scoped("NATS_")),
             pub_sub=EventPubSubConfig.from_env(env),
         )
 

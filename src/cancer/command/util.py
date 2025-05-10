@@ -3,7 +3,6 @@ import logging
 import signal
 import sys
 
-from cancer.adapter.publisher_pubsub import PubSubSubscriber
 from cancer.config import EventConfig
 from cancer.port.subscriber import Subscriber
 
@@ -21,12 +20,20 @@ def _close_subscriber_on_signal(subscriber: Subscriber):
 
 
 async def initialize_subscriber(config: EventConfig) -> Subscriber:
-    pubsub_config = config.pub_sub
-    if pubsub_config is None:
-        _LOG.error("No pubsub config found")
-        sys.exit(1)
+    subscriber: Subscriber
+    if (nats_config := config.nats) is not None:
+        _LOG.info("Using NATS subscriber")
+        from cancer.adapter.publisher_nats import NatsSubscriber
 
-    subscriber = PubSubSubscriber(pubsub_config)
+        subscriber = NatsSubscriber(nats_config)
+    elif (pubsub_config := config.pub_sub) is not None:
+        _LOG.info("Using PubSub subscriber")
+        from cancer.adapter.publisher_pubsub import PubSubSubscriber
+
+        subscriber = PubSubSubscriber(pubsub_config)
+    else:
+        _LOG.error("No event config found")
+        sys.exit(1)
 
     _close_subscriber_on_signal(subscriber)
 
