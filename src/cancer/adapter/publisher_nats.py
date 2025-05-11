@@ -1,7 +1,7 @@
 import logging
 
 from nats.aio.client import Client, RawCredentials
-from nats.aio.subscription import JetStreamContext
+from nats.js.client import JetStreamContext
 
 from cancer.config import EventNatsConfig
 from cancer.message import Message, Topic
