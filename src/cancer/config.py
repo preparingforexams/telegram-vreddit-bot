@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+from typing import Literal, Self, cast
 
 from bs_config import Env
 
@@ -135,14 +135,27 @@ class EventPubSubConfig:
             return None
 
 
+type BrokerType = Literal["nats", "pubsub"]
+
+
 @dataclass
 class EventConfig:
+    broker: BrokerType
     nats: EventNatsConfig | None
     pub_sub: EventPubSubConfig | None
+
+    @staticmethod
+    def _parse_event_broker(broker: str) -> BrokerType:
+        if broker not in ["nats", "pubsub"]:
+            raise ValueError(f"Invalid event broker {broker}")
+        return cast(BrokerType, broker)
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
+            broker=cls._parse_event_broker(
+                env.get_string("EVENT_BROKER", default="nats")
+            ),
             nats=EventNatsConfig.from_env(env.scoped("NATS_")),
             pub_sub=EventPubSubConfig.from_env(env),
         )

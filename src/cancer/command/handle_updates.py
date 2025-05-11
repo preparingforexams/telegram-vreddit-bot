@@ -248,19 +248,27 @@ class _CancerBot:
 
 
 def _init_publisher(config: EventConfig) -> Publisher:
-    if nats_config := config.nats:
+    broker = config.broker
+
+    if broker == "nats":
+        nats_config = config.nats
+        if nats_config is None:
+            raise ValueError("nats config is required when broker is nats")
+
         from cancer.adapter.publisher_nats import NatsPublisher
 
         return NatsPublisher(nats_config)
 
-    if pubsub_config := config.pub_sub:
+    if broker == "pubsub":
+        pubsub_config = config.pub_sub
+        if pubsub_config is None:
+            raise ValueError("pubsub config is required when broker is pubsub")
+
         from cancer.adapter.publisher_pubsub import PubSubPublisher
 
         return PubSubPublisher(pubsub_config)
 
-    from cancer.adapter.publisher_stub import StubPublisher
-
-    return StubPublisher()
+    raise ValueError("Invalid event config")
 
 
 def run(config: Config) -> None:
