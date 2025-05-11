@@ -7,7 +7,7 @@ _LOG = logging.getLogger(__name__)
 
 
 class StubPublisher(Publisher):
-    def publish(self, topic: Topic, message: Message):
+    async def publish(self, topic: Topic, message: Message):
         _LOG.info(
             "Dropping message for topic %s in stub publisher: %s",
             topic,

@@ -1,11 +1,10 @@
 import abc
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from enum import Enum, auto
-from typing import TypeVar
 
 from cancer.message import Message, Topic
 
-T = TypeVar("T", bound=Message)
+type MessageCallback[T] = Callable[[T], Awaitable[Subscriber.Result]]
 
 
 class Subscriber(abc.ABC):
@@ -15,7 +14,7 @@ class Subscriber(abc.ABC):
         Requeue = auto()
 
     @abc.abstractmethod
-    def subscribe(
-        self, topic: Topic, message_type: type[T], handle: Callable[[T], Result]
-    ):
+    async def subscribe[T: Message](
+        self, topic: Topic, message_type: type[T], handle: MessageCallback[T]
+    ) -> None:
         pass

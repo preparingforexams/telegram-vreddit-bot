@@ -53,6 +53,20 @@ wheels = [
 ]
 
 [[package]]
+name = "bs-config"
+version = "1.1.1"
+source = { registry = "https://pypi.bjoernpetersen.net/" }
+sdist = { url = "https://pypi.bjoernpetersen.net/packages/bs_config-1.1.1.tar.gz", hash = "sha256:4aa495f29a9456af762d8375d4138270bf538a50b52128659646c7359f487e6f" }
+wheels = [
+    { url = "https://pypi.bjoernpetersen.net/packages/bs_config-1.1.1-py3-none-any.whl", hash = "sha256:00d480c9d3f2f0494a54f2d1da860dfedd4204119dde41db63c630baa4fd57b9" },
+]
+
+[package.optional-dependencies]
+dotenv = [
+    { name = "python-dotenv" },
+]
+
+[[package]]
 name = "cachetools"
 version = "5.5.2"
 source = { registry = "https://pypi.org/simple" }
@@ -66,10 +80,12 @@ name = "cancer"
 version = "1.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "bs-config", extra = ["dotenv"] },
     { name = "click" },
     { name = "google-cloud-pubsub" },
     { name = "httpx" },
     { name = "pillow" },
+    { name = "python-telegram-bot" },
     { name = "sentry-sdk" },
     { name = "yt-dlp", extra = ["default"] },
 ]
@@ -85,10 +101,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bs-config", extras = ["dotenv"], specifier = "==1.1.1", index = "https://pypi.bjoernpetersen.net/" },
     { name = "click", specifier = ">=8.1.3,<9.0.0" },
     { name = "google-cloud-pubsub", specifier = ">=2.0.0,<3.0.0" },
     { name = "httpx", specifier = "==0.28.*" },
     { name = "pillow", specifier = ">=11.0.0,<12.0.0" },
+    { name = "python-telegram-bot", specifier = "==22.0" },
     { name = "sentry-sdk", specifier = ">=2.0.0,<3.0.0" },
     { name = "yt-dlp", extras = ["default"], specifier = "==2025.4.30" },
 ]
@@ -586,6 +604,27 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ae/3c/c9d525a414d506893f0cd8a8d0de7706446213181570cdbd766691164e40/pytest-8.3.5.tar.gz", hash = "sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845", size = 1450891, upload-time = "2025-03-02T12:54:54.503Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/30/3d/64ad57c803f1fa1e963a7946b6e0fea4a70df53c1a7fed304586539c2bac/pytest-8.3.5-py3-none-any.whl", hash = "sha256:c69214aa47deac29fad6c2a4f590b9c4a9fdb16a403176fe154b79c0b4d4d820", size = 343634, upload-time = "2025-03-02T12:54:52.069Z" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/2c/7bb1416c5620485aa793f2de31d3df393d3686aa8a8506d11e10e13c5baf/python_dotenv-1.1.0.tar.gz", hash = "sha256:41f90bc6f5f177fb41f53e87666db362025010eb28f60a01c9143bfa33a2b2d5", size = 39920, upload-time = "2025-03-25T10:14:56.835Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/18/98a99ad95133c6a6e2005fe89faedf294a748bd5dc803008059409ac9b1e/python_dotenv-1.1.0-py3-none-any.whl", hash = "sha256:d7c01d9e2293916c18baf562d95698754b0dbbb5e74d457c45d4f6561fb9d55d", size = 20256, upload-time = "2025-03-25T10:14:55.034Z" },
+]
+
+[[package]]
+name = "python-telegram-bot"
+version = "22.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/61/8c/0bd0d5c6de549ee0ebc2ddf4d49618eec1ece6d25084f3b4ef72bba6590c/python_telegram_bot-22.0.tar.gz", hash = "sha256:acf86f28d86d81cab736177d2988e5bcb27f2248137efd62e02c46e9ba1fe44c", size = 440017, upload-time = "2025-03-15T08:57:43.752Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/15/9f/b8c116f606074c19ec2600a7edc222f158c307ca949de568d67fe2b9d364/python_telegram_bot-22.0-py3-none-any.whl", hash = "sha256:23237f778655e634f08cfebbada96ed3692c2bdd3c20c122e90a6d606d6a4516", size = 673473, upload-time = "2025-03-15T08:57:41.637Z" },
 ]
 
 [[package]]

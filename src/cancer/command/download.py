@@ -1,27 +1,24 @@
+import asyncio
 import logging
-import os
 import signal
-import subprocess
 import sys
 import uuid
+from asyncio.locks import Lock
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from threading import Lock
 
-from httpx import Client, HTTPStatusError, Response
+from httpx import AsyncClient, HTTPStatusError, Response
 from PIL import Image
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
 from cancer import telegram
-from cancer.adapter.publisher_pubsub import PubSubConfig, PubSubSubscriber
-from cancer.message import DownloadMessage, Topic
+from cancer.adapter.publisher_pubsub import PubSubSubscriber
+from cancer.config import Config, DownloaderConfig, DownloaderCredentials
+from cancer.message import DownloadMessage
 from cancer.port.subscriber import Subscriber
-
-_STORAGE_DIR = Path(os.getenv("STORAGE_DIR", "downloads"))
-_UPLOAD_CHAT = os.getenv("UPLOAD_CHAT_ID", "1259947317")
-_MAX_FILE_SIZE = int(os.getenv("MAX_DOWNLOAD_FILE_SIZE", "40_000_000"))
 
 _LOG = logging.getLogger(__name__)
 
@@ -32,6 +29,10 @@ _busy_lock = Lock()
 class VideoInfo:
     size: int | None
     thumbnails: list[str]
+
+
+async def _run_blocking[T](func: Callable[[], T]) -> T:
+    return await asyncio.get_running_loop().run_in_executor(None, func)
 
 
 def _get_info(url: str) -> VideoInfo:
@@ -79,7 +80,11 @@ class TryAgainException(Exception):
     pass
 
 
-def _download_videos(base_folder: Path, url: str) -> list[Path]:
+def _download_videos(
+    base_folder: Path,
+    credentials: DownloaderCredentials,
+    url: str,
+) -> list[Path]:
     cure_id = str(uuid.uuid4())
     cure_dir = base_folder / cure_id
     cure_dir.mkdir()
@@ -88,11 +93,11 @@ def _download_videos(base_folder: Path, url: str) -> list[Path]:
         "outtmpl": f"{cure_dir}/output%(autonumber)d.%(ext)s",
     }
 
-    if (username := os.getenv("USERNAME")) and (password := os.getenv("PASSWORD")):
+    if (username := credentials.username) and (password := credentials.password):
         params["username"] = username
         params["password"] = password
 
-    if cookie_file := os.getenv("COOKIE_FILE"):
+    if cookie_file := credentials.cookie_file:
         params["cookies"] = cookie_file
 
     ytdl = YoutubeDL(params=params)
@@ -130,201 +135,222 @@ def _download_videos(base_folder: Path, url: str) -> list[Path]:
     return list(cure_names)
 
 
-def _convert_cure(input_path: Path, output_path: Path) -> None:
-    _LOG.info("Converting from %s to %s", input_path, output_path)
-    process = subprocess.Popen(
-        [
-            "ffmpeg",
-            "-i",
-            input_path,
-            output_path,
-        ]
-    )
-    if process.wait() != 0:
-        raise RuntimeError("Could not convert file!")
-
-
-def _ensure_compatibility(original_path: Path) -> Path | None:
-    ext = original_path.suffix
-    if ext == ".mp4":
-        return original_path
-
-    if ext in [".png", ".jpg"]:
-        return None
-
-    converted_path = original_path.with_suffix(".mp4")
-    _convert_cure(original_path, converted_path)
-    return converted_path
-
-
 def _get_dimensions(image_path: Path) -> tuple[int, int]:
     image = Image.open(image_path)
     return image.size
 
 
-def _download_thumb(client: Client, cure_dir: Path, urls: list[str]) -> Path | None:
-    for url in urls:
-        if not url.endswith(".jpg"):
-            continue
+class _Downloader:
+    def __init__(self, config: DownloaderConfig) -> None:
+        self.config = config
 
-        try:
-            response = client.get(url)
-            response.raise_for_status()
-        except Exception as e:
-            _LOG.warning("Could not download thumbnail %s", url, exc_info=e)
-            continue
-        else:
-            # TODO: maybe don't download the whole content here
-            if len(response.content) > 200_000:
-                _LOG.info(
-                    "Skipping thumbnail %s because its file size is too large", url
-                )
+    async def _convert_cure(self, input_path: Path, output_path: Path) -> None:
+        _LOG.info("Converting from %s to %s", input_path, output_path)
+        process = await asyncio.create_subprocess_exec(
+            "ffmpeg",
+            "-i",
+            input_path,
+            output_path,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        if await process.wait() != 0:
+            if (stdout := process.stdout) is not None:
+                output = (await stdout.read()).decode("utf-8")
+            else:
+                output = ""
+
+            if (stderr := process.stderr) is not None:
+                error_output = (await stderr.read()).decode("utf-8")
+            else:
+                error_output = ""
+
+            raise RuntimeError(
+                f"Could not convert file! Output:\n{output}\n\nStderr: {error_output}"
+            )
+
+    async def _ensure_compatibility(self, original_path: Path) -> Path | None:
+        ext = original_path.suffix
+        if ext == ".mp4":
+            return original_path
+
+        if ext in [".png", ".jpg"]:
+            return None
+
+        converted_path = original_path.with_suffix(".mp4")
+        await self._convert_cure(original_path, converted_path)
+        return converted_path
+
+    async def _download_thumb(
+        self, client: AsyncClient, cure_dir: Path, urls: list[str]
+    ) -> Path | None:
+        for url in urls:
+            if not url.endswith(".jpg"):
                 continue
 
-            _LOG.debug("Found thumbnail with size %d", len(response.content))
-
-            thumb_path = cure_dir / "thumb.jpg"
-            with thumb_path.open("wb") as f:
-                f.write(response.content)
-
-            dimensions = _get_dimensions(thumb_path)
-            if max(dimensions) > 320:
-                _LOG.info(
-                    "Skipping thumbnail %s because its"
-                    " dimensions (%d x %d) are too large",
-                    url,
-                    dimensions[0],
-                    dimensions[1],
-                )
+            try:
+                response = await client.get(url)
+                response.raise_for_status()
+            except Exception as e:
+                _LOG.warning("Could not download thumbnail %s", url, exc_info=e)
                 continue
             else:
-                _LOG.debug(
-                    "Using thumbnail %s with dimensions %d x %d and size %d",
-                    url,
-                    dimensions[0],
-                    dimensions[1],
-                    thumb_path.stat().st_size,
-                )
-
-            return thumb_path
-    return None
-
-
-def _upload_video(
-    chat_id: str | int,
-    message_id: int | None,
-    thumb_path: Path | None,
-    video_file: Path,
-) -> Path | None:
-    cure_path = _ensure_compatibility(video_file)
-
-    if not cure_path:
-        _LOG.info("Not uploading incompatible file %s", video_file)
-        return None
-
-    try:
-        message = telegram.upload_video(
-            chat_id,
-            cure_path,
-            reply_to_message_id=message_id,
-            thumb_path=thumb_path,
-        )
-    except HTTPStatusError as e:
-        response: Response = e.response
-        if response.status_code == 413:
-            _LOG.warning(
-                "Could not upload video (entity too large)."
-                " Initial size: %d, cured: %d",
-                video_file.stat().st_size,
-                cure_path.stat().st_size,
-                exc_info=e,
-            )
-            return None
-        else:
-            _LOG.warning("Re-raising exception with response %s", response)
-            raise e
-
-    video = message["video"]
-    file_id = video["file_id"]
-    return file_id
-
-
-def _handle_payload(payload: DownloadMessage) -> Subscriber.Result:
-    _LOG.info("Received payload: %s", payload)
-
-    client = Client(timeout=60)
-
-    with TemporaryDirectory(dir=str(_STORAGE_DIR)) as folder_path:
-        folder = Path(folder_path)
-        with _busy_lock:
-            files: list[tuple[Path | None, Path]] = []
-            for url in payload.urls:
-                info = _get_info(url)
-                if info.size is not None and info.size > _MAX_FILE_SIZE:
-                    _LOG.info("Skipping URL %s because it's too large", url)
+                # TODO: maybe don't download the whole content here
+                if len(response.content) > 200_000:
+                    _LOG.info(
+                        "Skipping thumbnail %s because its file size is too large", url
+                    )
                     continue
 
-                thumb_file: Path | None = None
-                if info.thumbnails:
-                    _LOG.debug(
-                        "Found %d thumbnail candidates for URL %s",
-                        len(info.thumbnails),
+                _LOG.debug("Found thumbnail with size %d", len(response.content))
+
+                thumb_path = cure_dir / "thumb.jpg"
+                with thumb_path.open("wb") as f:
+                    f.write(response.content)
+
+                dimensions = await _run_blocking(lambda: _get_dimensions(thumb_path))
+                if max(dimensions) > 320:
+                    _LOG.info(
+                        "Skipping thumbnail %s because its"
+                        " dimensions (%d x %d) are too large",
                         url,
+                        dimensions[0],
+                        dimensions[1],
                     )
-                    thumb_file = _download_thumb(client, folder, info.thumbnails)
+                    continue
+                else:
+                    _LOG.debug(
+                        "Using thumbnail %s with dimensions %d x %d and size %d",
+                        url,
+                        dimensions[0],
+                        dimensions[1],
+                        thumb_path.stat().st_size,
+                    )
 
-                try:
-                    download_result = _download_videos(folder, url)
-                except TryAgainException as e:
-                    _LOG.warning("Got exception during download", exc_info=e)
-                    return Subscriber.Result.Requeue
-                except AccessDeniedException as e:
-                    _LOG.error("Was denied access to service", exc_info=e)
-                    return Subscriber.Result.Requeue
+                return thumb_path
+        return None
 
-                for file in download_result:
-                    files.append((thumb_file, file))
+    async def _upload_video(
+        self,
+        chat_id: str | int,
+        message_id: int | None,
+        thumb_path: Path | None,
+        video_file: Path,
+    ) -> Path | None:
+        cure_path = await self._ensure_compatibility(video_file)
 
-            if not files:
-                _LOG.warning("Download returned no videos")
+        if not cure_path:
+            _LOG.info("Not uploading incompatible file %s", video_file)
+            return None
+
+        try:
+            message = await telegram.upload_video(
+                chat_id,
+                cure_path,
+                reply_to_message_id=message_id,
+                thumb_path=thumb_path,
+            )
+        except HTTPStatusError as e:
+            response: Response = e.response
+            if response.status_code == 413:
+                _LOG.warning(
+                    "Could not upload video (entity too large)."
+                    " Initial size: %d, cured: %d",
+                    video_file.stat().st_size,
+                    cure_path.stat().st_size,
+                    exc_info=e,
+                )
+                return None
+            else:
+                _LOG.warning("Re-raising exception with response %s", response)
+                raise e
+
+        video = message["video"]
+        file_id = video["file_id"]
+        return file_id
+
+    async def handle_payload(
+        self,
+        payload: DownloadMessage,
+    ) -> Subscriber.Result:
+        _LOG.info("Received payload: %s", payload)
+
+        client = AsyncClient(timeout=60)
+
+        with TemporaryDirectory(dir=str(self.config.storage_dir)) as folder_path:
+            folder = Path(folder_path)
+            async with _busy_lock:
+                files: list[tuple[Path | None, Path]] = []
+                for url in payload.urls:
+                    info = await _run_blocking(lambda: _get_info(url))
+                    if info.size is not None and info.size > self.config.max_file_size:
+                        _LOG.info("Skipping URL %s because it's too large", url)
+                        continue
+
+                    thumb_file: Path | None = None
+                    if info.thumbnails:
+                        _LOG.debug(
+                            "Found %d thumbnail candidates for URL %s",
+                            len(info.thumbnails),
+                            url,
+                        )
+                        thumb_file = await self._download_thumb(
+                            client, folder, info.thumbnails
+                        )
+
+                    try:
+                        download_result = await _run_blocking(
+                            lambda: _download_videos(
+                                folder,
+                                self.config.credentials,
+                                url,
+                            )
+                        )
+                    except TryAgainException as e:
+                        _LOG.warning("Got exception during download", exc_info=e)
+                        return Subscriber.Result.Requeue
+                    except AccessDeniedException as e:
+                        _LOG.error("Was denied access to service", exc_info=e)
+                        return Subscriber.Result.Requeue
+
+                    for file in download_result:
+                        files.append((thumb_file, file))
+
+                if not files:
+                    _LOG.warning("Download returned no videos")
+                    return Subscriber.Result.Ack
+
+                for thumb_file, file in files:
+                    await self._upload_video(
+                        payload.chat_id, payload.message_id, thumb_file, file
+                    )
+
+                _LOG.info("Successfully handled payload")
                 return Subscriber.Result.Ack
 
-            for thumb_file, file in files:
-                _upload_video(payload.chat_id, payload.message_id, thumb_file, file)
 
-            _LOG.info("Successfully handled payload")
-            return Subscriber.Result.Ack
+async def run(config: Config) -> None:
+    telegram.init(config.telegram)
 
+    downloader_config = config.download
+    if downloader_config is None:
+        _LOG.error("No downloader config found")
+        sys.exit(1)
 
-def run() -> None:
-    telegram.check()
+    pubsub_config = config.event.pub_sub
+    if pubsub_config is None:
+        _LOG.error("No pubsub config found")
+        sys.exit(1)
 
-    if not _STORAGE_DIR.exists():
-        _STORAGE_DIR.mkdir()
+    storage_dir = downloader_config.storage_dir
+    if not storage_dir.exists():
+        storage_dir.mkdir()
 
     signal.signal(signal.SIGTERM, lambda _, __: sys.exit(0))
 
-    topic: Topic
-    match os.getenv("DOWNLOAD_TYPE"):
-        case "insta":
-            topic = Topic.instaDownload
-        case "youtube":
-            topic = Topic.youtubeDownload
-        case "tiktok":
-            topic = Topic.tiktokDownload
-        case "twitter":
-            topic = Topic.twitterDownload
-        case "vimeo":
-            topic = Topic.vimeoDownload
-        case download_type:
-            _LOG.info(
-                "Using generic download topic for download type %s", download_type
-            )
-            topic = Topic.download
-
+    topic = downloader_config.topic
     _LOG.debug("Subscribing to topic %s", topic)
-    subscriber: Subscriber = PubSubSubscriber(PubSubConfig.from_env())
+    subscriber: Subscriber = PubSubSubscriber(pubsub_config)
+    downloader = _Downloader(downloader_config)
 
-    # readiness_server = ReadinessServer()
-    # readiness_server.start(lambda: not _busy_lock.locked())
-    subscriber.subscribe(topic, DownloadMessage, _handle_payload)
+    await subscriber.subscribe(topic, DownloadMessage, downloader.handle_payload)

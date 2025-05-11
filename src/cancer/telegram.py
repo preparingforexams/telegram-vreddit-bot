@@ -1,20 +1,20 @@
 import logging
-import os
-from collections.abc import Callable
 from pathlib import Path
-from typing import IO, Any
+from typing import IO
 
-from httpx import Client, Response
+from httpx import AsyncClient, Response
 
-_API_KEY = os.getenv("TELEGRAM_API_KEY")
+from cancer.config import TelegramConfig
+
 _LOG = logging.getLogger(__name__)
 
-_client = Client(timeout=60)
+_client = AsyncClient(timeout=60)
+_API_KEY: str = None  # type: ignore
 
 
-def check():
-    if not _API_KEY:
-        raise ValueError("Missing TELEGRAM_API_KEY")
+def init(config: TelegramConfig) -> None:
+    global _API_KEY
+    _API_KEY = config.token
 
 
 def _build_url(method: str) -> str:
@@ -33,7 +33,7 @@ def _get_actual_body(response: Response):
     raise ValueError(f"Body was not ok! {body}")
 
 
-def _request_updates(last_update_id: int | None) -> list[dict]:
+async def _request_updates(last_update_id: int | None) -> list[dict]:
     body: dict | None = None
     if last_update_id:
         body = {
@@ -41,7 +41,7 @@ def _request_updates(last_update_id: int | None) -> list[dict]:
             "timeout": 10,
         }
     return _get_actual_body(
-        _client.post(
+        await _client.post(
             _build_url("getUpdates"),
             json=body,
             timeout=12,
@@ -49,20 +49,7 @@ def _request_updates(last_update_id: int | None) -> list[dict]:
     )
 
 
-def handle_updates(should_run: Callable[[], bool], handler: Callable[[dict], None]):
-    last_update_id: int | None = None
-    while should_run():
-        updates = _request_updates(last_update_id)
-        try:
-            for update in updates:
-                _LOG.info(f"Received update: {update}")
-                handler(update)
-                last_update_id = update["update_id"]
-        except Exception as e:
-            _LOG.error("Could not handle update", exc_info=e)
-
-
-def upload_video(
+async def upload_video(
     chat_id: int | str,
     path: Path,
     reply_to_message_id: int | None,
@@ -71,8 +58,8 @@ def upload_video(
     _LOG.info("Uploading file %s with thumb %s", path, thumb_path)
     url = _build_url("sendVideo")
 
-    def _request(files: dict):
-        return _client.post(
+    async def _request(files: dict):
+        return await _client.post(
             url,
             data=dict(chat_id=chat_id, reply_to_message_id=reply_to_message_id),
             files=files,
@@ -82,25 +69,25 @@ def upload_video(
     with path.open("rb") as file:
         if thumb_path:
             with thumb_path.open("rb") as thumb_file:
-                response = _request(dict(video=file, thumb=thumb_file))
+                response = await _request(dict(video=file, thumb=thumb_file))
                 if response.status_code == 413:
                     _LOG.warning(
                         "Got Entity Too Large response, retrying without thumbnail"
                     )
-                    return upload_video(chat_id, path, reply_to_message_id, None)
+                    return await upload_video(chat_id, path, reply_to_message_id, None)
         else:
-            response = _request(dict(video=file))
+            response = await _request(dict(video=file))
 
     return _get_actual_body(response)
 
 
-def send_message(
+async def send_message(
     chat_id: int,
     text: str,
     reply_to_message_id: int | None = None,
 ) -> dict:
     return _get_actual_body(
-        _client.post(
+        await _client.post(
             _build_url("sendMessage"),
             json={
                 "chat_id": chat_id,
@@ -114,9 +101,9 @@ def send_message(
     )
 
 
-def download_file(file_id: str, file: IO[bytes]):
+async def download_file(file_id: str, file: IO[bytes]):
     response = _get_actual_body(
-        _client.post(
+        await _client.post(
             _build_url("getFile"),
             json={
                 "file_id": file_id,
@@ -125,19 +112,19 @@ def download_file(file_id: str, file: IO[bytes]):
     )
 
     url = _build_file_url(response["file_path"])
-    response = _client.get(url)
+    response = await _client.get(url)
     response.raise_for_status()
     file.write(response.content)
 
 
-def send_audio_message(
+async def send_audio_message(
     chat_id: int,
     name: str,
     audio: IO[bytes],
     reply_to_message_id: int | None = None,
 ) -> dict:
     return _get_actual_body(
-        _client.post(
+        await _client.post(
             _build_url("sendDocument"),
             data={
                 "chat_id": chat_id,
@@ -152,13 +139,13 @@ def send_audio_message(
     )
 
 
-def send_video_group(
+async def send_video_group(
     chat_id: int,
     reply_to_message_id: int | None,
     videos: list[str],
 ) -> dict:
     return _get_actual_body(
-        _client.post(
+        await _client.post(
             _build_url("sendMediaGroup"),
             json={
                 "chat_id": chat_id,
@@ -173,31 +160,5 @@ def send_video_group(
                     for video_id in videos
                 ],
             },
-        )
-    )
-
-
-def set_message_reaction(
-    *,
-    chat_id: int,
-    message_id: int,
-    emoji: str | None,
-) -> None:
-    request_body: dict[str, Any] = {
-        "chat_id": chat_id,
-        "message_id": message_id,
-    }
-
-    if emoji is not None:
-        request_body["reaction"] = [
-            {
-                "type": "emoji",
-                "emoji": emoji,
-            }
-        ]
-    _get_actual_body(
-        _client.post(
-            _build_url("setMessageReaction"),
-            json=request_body,
         )
     )
