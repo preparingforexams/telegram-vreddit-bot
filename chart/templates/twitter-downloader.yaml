@@ -47,17 +47,13 @@ spec:
             - name: DOWNLOAD_TYPE
               value: twitter
           envFrom:
-            - configMapRef:
-                name: cancer-config
             - secretRef:
                 name: base
             - secretRef:
                 name: nats
           volumeMounts:
-            - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
             - mountPath: "/downloads"
               name: downloads
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
-        - {{ include "secrets.volume" $ | fromYaml | toJson }}
 {{ end }}

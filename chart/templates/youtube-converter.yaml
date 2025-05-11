@@ -26,8 +26,6 @@ spec:
         seccompProfile:
           type: RuntimeDefault
         fsGroup: 1000
-      volumes:
-        - {{ include "secrets.volume" $ | fromYaml | toJson }}
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
@@ -44,12 +42,8 @@ spec:
               cpu: 10m
               memory: 128Mi
           envFrom:
-            - configMapRef:
-                name: cancer-config
             - secretRef:
                 name: base
             - secretRef:
                 name: nats
-          volumeMounts:
-            - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
 {{ end }}

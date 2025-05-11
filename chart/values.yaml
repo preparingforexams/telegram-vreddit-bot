@@ -3,9 +3,6 @@ image: ghcr.io/preparingforexams/telegram-vreddit-bot
 
 isEnabled: true
 
-gcp:
-  project: cancer-be-gone
-
 features:
   - handle_updates
   - download

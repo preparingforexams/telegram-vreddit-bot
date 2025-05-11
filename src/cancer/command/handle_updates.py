@@ -10,6 +10,7 @@ from telegram import MessageEntity, Update, Voice
 from telegram.constants import ChatType, MessageEntityType
 from telegram.ext import ApplicationBuilder, MessageHandler
 
+from cancer.adapter.publisher_nats import NatsPublisher
 from cancer.config import Config, EventConfig
 from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher, PublishingException
@@ -248,27 +249,11 @@ class _CancerBot:
 
 
 def _init_publisher(config: EventConfig) -> Publisher:
-    broker = config.broker
+    nats_config = config.nats
+    if nats_config is None:
+        raise ValueError("nats config is required when broker is nats")
 
-    if broker == "nats":
-        nats_config = config.nats
-        if nats_config is None:
-            raise ValueError("nats config is required when broker is nats")
-
-        from cancer.adapter.publisher_nats import NatsPublisher
-
-        return NatsPublisher(nats_config)
-
-    if broker == "pubsub":
-        pubsub_config = config.pub_sub
-        if pubsub_config is None:
-            raise ValueError("pubsub config is required when broker is pubsub")
-
-        from cancer.adapter.publisher_pubsub import PubSubPublisher
-
-        return PubSubPublisher(pubsub_config)
-
-    raise ValueError("Invalid event config")
+    return NatsPublisher(nats_config)
 
 
 def run(config: Config) -> None:

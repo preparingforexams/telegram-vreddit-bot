@@ -1,5 +1,4 @@
 import logging
-import sys
 import tempfile
 
 from cancer import telegram
@@ -41,10 +40,6 @@ async def run(config: Config) -> None:
     topic = Topic.voiceDownload
     _LOG.debug("Subscribing to topic %s", topic)
 
-    pubsub_config = config.event.pub_sub
-    if pubsub_config is None:
-        _LOG.error("No pubsub config found")
-        sys.exit(1)
     subscriber = await initialize_subscriber(config.event)
 
     await subscriber.subscribe(

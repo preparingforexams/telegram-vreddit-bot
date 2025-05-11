@@ -1,8 +1,8 @@
 import asyncio
 import logging
 import signal
-import sys
 
+from cancer.adapter.publisher_nats import NatsSubscriber
 from cancer.config import EventConfig
 from cancer.port.subscriber import Subscriber
 
@@ -22,23 +22,9 @@ def _close_subscriber_on_signal(subscriber: Subscriber):
 async def initialize_subscriber(config: EventConfig) -> Subscriber:
     subscriber: Subscriber
 
-    broker = config.broker
     nats_config = config.nats
-    pubsub_config = config.pub_sub
-
-    if broker == "nats" and nats_config is not None:
-        _LOG.info("Using NATS subscriber")
-        from cancer.adapter.publisher_nats import NatsSubscriber
-
-        subscriber = NatsSubscriber(nats_config)
-    elif broker == "pubsub" and pubsub_config is not None:
-        _LOG.info("Using PubSub subscriber")
-        from cancer.adapter.publisher_pubsub import PubSubSubscriber
-
-        subscriber = PubSubSubscriber(pubsub_config)
-    else:
-        _LOG.error("Invalid event config")
-        sys.exit(1)
+    _LOG.info("Using NATS subscriber")
+    subscriber = NatsSubscriber(nats_config)
 
     _close_subscriber_on_signal(subscriber)
 

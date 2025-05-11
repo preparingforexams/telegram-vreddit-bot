@@ -67,14 +67,11 @@ spec:
             - name: COOKIE_FILE
               value: /cookies/insta-cookies.dat
           envFrom:
-            - configMapRef:
-                name: cancer-config
             - secretRef:
                 name: base
             - secretRef:
                 name: nats
           volumeMounts:
-            - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
             - mountPath: "/downloads"
               name: downloads
             - mountPath: "/cookies"
@@ -83,7 +80,6 @@ spec:
               name: cookie
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
-        - {{ include "secrets.volume" $ | fromYaml | toJson }}
         - name: cookie
           secret:
             secretName: insta-cookies
