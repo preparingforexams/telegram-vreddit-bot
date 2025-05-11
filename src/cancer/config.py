@@ -103,10 +103,6 @@ class EventNatsConfig:
     credentials: str
     stream_name: str
 
-    @property
-    def prefix(self):
-        return f"{self.stream_name}."
-
     def get_publish_subject(self, topic: Topic) -> str:
         return f"{self.stream_name}.{topic.value}"
 

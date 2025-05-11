@@ -79,7 +79,6 @@ class NatsSubscriber(Subscriber):
         sub: JetStreamContext.PullSubscription = await jetstream.pull_subscribe_bind(
             consumer=self.config.get_consumer_name(topic),
             stream=self.config.stream_name,
-            inbox_prefix=self.config.prefix,
         )
 
         while not (client.is_draining or client.is_closed):
