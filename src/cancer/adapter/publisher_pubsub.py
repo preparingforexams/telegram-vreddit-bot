@@ -3,6 +3,7 @@ import functools
 import logging
 from concurrent import futures
 
+from google.api_core.exceptions import Cancelled
 from google.cloud.pubsub_v1 import PublisherClient, SubscriberClient
 from google.cloud.pubsub_v1.subscriber.message import Message as PubSubMessage
 
@@ -85,8 +86,12 @@ class PubSubSubscriber(Subscriber):
 
         subscription_name = f"{self.prefix}{topic.value}"
         subscribe_future = self.client.subscribe(subscription_name, _handle_message)
-        await loop.run_in_executor(None, subscribe_future.result)
-        _LOG.info("Subscription ended")
+        try:
+            await loop.run_in_executor(None, subscribe_future.result)
+        except Cancelled:
+            _LOG.info("Subscription cancelled")
+        else:
+            _LOG.info("Subscription ended")
 
     async def close(self) -> None:
         _LOG.info("Closing Pub/Sub subscriber")
