@@ -40,7 +40,7 @@ spec:
               cpu: 100m
             requests:
               cpu: 10m
-              memory: 64Mi
+              memory: 128Mi
           envFrom:
             - configMapRef:
                 name: cancer-config
