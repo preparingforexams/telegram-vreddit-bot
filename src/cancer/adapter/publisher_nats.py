@@ -86,8 +86,11 @@ class NatsSubscriber(Subscriber):
         while not (client.is_draining or client.is_closed):
             try:
                 msgs = await sub.fetch()
-            except ServiceUnavailableError:
-                _LOG.error("NATS service unavailable. Retrying after a short wait...")
+            except ServiceUnavailableError as e:
+                _LOG.error(
+                    "NATS service unavailable. Retrying after a short wait...",
+                    exc_info=e,
+                )
                 await asyncio.sleep(10)
                 continue
             except Exception as e:
