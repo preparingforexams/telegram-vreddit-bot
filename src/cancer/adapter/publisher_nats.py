@@ -1,7 +1,9 @@
+import asyncio
 import logging
 
 from nats.aio.client import Client, RawCredentials
 from nats.js.client import JetStreamContext
+from nats.js.errors import ServiceUnavailableError
 
 from cancer.config import EventNatsConfig
 from cancer.message import Message, Topic
@@ -84,6 +86,10 @@ class NatsSubscriber(Subscriber):
         while not (client.is_draining or client.is_closed):
             try:
                 msgs = await sub.fetch()
+            except ServiceUnavailableError:
+                _LOG.error("NATS service unavailable. Retrying after a short wait...")
+                await asyncio.sleep(10)
+                continue
             except Exception as e:
                 _LOG.error("Could not fetch messages", exc_info=e)
                 continue
