@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import signal
 import sys
 import uuid
 from asyncio.locks import Lock
@@ -15,7 +14,7 @@ from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
 from cancer import telegram
-from cancer.adapter.publisher_pubsub import PubSubSubscriber
+from cancer.command.util import initialize_subscriber
 from cancer.config import Config, DownloaderConfig, DownloaderCredentials
 from cancer.message import DownloadMessage
 from cancer.port.subscriber import Subscriber
@@ -337,20 +336,13 @@ async def run(config: Config) -> None:
         _LOG.error("No downloader config found")
         sys.exit(1)
 
-    pubsub_config = config.event.pub_sub
-    if pubsub_config is None:
-        _LOG.error("No pubsub config found")
-        sys.exit(1)
-
     storage_dir = downloader_config.storage_dir
     if not storage_dir.exists():
         storage_dir.mkdir()
 
     topic = downloader_config.topic
     _LOG.debug("Subscribing to topic %s", topic)
-    subscriber: Subscriber = PubSubSubscriber(pubsub_config)
+    subscriber = await initialize_subscriber(config.event)
     downloader = _Downloader(downloader_config)
-
-    asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, subscriber.close)
 
     await subscriber.subscribe(topic, DownloadMessage, downloader.handle_payload)

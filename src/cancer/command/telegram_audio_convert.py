@@ -1,11 +1,9 @@
-import asyncio
 import logging
-import signal
 import sys
 import tempfile
 
 from cancer import telegram
-from cancer.adapter.publisher_pubsub import PubSubSubscriber
+from cancer.command.util import initialize_subscriber
 from cancer.config import Config
 from cancer.message import Topic, VoiceMessage
 from cancer.port.subscriber import Subscriber
@@ -47,9 +45,7 @@ async def run(config: Config) -> None:
     if pubsub_config is None:
         _LOG.error("No pubsub config found")
         sys.exit(1)
-    subscriber: Subscriber = PubSubSubscriber(pubsub_config)
-
-    asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, subscriber.close)
+    subscriber = await initialize_subscriber(config.event)
 
     await subscriber.subscribe(
         topic,
