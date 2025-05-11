@@ -52,6 +52,8 @@ spec:
                 name: cancer-config
             - secretRef:
                 name: base
+            - secretRef:
+                name: nats
           volumeMounts:
             - {{ include "secrets.volumeMount" . | fromYaml | toJson }}
             - mountPath: "/downloads"
