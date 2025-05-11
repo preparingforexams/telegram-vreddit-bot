@@ -346,11 +346,11 @@ async def run(config: Config) -> None:
     if not storage_dir.exists():
         storage_dir.mkdir()
 
-    signal.signal(signal.SIGTERM, lambda _, __: sys.exit(0))
-
     topic = downloader_config.topic
     _LOG.debug("Subscribing to topic %s", topic)
     subscriber: Subscriber = PubSubSubscriber(pubsub_config)
     downloader = _Downloader(downloader_config)
+
+    asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, subscriber.close)
 
     await subscriber.subscribe(topic, DownloadMessage, downloader.handle_payload)

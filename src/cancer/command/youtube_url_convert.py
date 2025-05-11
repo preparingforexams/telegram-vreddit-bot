@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import signal
 import sys
@@ -36,8 +37,6 @@ async def _handle_payload(payload: YoutubeUrlConvertMessage) -> Subscriber.Resul
 async def run(config: Config) -> None:
     telegram.init(config.telegram)
 
-    signal.signal(signal.SIGTERM, lambda _, __: sys.exit(0))
-
     topic = Topic.youtubeUrlConvert
     _LOG.debug("Subscribing to topic %s", topic)
 
@@ -46,6 +45,9 @@ async def run(config: Config) -> None:
         _LOG.error("No pubsub config found")
         sys.exit(1)
     subscriber: Subscriber = PubSubSubscriber(pubsub_config)
+
+    asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, subscriber.close)
+
     await subscriber.subscribe(
         topic,
         YoutubeUrlConvertMessage,

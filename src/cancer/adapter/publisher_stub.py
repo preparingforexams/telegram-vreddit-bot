@@ -13,3 +13,6 @@ class StubPublisher(Publisher):
             topic,
             message,
         )
+
+    async def close(self) -> None:
+        _LOG.info("Closing stub publisher")

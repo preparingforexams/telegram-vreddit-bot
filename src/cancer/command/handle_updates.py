@@ -262,7 +262,12 @@ def run(config: Config) -> None:
     publisher: Publisher = _init_publisher(config.event)
     cancer_bot = _CancerBot(publisher)
 
-    app = ApplicationBuilder().token(config.telegram.token).build()
+    app = (
+        ApplicationBuilder()
+        .token(config.telegram.token)
+        .post_stop(lambda _: publisher.close())
+        .build()
+    )
 
     app.add_handler(MessageHandler(filters=None, callback=cancer_bot.handle_update))
 

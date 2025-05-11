@@ -18,3 +18,7 @@ class Subscriber(abc.ABC):
         self, topic: Topic, message_type: type[T], handle: MessageCallback[T]
     ) -> None:
         pass
+
+    @abc.abstractmethod
+    async def close(self) -> None:
+        pass

@@ -11,3 +11,7 @@ class Publisher(abc.ABC):
     @abc.abstractmethod
     async def publish(self, topic: Topic, message: Message):
         pass
+
+    @abc.abstractmethod
+    async def close(self) -> None:
+        pass

@@ -38,6 +38,9 @@ class PubSubPublisher(Publisher):
         except Exception as e:
             raise PublishingException from e
 
+    async def close(self) -> None:
+        self.client.stop()
+
 
 class PubSubSubscriber(Subscriber):
     def __init__(self, config: EventPubSubConfig):
@@ -84,3 +87,9 @@ class PubSubSubscriber(Subscriber):
         subscribe_future = self.client.subscribe(subscription_name, _handle_message)
         await loop.run_in_executor(None, subscribe_future.result)
         _LOG.info("Subscription ended")
+
+    async def close(self) -> None:
+        _LOG.info("Closing Pub/Sub subscriber")
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self.client.close)
+        _LOG.info("Pub/Sub subscriber closed")
