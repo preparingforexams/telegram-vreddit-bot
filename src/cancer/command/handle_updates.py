@@ -1,12 +1,16 @@
 import logging
-import os
 import signal
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import cast
 from urllib.parse import ParseResult, urlparse
 
-from cancer import telegram
-from cancer.adapter.publisher_pubsub import PubSubConfig, PubSubPublisher
+from telegram import MessageEntity, Update, Voice
+from telegram.constants import ChatType, MessageEntityType
+from telegram.ext import ApplicationBuilder, MessageHandler
+
+from cancer.config import Config, EventConfig
 from cancer.message import Message, Topic
 from cancer.port.publisher import Publisher, PublishingException
 
@@ -126,16 +130,14 @@ class Drug:
 
 
 def _diagnose_cancer(
-    text: str,
-    entity: dict,
+    parse_entity: Callable[[MessageEntity], str],
+    entity: MessageEntity,
     is_direct_chat: bool,
 ) -> Diagnosis | None:
-    if entity["type"] == "url":
-        offset = entity["offset"]
-        length = entity["length"]
-        url = text[offset : offset + length]
-    elif entity["type"] == "text_link":
-        url = entity["url"]
+    if entity.type == MessageEntityType.URL:
+        url = parse_entity(entity)
+    elif entity.type == MessageEntityType.TEXT_LINK:
+        url = cast(str, entity.url)
     else:
         return None
 
@@ -165,110 +167,105 @@ def _make_message(
     return treatment.create_message(chat_id, message_id, [d.case for d in diagnoses])
 
 
-def _handle_update(publisher: Publisher, update: dict):
-    message: dict | None = update.get("message")
+class _CancerBot:
+    def __init__(self, publisher: Publisher) -> None:
+        self.publisher = publisher
 
-    if not message:
-        _LOG.debug("Skipping non-message update")
-        return
+    async def handle_update(self, update: Update, _):
+        message = update.message
 
-    chat_id = message["chat"]["id"]
-    user_id = message["from"]["id"]
+        if not message:
+            _LOG.debug("Skipping non-message update")
+            return
 
-    text: str | None
-    entities: list[dict] | None
-    voice: dict | None
+        chat_id = message.chat.id
+        is_direct_chat = message.chat.type == ChatType.PRIVATE
 
-    if "text" in message:
-        text = message["text"]
-        entities = message.get("entities")
-        voice = None
-    elif "caption" in message:
-        text = message["caption"]
-        entities = message.get("caption_entities")
-        voice = None
-    elif "voice" in message:
-        text = message.get("caption")
-        entities = message.get("caption_entities")
-        voice = message["voice"]
-    else:
-        _LOG.debug("Not a text or caption")
-        return
+        parse_entity: Callable[[MessageEntity], str]
+        entities: tuple[MessageEntity, ...]
+        voice: Voice | None
 
-    diagnosis_by_treatment: dict[Topic, list[Diagnosis]] = defaultdict(list)
-    is_direct_chat = chat_id == user_id
-    if text and entities:
-        for entity in entities:
-            diagnosis = _diagnose_cancer(text, entity, is_direct_chat=is_direct_chat)
-            if diagnosis:
-                diagnosis_by_treatment[diagnosis.treatment].append(diagnosis)
+        if message.text:
+            entities = message.entities
+            parse_entity = message.parse_entity
+            voice = None
+        elif voice := message.voice:
+            entities = message.caption_entities
+            parse_entity = message.parse_caption_entity
+            voice = voice
+        elif message.caption:
+            entities = message.caption_entities
+            parse_entity = message.parse_caption_entity
+            voice = None
+        else:
+            _LOG.debug("Not a text or caption")
+            return
 
-    if is_direct_chat and voice:
-        diagnosis_by_treatment[Topic.voiceDownload].append(
-            Diagnosis(
-                cancer=None,  # type: ignore
-                case=f"{voice['file_id']}::{voice['file_size']}",
-                is_private=True,
+        diagnosis_by_treatment: dict[Topic, list[Diagnosis]] = defaultdict(list)
+        if entities:
+            for entity in entities:
+                diagnosis = _diagnose_cancer(
+                    parse_entity, entity, is_direct_chat=is_direct_chat
+                )
+                if diagnosis:
+                    diagnosis_by_treatment[diagnosis.treatment].append(diagnosis)
+
+        if is_direct_chat and voice:
+            diagnosis_by_treatment[Topic.voiceDownload].append(
+                Diagnosis(
+                    cancer=None,  # type: ignore
+                    case=f"{voice.file_id}::{voice.file_size}",
+                    is_private=True,
+                )
             )
-        )
 
-    if not diagnosis_by_treatment:
-        _LOG.debug("Message was healthy")
-        return
-
-    try:
-        telegram.set_message_reaction(
-            chat_id=chat_id,
-            message_id=message["message_id"],
-            emoji="🫡" if is_direct_chat else "😡",
-        )
-    except Exception as e:
-        # Don't really care if this fails.
-        _LOG.error("Could not set message reaction", exc_info=e)
-
-    for treatment in Topic:
-        diagnoses = diagnosis_by_treatment[treatment]
-        if not diagnoses:
-            _LOG.debug("No diagnosed cases for treatment %s", treatment)
-            continue
-
-        event = _make_message(chat_id, message["message_id"], treatment, diagnoses)
+        if not diagnosis_by_treatment:
+            _LOG.debug("Message was healthy")
+            return
 
         try:
-            publisher.publish(treatment, event)
-            _LOG.info("Published event on topic %s", treatment.value)
-        except PublishingException as e:
-            _LOG.error("Could not publish event", exc_info=e)
-            raise
+            await message.set_reaction(
+                reaction="🫡" if is_direct_chat else "😡",
+            )
+        except Exception as e:
+            # Don't really care if this fails.
+            _LOG.error("Could not set message reaction", exc_info=e)
+
+        for treatment in Topic:
+            diagnoses = diagnosis_by_treatment[treatment]
+            if not diagnoses:
+                _LOG.debug("No diagnosed cases for treatment %s", treatment)
+                continue
+
+            event = _make_message(chat_id, message.message_id, treatment, diagnoses)
+
+            try:
+                await self.publisher.publish(treatment, event)
+                _LOG.info("Published event on topic %s", treatment.value)
+            except PublishingException as e:
+                _LOG.error("Could not publish event", exc_info=e)
+                raise
 
 
-def _init_publisher() -> Publisher:
-    if os.getenv("PUBLISHER_STUB") == "true":
-        from cancer.adapter.publisher_stub import StubPublisher
+def _init_publisher(config: EventConfig) -> Publisher:
+    if pubsub_config := config.pub_sub:
+        from cancer.adapter.publisher_pubsub import PubSubPublisher
 
-        return StubPublisher()
+        return PubSubPublisher(pubsub_config)
 
-    try:
-        return PubSubPublisher(PubSubConfig.from_env())
-    except ValueError as e:
-        _LOG.warning("Could not initialize Publisher", exc_info=e)
-        raise
+    from cancer.adapter.publisher_stub import StubPublisher
+
+    return StubPublisher()
 
 
-def run() -> None:
-    telegram.check()
+def run(config: Config) -> None:
+    publisher: Publisher = _init_publisher(config.event)
+    cancer_bot = _CancerBot(publisher)
 
-    publisher: Publisher = _init_publisher()
+    app = ApplicationBuilder().token(config.telegram.token).build()
 
-    received_sigterm = False
+    app.add_handler(MessageHandler(filters=None, callback=cancer_bot.handle_update))
 
-    def should_run() -> bool:
-        return not received_sigterm
-
-    def on_sigterm(*args):
-        nonlocal received_sigterm
-        received_sigterm = True
-
-    signal.signal(signal.SIGTERM, on_sigterm)
-
-    telegram.handle_updates(should_run, lambda u: _handle_update(publisher, u))
+    app.run_polling(
+        stop_signals=[signal.SIGTERM, signal.SIGINT],
+    )

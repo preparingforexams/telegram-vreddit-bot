@@ -9,5 +9,5 @@ class PublishingException(Exception):
 
 class Publisher(abc.ABC):
     @abc.abstractmethod
-    def publish(self, topic: Topic, message: Message):
+    async def publish(self, topic: Topic, message: Message):
         pass
