@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from nats.aio.client import Client, RawCredentials
+from nats.errors import TimeoutError
 from nats.js.client import JetStreamContext
 from nats.js.errors import ServiceUnavailableError
 
@@ -85,7 +86,10 @@ class NatsSubscriber(Subscriber):
 
         while not (client.is_draining or client.is_closed):
             try:
-                msgs = await sub.fetch()
+                msgs = await sub.fetch(timeout=60)
+            except TimeoutError:
+                _LOG.debug("Subscription fetch timed out")
+                continue
             except ServiceUnavailableError as e:
                 _LOG.error(
                     "NATS service unavailable. Retrying after a short wait...",
