@@ -42,31 +42,36 @@ def _get_info(url: str) -> VideoInfo:
     except DownloadError:
         return VideoInfo(None, [])
 
-    size = info.get("filesize") or info.get("filesize_approx")
-    if size is None:
-        _LOG.debug("Got no file size for URL %s", url)
+    if info is None:
+        size = None
+        thumbnails = []
     else:
-        _LOG.debug(
-            "Got a file size of approx. %d MB for URL %s",
-            round(float(size) / 1_000_000),
-            url,
-        )
+        size = info.get("filesize") or info.get("filesize_approx")
 
-    raw_thumbnails = info.get("thumbnails", [])
-    if raw_thumbnails:
-        _LOG.debug(
-            "Thumbnails for URL %s have the following keys: %s",
-            url,
-            list(raw_thumbnails[0].keys()),
-        )
-    thumbnails = [
-        t["url"]
-        for t in sorted(
-            raw_thumbnails,
-            key=lambda t: t.get("preference") or t.get("filesize") or -999999,
-            reverse=True,
-        )
-    ]
+        if size is None:
+            _LOG.debug("Got no file size for URL %s", url)
+        else:
+            _LOG.debug(
+                "Got a file size of approx. %d MB for URL %s",
+                round(float(size) / 1_000_000),
+                url,
+            )
+
+        raw_thumbnails = info.get("thumbnails", [])
+        if raw_thumbnails:
+            _LOG.debug(
+                "Thumbnails for URL %s have the following keys: %s",
+                url,
+                list(raw_thumbnails[0].keys()),
+            )
+        thumbnails = [
+            t["url"]
+            for t in sorted(
+                raw_thumbnails,
+                key=lambda t: t.get("preference") or t.get("filesize") or -999999,
+                reverse=True,
+            )
+        ]
 
     return VideoInfo(size, thumbnails)
 
