@@ -100,7 +100,7 @@ class TelegramConfig:
 @dataclass
 class EventNatsConfig:
     endpoint: str
-    credentials: str
+    credentials: str | None
     stream_name: str
 
     def get_publish_subject(self, topic: Topic) -> str:
@@ -113,7 +113,7 @@ class EventNatsConfig:
     def from_env(cls, env: Env) -> Self:
         return cls(
             endpoint=env.get_string("ENDPOINT", required=True),
-            credentials=env.get_string("CREDENTIALS", required=True),
+            credentials=env.get_string("CREDENTIALS"),
             stream_name=env.get_string("STREAM_NAME", required=True),
         )
 

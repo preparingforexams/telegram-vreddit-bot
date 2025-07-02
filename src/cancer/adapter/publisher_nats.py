@@ -23,10 +23,12 @@ class NatsPublisher(Publisher):
         client = self._client
         if client is None:
             client = Client()
+            credentials = self.config.credentials
+            raw_credentials = RawCredentials(credentials) if credentials else None
             await client.connect(
                 self.config.endpoint,
                 allow_reconnect=True,
-                user_credentials=RawCredentials(self.config.credentials),
+                user_credentials=raw_credentials,
             )
             self._client = client
         return client
