@@ -7,13 +7,13 @@ from .youtube_url_convert import YoutubeUrlConvertMessage
 
 class Topic(str, Enum):
     download = "download"
-    instaDownload = "instaDownload"
-    youtubeDownload = "youtubeDownload"
-    youtubeUrlConvert = "youtubeUrlConvert"
-    tiktokDownload = "tiktokDownload"
-    twitterDownload = "twitterDownload"
-    vimeoDownload = "vimeoDownload"
-    voiceDownload = "voiceDownload"
+    instaDownload = "insta-download"
+    youtubeDownload = "youtube-download"
+    youtubeUrlConvert = "youtube-url-convert"
+    tiktokDownload = "tiktok-download"
+    twitterDownload = "twitter-download"
+    vimeoDownload = "vimeo-download"
+    voiceDownload = "voice-download"
 
     def create_message(self, chat_id: int, message_id: int, urls: list[str]):
         match self:
