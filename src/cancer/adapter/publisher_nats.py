@@ -90,16 +90,15 @@ class NatsSubscriber(Subscriber):
 
         while not (client.is_draining or client.is_closed):
             try:
-                msgs = await sub.fetch(timeout=60)
+                msgs = await sub.fetch()
             except TimeoutError:
-                _LOG.debug("Subscription fetch timed out")
                 continue
             except ServiceUnavailableError as e:
                 _LOG.error(
                     "NATS service unavailable. Retrying after a short wait...",
                     exc_info=e,
                 )
-                await asyncio.sleep(10)
+                await asyncio.sleep(1)
                 continue
             except Exception as e:
                 _LOG.error("Could not fetch messages", exc_info=e)
