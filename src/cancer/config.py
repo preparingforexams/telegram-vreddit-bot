@@ -136,6 +136,7 @@ class EventConfig:
 class Config:
     download: DownloaderConfig | None
     event: EventConfig
+    running_signal_file: str | None
     sentry: SentryConfig
     telegram: TelegramConfig
 
@@ -144,6 +145,7 @@ class Config:
         return cls(
             download=DownloaderConfig.from_env(env),
             event=EventConfig.from_env(env),
+            running_signal_file=env.get_string("RUNNING_SIGNAL_FILE"),
             sentry=SentryConfig.from_env(env),
             telegram=TelegramConfig.from_env(env.scoped("TELEGRAM_")),
         )

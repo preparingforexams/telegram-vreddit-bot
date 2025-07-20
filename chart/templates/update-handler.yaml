@@ -8,6 +8,11 @@ spec:
   revisionHistoryLimit: 0
   replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
   minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: update-handler
@@ -22,6 +27,11 @@ spec:
         seccompProfile:
           type: RuntimeDefault
         fsGroup: 1000
+      volumes:
+        - name: signaling
+          emptyDir:
+            sizeLimit: 1Mi
+            medium: Memory
       containers:
         - name: app
           image: {{ .Values.image }}:{{ .Values.appVersion }}
@@ -37,9 +47,19 @@ spec:
             requests:
               cpu: 10m
               memory: 128Mi
+          startupProbe:
+            failureThreshold: 20
+            exec:
+              command: [ "test", "-f", "/var/run/bot/is-running"]
+          env:
+            - name: RUNNING_SIGNAL_FILE
+              value: /var/run/bot/is-running
           envFrom:
             - secretRef:
                 name: base
             - secretRef:
                 name: nats
+          volumeMounts:
+            - mountPath: /var/run/bot
+              name: signaling
 {{- end }}

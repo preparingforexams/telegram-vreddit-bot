@@ -3,7 +3,8 @@ import signal
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import cast
+from pathlib import Path
+from typing import Any, cast
 from urllib.parse import ParseResult, urlparse
 
 from bs_nats_updater import create_updater
@@ -261,9 +262,18 @@ def run(config: Config) -> None:
     publisher: Publisher = _init_publisher(config.event)
     cancer_bot = _CancerBot(publisher)
 
+    async def __post_init(_: Any) -> None:
+        signal_file = config.running_signal_file
+        if signal_file is None:
+            return
+
+        with Path(signal_file).open("w"):
+            pass
+
     app = (
         ApplicationBuilder()
         .updater(create_updater(config.telegram.token, config.telegram.updater_nats))
+        .post_init(__post_init)
         .post_stop(lambda _: publisher.close())
         .build()
     )
