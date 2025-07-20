@@ -135,10 +135,10 @@ def _download_videos(
         _LOG.error("YTDL returned error code %d", return_code)
         return []
 
-    cure_names = Path.iterdir(cure_dir)
+    cure_names = list(Path.iterdir(cure_dir))
     _LOG.debug("Downloaded files %s", cure_names)
 
-    return list(cure_names)
+    return cure_names
 
 
 def _get_dimensions(image_path: Path) -> tuple[int, int]:
