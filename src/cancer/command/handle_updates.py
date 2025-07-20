@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import cast
 from urllib.parse import ParseResult, urlparse
 
+from bs_nats_updater import create_updater
 from telegram import MessageEntity, Update, Voice
 from telegram.constants import ChatType, MessageEntityType
 from telegram.ext import ApplicationBuilder, MessageHandler
@@ -262,7 +263,7 @@ def run(config: Config) -> None:
 
     app = (
         ApplicationBuilder()
-        .token(config.telegram.token)
+        .updater(create_updater(config.telegram.token, config.telegram.updater_nats))
         .post_stop(lambda _: publisher.close())
         .build()
     )
