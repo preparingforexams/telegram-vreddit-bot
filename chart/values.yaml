@@ -16,5 +16,3 @@ features:
 scratch:
   storageclass: longhorn-temp
   size: 2Gi
-
-useScalewayNats: false
