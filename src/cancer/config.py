@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Self
 
 from bs_config import Env
+from bs_nats_updater import NatsConfig
 
 from cancer.message import Topic
 
@@ -89,11 +90,13 @@ class SentryConfig:
 @dataclass
 class TelegramConfig:
     token: str
+    updater_nats: NatsConfig
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
             token=env.get_string("API_KEY", required=True),
+            updater_nats=NatsConfig.from_env(env.scoped("NATS_")),
         )
 
 
@@ -125,7 +128,7 @@ class EventConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            nats=EventNatsConfig.from_env(env.scoped("NATS_")),
+            nats=EventNatsConfig.from_env(env.scoped("NATS_CANCER_")),
         )
 
 
