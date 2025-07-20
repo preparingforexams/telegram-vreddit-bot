@@ -7,13 +7,15 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import cast
 
-from httpx import AsyncClient, HTTPStatusError, Response
+from httpx import AsyncClient
 from PIL import Image
+from telegram import Bot, ReplyParameters, Video
+from telegram.error import TelegramError
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
-from cancer import telegram
 from cancer.command.util import initialize_subscriber
 from cancer.config import Config, DownloaderConfig, DownloaderCredentials
 from cancer.message import DownloadMessage
@@ -145,7 +147,8 @@ def _get_dimensions(image_path: Path) -> tuple[int, int]:
 
 
 class _Downloader:
-    def __init__(self, config: DownloaderConfig) -> None:
+    def __init__(self, bot: Bot, config: DownloaderConfig) -> None:
+        self.bot = bot
         self.config = config
 
     async def _convert_cure(self, input_path: Path, output_path: Path) -> None:
@@ -248,30 +251,29 @@ class _Downloader:
             return None
 
         try:
-            message = await telegram.upload_video(
+            message = await self.bot.send_video(
                 chat_id,
                 cure_path,
-                reply_to_message_id=message_id,
-                thumb_path=thumb_path,
-            )
-        except HTTPStatusError as e:
-            response: Response = e.response
-            if response.status_code == 413:
-                _LOG.warning(
-                    "Could not upload video (entity too large)."
-                    " Initial size: %d, cured: %d",
-                    video_file.stat().st_size,
-                    cure_path.stat().st_size,
-                    exc_info=e,
+                reply_parameters=ReplyParameters(
+                    message_id,
                 )
-                return None
-            else:
-                _LOG.warning("Re-raising exception with response %s", response)
-                raise e
+                if message_id
+                else None,
+                thumbnail=thumb_path,
+            )
+        except TelegramError as e:
+            _LOG.error(
+                "Could not upload video (entity too large?)."
+                " Initial size: %d, cured: %d",
+                video_file.stat().st_size,
+                cure_path.stat().st_size,
+                exc_info=e,
+            )
+            return None
 
-        video = message["video"]
-        file_id = video["file_id"]
-        return file_id
+        video = cast(Video, message.video)
+        file_id = video.file_id
+        return Path(file_id)
 
     async def handle_payload(
         self,
@@ -334,8 +336,6 @@ class _Downloader:
 
 
 async def run(config: Config) -> None:
-    telegram.init(config.telegram)
-
     downloader_config = config.download
     if downloader_config is None:
         _LOG.error("No downloader config found")
@@ -348,6 +348,6 @@ async def run(config: Config) -> None:
     topic = downloader_config.topic
     _LOG.debug("Subscribing to topic %s", topic)
     subscriber = await initialize_subscriber(config.event)
-    downloader = _Downloader(downloader_config)
+    downloader = _Downloader(Bot(config.telegram.token), downloader_config)
 
     await subscriber.subscribe(topic, DownloadMessage, downloader.handle_payload)
