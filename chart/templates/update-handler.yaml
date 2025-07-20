@@ -1,21 +1,13 @@
----
 {{ if has "handle_updates" .Values.features  }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: update-handler
-spec:
-  clusterIP: None
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: cancer-update-handler
 spec:
   revisionHistoryLimit: 0
   replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
   minReadySeconds: 5
-  serviceName: update-handler
   selector:
     matchLabels:
       app: update-handler
