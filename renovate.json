@@ -6,6 +6,7 @@
   "packageRules": [
     {
       "groupName": "NATS",
+      "separateMinorPatch": false,
       "matchDepNames": [
         "nats-py",
         "nats",
