@@ -8,6 +8,7 @@ features:
   - download
   - youtube_url_convert
   - telegram_audio_convert
+  - tiktok_download
   - twitter_download
   - vimeo_download
   - youtube_download

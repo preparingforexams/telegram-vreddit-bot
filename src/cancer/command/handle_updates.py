@@ -49,8 +49,8 @@ _CANCERS = [
     Cancer("www.instagram.com", Topic.instaDownload),
     Cancer("facebook.com", Topic.instaDownload),
     Cancer("www.facebook.com", Topic.instaDownload),
-    # Cancer("vm.tiktok.com", Topic.tiktokDownload),
-    # Cancer("www.tiktok.com", Topic.tiktokDownload),
+    Cancer("vm.tiktok.com", Topic.tiktokDownload),
+    Cancer("www.tiktok.com", Topic.tiktokDownload),
     Cancer(
         host="youtube.com",
         path="/shorts/",
