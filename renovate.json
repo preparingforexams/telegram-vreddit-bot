@@ -2,5 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>preparingforexams/renovate-config"
+  ],
+  "packageRules": [
+    {
+      "groupName": "NATS",
+      "matchDepNames": [
+        "nats-py",
+        "bs-nats-updater"
+      ]
+    }
   ]
 }
