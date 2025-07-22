@@ -4,7 +4,7 @@ from enum import Enum, auto
 
 from cancer.message import Message, Topic
 
-type MessageCallback[T] = Callable[[T], Awaitable[Subscriber.Result]]
+type MessageCallback[T] = Callable[[T, int], Awaitable[Subscriber.Result]]
 
 
 class Subscriber(abc.ABC):

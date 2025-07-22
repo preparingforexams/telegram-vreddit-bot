@@ -25,6 +25,7 @@ class _YouTubeUrlConverter:
     async def handle_payload(
         self,
         payload: YoutubeUrlConvertMessage,
+        _: int,
     ) -> Subscriber.Result:
         _LOG.info("Received payload: %s", payload)
 

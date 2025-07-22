@@ -17,7 +17,11 @@ class _TelegramAudioConverter:
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    async def handle_payload(self, payload: VoiceMessage) -> Subscriber.Result:
+    async def handle_payload(
+        self,
+        payload: VoiceMessage,
+        _: int,
+    ) -> Subscriber.Result:
         _LOG.info("Received payload: %s", payload)
 
         if payload.file_size > FileSizeLimit.FILESIZE_DOWNLOAD:

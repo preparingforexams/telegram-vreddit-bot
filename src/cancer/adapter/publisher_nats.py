@@ -113,7 +113,7 @@ class NatsSubscriber(Subscriber):
                     continue
 
                 try:
-                    result = await handle(decoded)
+                    result = await handle(decoded, message.metadata.num_delivered)
                 except Exception as e:
                     _LOG.error(
                         "Handler failed to handle message, requeuing", exc_info=e

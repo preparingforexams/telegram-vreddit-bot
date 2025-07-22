@@ -12,7 +12,7 @@ from typing import cast
 from httpx import AsyncClient
 from PIL import Image
 from telegram import Bot, ReplyParameters, Video
-from telegram.error import TelegramError
+from telegram.error import NetworkError, TelegramError
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
@@ -243,7 +243,14 @@ class _Downloader:
         message_id: int | None,
         thumb_path: Path | None,
         video_file: Path,
+        retries: int = 2,
     ) -> Path | None:
+        _LOG.info(
+            "Uploading video %s (%d retries left)",
+            video_file,
+            retries,
+        )
+
         cure_path = await self._ensure_compatibility(video_file)
 
         if not cure_path:
@@ -261,6 +268,22 @@ class _Downloader:
                 else None,
                 thumbnail=thumb_path,
             )
+        except NetworkError as e:
+            if retries > 0:
+                _LOG.warning("Video upload failed due to network issue. Retrying...")
+                return await self._upload_video(
+                    chat_id,
+                    message_id,
+                    thumb_path,
+                    video_file,
+                    retries - 1,
+                )
+
+            _LOG.error(
+                "Video failed due to network multiple times. Requeueing...",
+                exc_info=e,
+            )
+            raise TryAgainException from e
         except TelegramError as e:
             _LOG.error(
                 "Could not upload video (entity too large?)."
@@ -278,6 +301,7 @@ class _Downloader:
     async def handle_payload(
         self,
         payload: DownloadMessage,
+        attempt: int,
     ) -> Subscriber.Result:
         _LOG.info("Received payload: %s", payload)
 
@@ -313,8 +337,15 @@ class _Downloader:
                             )
                         )
                     except TryAgainException as e:
-                        _LOG.warning("Got exception during download", exc_info=e)
-                        return Subscriber.Result.Requeue
+                        if attempt < 5:
+                            _LOG.warning("Got exception during download", exc_info=e)
+                            return Subscriber.Result.Requeue
+
+                        _LOG.error(
+                            "Want to requeue, but maximum number of attempts reached. Dropping message.",
+                            exc_info=e,
+                        )
+                        return Subscriber.Result.Drop
                     except AccessDeniedException as e:
                         _LOG.error("Was denied access to service", exc_info=e)
                         return Subscriber.Result.Requeue
