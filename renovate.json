@@ -8,6 +8,7 @@
       "groupName": "NATS",
       "matchDepNames": [
         "nats-py",
+        "nats",
         "bs-nats-updater"
       ]
     }
