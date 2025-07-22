@@ -243,6 +243,7 @@ class _Downloader:
         message_id: int | None,
         thumb_path: Path | None,
         video_file: Path,
+        cure_path: Path | None = None,
         retries: int = 2,
     ) -> Path | None:
         _LOG.info(
@@ -251,7 +252,10 @@ class _Downloader:
             retries,
         )
 
-        cure_path = await self._ensure_compatibility(video_file)
+        if cure_path is None:
+            cure_path = await self._ensure_compatibility(video_file)
+        else:
+            _LOG.info("Skipping compatibility check because we already have a cure")
 
         if not cure_path:
             _LOG.info("Not uploading incompatible file %s", video_file)
@@ -276,6 +280,7 @@ class _Downloader:
                     message_id,
                     thumb_path,
                     video_file,
+                    cure_path,
                     retries - 1,
                 )
 
