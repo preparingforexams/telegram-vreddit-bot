@@ -10,6 +10,7 @@ from urllib.parse import ParseResult, urlparse
 from bs_nats_updater import create_updater
 from telegram import MessageEntity, Update, Voice
 from telegram.constants import ChatType, MessageEntityType
+from telegram.error import BadRequest
 from telegram.ext import ApplicationBuilder, MessageHandler
 
 from cancer.adapter.publisher_nats import NatsPublisher
@@ -224,6 +225,15 @@ class _CancerBot:
 
         if not diagnosis_by_treatment:
             _LOG.debug("Message was healthy")
+
+            if is_direct_chat:
+                try:
+                    await message.reply_text(
+                        "Joa weiß nicht, versteh ich jetzt auch nicht so genau 🤷‍♂️"
+                    )
+                except BadRequest:
+                    pass
+
             return
 
         try:
