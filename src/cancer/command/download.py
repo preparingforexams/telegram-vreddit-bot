@@ -337,7 +337,7 @@ class _Downloader:
                             )
                         )
                     except TryAgainException as e:
-                        if attempt < 5:
+                        if attempt < 6:
                             _LOG.warning("Got exception during download", exc_info=e)
                             return Subscriber.Result.Requeue
 

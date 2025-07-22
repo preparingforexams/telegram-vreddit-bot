@@ -127,8 +127,13 @@ class NatsSubscriber(Subscriber):
                             _LOG.warning("Dropping message")
                             await message.term()
                         case Subscriber.Result.Requeue:
-                            _LOG.info("Requeuing message due to handler result")
-                            await message.nak()
+                            # 20, 60, 180, 540, 1620
+                            delay = 20 * pow(3, message.metadata.num_delivered - 1)
+                            _LOG.info(
+                                "Requeuing message due to handler result (delay: %d seconds)",
+                                delay,
+                            )
+                            await message.nak(delay=delay)
                         case _:
                             raise ValueError(f"Unknown event handler result: {result}")
 
