@@ -36,6 +36,9 @@ subscribers:
     enableScratchSpace: true
     env:
       DOWNLOAD_TYPE: tiktok
+  url-alias:
+    args:
+      url-alias-resolution
   vimeo:
     args:
       - download
