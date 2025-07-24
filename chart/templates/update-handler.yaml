@@ -1,4 +1,3 @@
-{{ if has "handle_updates" .Values.features  }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -62,4 +61,4 @@ spec:
           volumeMounts:
             - mountPath: /var/run/bot
               name: signaling
-{{- end }}
+

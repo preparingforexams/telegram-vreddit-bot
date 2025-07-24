@@ -1,4 +1,3 @@
-{{ if has "insta_download" .Values.features  }}
 ---
 apiVersion: v1
 kind: Service
@@ -83,4 +82,3 @@ spec:
         - name: cookie
           secret:
             secretName: insta-cookies
-{{ end }}
