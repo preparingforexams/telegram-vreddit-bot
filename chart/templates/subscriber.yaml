@@ -1,12 +1,12 @@
+{{- range $id, $subscriber := .Values.subscribers }}
 ---
-{{ if has "telegram_audio_convert" .Values.features  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cancer-telegram-audio-converter
+  name: {{ $id }}
 spec:
+  replicas: {{ if $.Values.isEnabled }}1{{ else }}0{{ end }}
   revisionHistoryLimit: 0
-  replicas: {{ if .Values.isEnabled }}1{{ else }}0{{ end }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -14,11 +14,11 @@ spec:
       maxUnavailable: 100%
   selector:
     matchLabels:
-      app: telegram-audio-converter
+      app: sub-{{ $id }}
   template:
     metadata:
       labels:
-        app: telegram-audio-converter
+        app: sub-{{ $id }}
     spec:
       serviceAccountName: cancer
       securityContext:
@@ -28,27 +28,32 @@ spec:
         fsGroup: 1000
       containers:
         - name: app
-          image: {{ .Values.image }}:{{ .Values.appVersion }}
-          args:
-            - telegram_audio_convert
+          image: {{ $.Values.image }}:{{ $.Values.appVersion }}
+          args: {{ $subscriber.args | toJson }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
-          resources:
-            limits:
-              cpu: 100m
-            requests:
-              cpu: 10m
-              memory: 128Mi
+          resources: {{ $subscriber.resources | default $.Values.defaultResources | toJson }}
+          env:
+            {{- range $k, $v := ($subscriber.env | default dict) }}
+            - name: {{ $k }}
+              value: {{ $v }}
+            {{- end }}
+            {{- if $subscriber.enableScratchSpace }}
+            - name: STORAGE_DIR
+              value: "/scratch"
+            {{- end }}
           envFrom:
             - secretRef:
                 name: base
             - secretRef:
                 name: nats
+          {{- if $subscriber.enableScratchSpace }}
           volumeMounts:
-            - mountPath: "/tmp"
+            - mountPath: "/scratch"
               name: downloads
+          {{- end }}
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
 {{ end }}

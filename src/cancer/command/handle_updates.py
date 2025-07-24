@@ -41,8 +41,6 @@ class Cancer:
 
 
 _CANCERS = [
-    Cancer(host="twitter.com", treatment=Topic.twitterDownload),
-    Cancer(host="mobile.twitter.com", treatment=Topic.twitterDownload),
     Cancer("v.redd.it", Topic.download),
     Cancer("www.reddit.com", Topic.download),
     Cancer("cdn.discordapp.com", Topic.download),

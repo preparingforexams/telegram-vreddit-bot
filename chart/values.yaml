@@ -3,6 +3,73 @@ image: ghcr.io/preparingforexams/telegram-vreddit-bot
 
 isEnabled: true
 
+defaultResources:
+  limits:
+    cpu: 800m
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+subscribers:
+  generic-downloader:
+    args:
+      - download
+    resources:
+      limits:
+        cpu: "1"
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  telegram-audio:
+    args:
+      - telegram_audio_convert
+    enableScratchSpace: true
+    resources:
+      limits:
+        cpu: 100m
+      requests:
+        cpu: 10m
+        memory: 128Mi
+  tiktok:
+    args:
+      - download
+    enableScratchSpace: true
+    env:
+      DOWNLOAD_TYPE: tiktok
+  vimeo:
+    args:
+      - download
+    enableScratchSpace: true
+    env:
+      DOWNLOAD_TYPE: vimeo
+    resources:
+      limits:
+        cpu: "3"
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  youtube-converter:
+    args:
+      - youtube_url_convert
+    resources:
+      limits:
+        cpu: 100m
+      requests:
+        cpu: 10m
+        memory: 128Mi
+  youtube-downloader:
+    args:
+      - download
+    enableScratchSpace: true
+    env:
+      DOWNLOAD_TYPE: youtube
+    resources:
+      limits:
+        cpu: "3"
+      requests:
+        cpu: 100m
+        memory: 512Mi
+
 features:
   - handle_updates
   - download

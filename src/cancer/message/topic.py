@@ -11,7 +11,6 @@ class Topic(str, Enum):
     youtubeDownload = "youtube-download"
     youtubeUrlConvert = "youtube-url-convert"
     tiktokDownload = "tiktok-download"
-    twitterDownload = "twitter-download"
     urlAliasResolution = "url-alias-resolution"
     vimeoDownload = "vimeo-download"
     voiceDownload = "voice-download"
