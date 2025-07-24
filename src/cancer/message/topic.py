@@ -1,5 +1,6 @@
 from enum import Enum
 
+from . import Message
 from .download import DownloadMessage
 from .voice import VoiceMessage
 from .youtube_url_convert import YoutubeUrlConvertMessage
@@ -15,7 +16,12 @@ class Topic(str, Enum):
     vimeoDownload = "vimeo-download"
     voiceDownload = "voice-download"
 
-    def create_message(self, chat_id: int, message_id: int, urls: list[str]):
+    def create_message(
+        self,
+        chat_id: int,
+        message_id: int,
+        urls: list[str],
+    ) -> Message:
         match self:
             case Topic.youtubeUrlConvert:
                 return YoutubeUrlConvertMessage(chat_id, message_id, urls)
@@ -32,7 +38,6 @@ class Topic(str, Enum):
                 | Topic.instaDownload
                 | Topic.youtubeDownload
                 | Topic.tiktokDownload
-                | Topic.twitterDownload
                 | Topic.vimeoDownload
             ):
                 return DownloadMessage(chat_id, message_id, urls)

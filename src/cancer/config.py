@@ -43,8 +43,6 @@ class DownloaderConfig:
                 return Topic.youtubeDownload
             case "tiktok":
                 return Topic.tiktokDownload
-            case "twitter":
-                return Topic.twitterDownload
             case "vimeo":
                 return Topic.vimeoDownload
             case download_type:
