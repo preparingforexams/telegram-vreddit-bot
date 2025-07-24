@@ -43,26 +43,32 @@ def app(ctx):
     ctx.obj = config
 
 
-@app.command("handle_updates")
+@app.command
 @click.pass_obj
 def handle_updates(config: Config):
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     command.handle_updates.run(config)
 
 
-@app.command("download")
+@app.command
 @click.pass_obj
 def download(config: Config):
     uvloop.run(command.download.run(config))
 
 
-@app.command("telegram_audio_convert")
+@app.command
 @click.pass_obj
 def telegram_audio_convert(config: Config):
     uvloop.run(command.telegram_audio_convert.run(config))
 
 
-@app.command("youtube_url_convert")
+@app.command
+@click.pass_obj
+def url_alias_resolution(config: Config):
+    uvloop.run(command.url_alias_resolution.run(config))
+
+
+@app.command
 @click.pass_obj
 def youtube_url_convert(config: Config):
     uvloop.run(command.youtube_url_convert.run(config))

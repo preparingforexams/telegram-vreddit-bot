@@ -22,7 +22,7 @@ subscribers:
         memory: 128Mi
   telegram-audio:
     args:
-      - telegram_audio_convert
+      - telegram-audio-convert
     enableScratchSpace: true
     resources:
       limits:
@@ -50,7 +50,7 @@ subscribers:
         memory: 256Mi
   youtube-converter:
     args:
-      - youtube_url_convert
+      - youtube-url-convert
     resources:
       limits:
         cpu: 100m
@@ -69,17 +69,6 @@ subscribers:
       requests:
         cpu: 100m
         memory: 512Mi
-
-features:
-  - handle_updates
-  - download
-  - youtube_url_convert
-  - telegram_audio_convert
-  - tiktok_download
-  - twitter_download
-  - vimeo_download
-  - youtube_download
-  - insta_download
 
 scratch:
   storageclass: longhorn-temp
