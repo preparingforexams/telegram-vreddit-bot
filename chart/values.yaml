@@ -38,7 +38,7 @@ subscribers:
       DOWNLOAD_TYPE: tiktok
   url-alias:
     args:
-      url-alias-resolution
+      - url-alias-resolution
   vimeo:
     args:
       - download
