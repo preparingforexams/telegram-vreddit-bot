@@ -6,7 +6,7 @@ from telegram import Bot, ReplyParameters
 from cancer.command.util import initialize_subscriber
 from cancer.config import Config
 from cancer.message import Topic
-from cancer.message.youtube_url_convert import YoutubeUrlConvertMessage
+from cancer.message.youtube_url_convert import UrlConvertMessage
 from cancer.port.subscriber import Subscriber
 
 _LOG = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class _YouTubeUrlConverter:
 
     async def handle_payload(
         self,
-        payload: YoutubeUrlConvertMessage,
+        payload: UrlConvertMessage,
         _: int,
     ) -> Subscriber.Result:
         _LOG.info("Received payload: %s", payload)
@@ -51,6 +51,6 @@ async def run(config: Config) -> None:
 
     await subscriber.subscribe(
         topic,
-        YoutubeUrlConvertMessage,
+        UrlConvertMessage,
         converter.handle_payload,
     )

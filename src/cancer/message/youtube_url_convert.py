@@ -4,5 +4,5 @@ from .message import Message
 
 
 @dataclass
-class YoutubeUrlConvertMessage(Message):
+class UrlConvertMessage(Message):
     urls: list[str]
