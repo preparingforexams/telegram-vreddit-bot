@@ -98,6 +98,14 @@ _CANCERS = [
         treatment=None,
         private_treatment=Topic.vimeoDownload,
     ),
+    Cancer(
+        host="share.google",
+        treatment=Topic.urlAliasResolution,
+    ),
+    Cancer(
+        host="search.app",
+        treatment=Topic.urlAliasResolution,
+    ),
 ]
 
 
