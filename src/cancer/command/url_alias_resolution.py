@@ -2,7 +2,8 @@ import asyncio
 import logging
 
 import httpx
-from telegram import Bot, ReplyParameters
+from telegram import Bot, LinkPreviewOptions, ReplyParameters
+from telegram.error import BadRequest
 
 from cancer.command.util import initialize_subscriber
 from cancer.config import Config
@@ -54,13 +55,22 @@ class _UrlAliasResolver:
 
         resolved_urls = [t.result() for t in resolve_tasks]
         url_list_text = "\n".join(url for url in resolved_urls if url is not None)
-        await self.bot.send_message(
-            chat_id=payload.chat_id,
-            reply_parameters=ReplyParameters(
-                payload.message_id,
-            ),
-            text=url_list_text,
-        )
+        try:
+            await self.bot.send_message(
+                chat_id=payload.chat_id,
+                reply_parameters=ReplyParameters(
+                    payload.message_id,
+                ),
+                link_preview_options=LinkPreviewOptions(
+                    is_disabled=True,
+                ),
+                text=url_list_text,
+            )
+        except BadRequest:
+            _LOG.warning(
+                "Could not send message as reply, assuming the original is gone",
+            )
+            return Subscriber.Result.Drop
 
         return Subscriber.Result.Ack
 
