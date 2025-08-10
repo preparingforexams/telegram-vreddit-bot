@@ -30,7 +30,7 @@ class _TelegramAudioConverter:
 
         with tempfile.TemporaryDirectory() as directory:
             tg_file = await self.bot.get_file(payload.file_id)
-            filename = tg_file.file_path or f"voice-{payload.file_id}.ogg"
+            filename = f"voice-{payload.file_id}.ogg"
             file_path = Path(directory) / filename
             await tg_file.download_to_drive(file_path)
 
