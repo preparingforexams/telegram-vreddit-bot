@@ -36,10 +36,10 @@ class _TelegramAudioConverter:
 
             _LOG.info("Downloaded file of size %d", tg_file.file_size)
 
-            await self.bot.send_audio(
+            await self.bot.send_document(
                 chat_id=payload.chat_id,
                 reply_to_message_id=payload.message_id,
-                audio=file_path,
+                document=file_path,
                 filename=filename,
             )
 
