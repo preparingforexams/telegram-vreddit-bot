@@ -66,6 +66,8 @@ kind: ScaledObject
 metadata:
   name: {{ $id }}
 spec:
+  maxReplicaCount: 1
+  minReplicaCount: 0
   scaleTargetRef:
     name: {{ $id }}
   triggers:
