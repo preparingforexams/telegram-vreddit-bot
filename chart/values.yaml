@@ -56,6 +56,7 @@ subscribers:
         cpu: "1"
         memory: 512Mi
   url-alias:
+    kedaConsumer: url-alias-resolution
     args:
       - url-alias-resolution
   vimeo:
@@ -73,6 +74,7 @@ subscribers:
         cpu: "2"
         memory: 512Mi
   youtube-converter:
+    kedaConsumer: youtube-url-convert
     args:
       - youtube-url-convert
     resources:
