@@ -91,6 +91,7 @@ metadata:
 spec:
   maxReplicaCount: 1
   minReplicaCount: 0
+  cooldownPeriod: 120
   scaleTargetRef:
     name: cancer-insta-downloader
   triggers:
