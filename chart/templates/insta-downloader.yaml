@@ -62,7 +62,7 @@ spec:
             - name: STORAGE_DIR
               value: "/downloads"
             - name: DOWNLOAD_TYPE
-              value: insta
+              value: insta-download
             - name: COOKIE_FILE
               value: /cookies/insta-cookies.dat
           envFrom:
