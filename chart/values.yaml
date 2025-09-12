@@ -17,7 +17,7 @@ nats:
 
 subscribers:
   generic-downloader:
-    enableKeda: true
+    kedaConsumer: download
     args:
       - download
     enableScratchSpace: true
@@ -31,6 +31,7 @@ subscribers:
         cpu: "1"
         memory: 512Mi
   telegram-audio:
+    kedaConsumer: voice-download
     args:
       - telegram-audio-convert
     enableScratchSpace: true
@@ -41,7 +42,7 @@ subscribers:
         cpu: 10m
         memory: 128Mi
   tiktok:
-    enableKeda: true
+    kedaConsumer: tiktok-download
     args:
       - download
     enableScratchSpace: true
@@ -58,7 +59,7 @@ subscribers:
     args:
       - url-alias-resolution
   vimeo:
-    enableKeda: true
+    kedaConsumer: vimeo-download
     args:
       - download
     enableScratchSpace: true
@@ -81,7 +82,7 @@ subscribers:
         cpu: 10m
         memory: 128Mi
   youtube-downloader:
-    enableKeda: true
+    kedaConsumer: youtube-download
     args:
       - download
     enableScratchSpace: true

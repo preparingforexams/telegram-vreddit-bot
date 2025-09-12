@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: {{ $id }}
 spec:
-  {{- if not $subscriber.enableKeda }}
+  {{- if not $subscriber.kedaConsumer }}
   replicas: {{ if $.Values.isEnabled }}1{{ else }}0{{ end }}
   {{- end }}
   revisionHistoryLimit: 0
@@ -59,7 +59,7 @@ spec:
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
 
-{{- if $subscriber.enableKeda }}
+{{- if $subscriber.kedaConsumer }}
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -76,6 +76,6 @@ spec:
         natsServerMonitoringEndpoint: {{ $.Values.nats.monitorEndpoint | quote }}
         account: "$G"
         stream: {{ $.Values.nats.streamName | quote }}
-        consumer: {{ $subscriber.env.DOWNLOAD_TYPE | quote }}
+        consumer: {{ $subscriber.kedaConsumer | quote }}
 {{- end }}
 {{- end }}
