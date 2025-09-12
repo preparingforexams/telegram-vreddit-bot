@@ -55,9 +55,10 @@ spec:
           resources:
             limits:
               cpu: "2"
+              memory: 512Mi
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: "2"
+              memory: 512Mi
           env:
             - name: STORAGE_DIR
               value: "/downloads"
@@ -82,3 +83,20 @@ spec:
         - name: cookie
           secret:
             secretName: insta-cookies
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: cancer-insta-downloader
+spec:
+  maxReplicaCount: 1
+  minReplicaCount: 0
+  scaleTargetRef:
+    name: cancer-insta-downloader
+  triggers:
+    - type: nats-jetstream
+      metadata:
+        natsServerMonitoringEndpoint: {{ $.Values.nats.monitorEndpoint | quote }}
+        account: "$G"
+        stream: {{ $.Values.nats.streamName | quote }}
+        consumer: insta-download
