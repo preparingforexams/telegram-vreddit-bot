@@ -16,7 +16,7 @@ nats:
 
 subscribers:
   generic-downloader:
-    enableKeda: false
+    enableKeda: true
     args:
       - download
     enableScratchSpace: true
