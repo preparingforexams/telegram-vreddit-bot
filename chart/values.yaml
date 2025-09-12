@@ -26,10 +26,10 @@ subscribers:
     resources:
       limits:
         cpu: "1"
-        memory: 512Mi
+        memory: 2048Mi
       requests:
         cpu: "1"
-        memory: 512Mi
+        memory: 2048Mi
   telegram-audio:
     kedaConsumer: voice-download
     args:
@@ -51,10 +51,10 @@ subscribers:
     resources:
       limits:
         cpu: "1"
-        memory: 512Mi
+        memory: 2048Mi
       requests:
         cpu: "1"
-        memory: 512Mi
+        memory: 2048Mi
   url-alias:
     kedaConsumer: url-alias-resolution
     args:
@@ -69,10 +69,10 @@ subscribers:
     resources:
       limits:
         cpu: "2"
-        memory: 512Mi
+        memory: 2048Mi
       requests:
         cpu: "2"
-        memory: 512Mi
+        memory: 2048Mi
   youtube-converter:
     kedaConsumer: youtube-url-convert
     args:
@@ -93,10 +93,10 @@ subscribers:
     resources:
       limits:
         cpu: "2"
-        memory: 512Mi
+        memory: 2048Mi
       requests:
         cpu: "2"
-        memory: 512Mi
+        memory: 2048Mi
 
 scratch:
   storageclass: longhorn-temp
