@@ -73,7 +73,7 @@ spec:
   triggers:
     - type: nats-jetstream
       metadata:
-        natsServerMonitoringEndpoint: {{ $.Values.nats.endpoint | quote }}
+        natsServerMonitoringEndpoint: {{ $.Values.nats.monitorEndpoint | quote }}
         account: "$G"
         stream: {{ $.Values.nats.streamName | quote }}
         consumer: {{ printf "%s.%s" $.Values.nats.streamName $subscriber.env.DOWNLOAD_TYPE | quote }}
