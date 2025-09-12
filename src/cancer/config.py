@@ -36,20 +36,14 @@ class DownloaderConfig:
 
     @staticmethod
     def _parse_topic(topic_name: str) -> Topic:
-        match topic_name:
-            case "insta":
-                return Topic.instaDownload
-            case "youtube":
-                return Topic.youtubeDownload
-            case "tiktok":
-                return Topic.tiktokDownload
-            case "vimeo":
-                return Topic.vimeoDownload
-            case download_type:
-                _LOG.info(
-                    "Using generic download topic for download type %s", download_type
-                )
-                return Topic.download
+        try:
+            return Topic(topic_name)
+        except ValueError:
+            _LOG.error(
+                "Could not parse topic '%s', falling back to generic",
+                topic_name,
+            )
+            return Topic.download
 
     @classmethod
     def from_env(cls, env: Env) -> Self | None:
@@ -61,7 +55,7 @@ class DownloaderConfig:
                 ),
                 storage_dir=Path(env.get_string("STORAGE_DIR", default="downloads")),
                 topic=cls._parse_topic(
-                    env.get_string("DOWNLOAD_TYPE", default="generic")
+                    env.get_string("DOWNLOAD_TYPE", default="download")
                 ),
                 upload_chat_id=int(
                     env.get_string("UPLOAD_CHAT_ID", default="1259947317")

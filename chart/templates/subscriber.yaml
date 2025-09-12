@@ -5,7 +5,9 @@ kind: Deployment
 metadata:
   name: {{ $id }}
 spec:
+  {{- if not $subscriber.enableKeda }}
   replicas: {{ if $.Values.isEnabled }}1{{ else }}0{{ end }}
+  {{- end }}
   revisionHistoryLimit: 0
   strategy:
     type: RollingUpdate
@@ -56,4 +58,21 @@ spec:
           {{- end }}
       volumes:
         - {{ include "downloads.volume" $ | fromYaml | toJson }}
-{{ end }}
+
+{{- if $subscriber.enableKeda }}
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: sub-{{ $id }}
+spec:
+  scaleTargetRef:
+    name: sub-{{ $id }}
+  triggers:
+    - type: nats-jetstream
+      metadata:
+        natsServerMonitoringEndpoint: {{ $.Values.nats.endpoint | quote }}
+        stream: {{ $.Values.nats.streamName | quote }}
+        consumer: {{ printf "%s.%s" $.Values.nats.streamName $subscriber.env.DOWNLOAD_TYPE | quote }}
+{{- end }}
+{{- end }}

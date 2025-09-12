@@ -10,10 +10,18 @@ defaultResources:
     cpu: 50m
     memory: 128Mi
 
+nats:
+  endpoint: "nats.nats-system.svc.cluster.local:4222"
+  streamName: cancers
+
 subscribers:
   generic-downloader:
+    enableKeda: false
     args:
       - download
+    enableScratchSpace: true
+    env:
+      DOWNLOAD_TYPE: download
     resources:
       limits:
         cpu: "1"
@@ -35,7 +43,7 @@ subscribers:
       - download
     enableScratchSpace: true
     env:
-      DOWNLOAD_TYPE: tiktok
+      DOWNLOAD_TYPE: tiktok-download
   url-alias:
     args:
       - url-alias-resolution
@@ -44,7 +52,7 @@ subscribers:
       - download
     enableScratchSpace: true
     env:
-      DOWNLOAD_TYPE: vimeo
+      DOWNLOAD_TYPE: vimeo-download
     resources:
       limits:
         cpu: "3"
@@ -65,7 +73,7 @@ subscribers:
       - download
     enableScratchSpace: true
     env:
-      DOWNLOAD_TYPE: youtube
+      DOWNLOAD_TYPE: youtube-download
     resources:
       limits:
         cpu: "3"
