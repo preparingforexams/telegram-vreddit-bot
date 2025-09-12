@@ -64,10 +64,10 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: sub-{{ $id }}
+  name: {{ $id }}
 spec:
   scaleTargetRef:
-    name: sub-{{ $id }}
+    name: {{ $id }}
   triggers:
     - type: nats-jetstream
       metadata:
