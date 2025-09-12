@@ -94,6 +94,7 @@ spec:
   cooldownPeriod: 120
   scaleTargetRef:
     name: cancer-insta-downloader
+    kind: StatefulSet
   triggers:
     - type: nats-jetstream
       metadata:
