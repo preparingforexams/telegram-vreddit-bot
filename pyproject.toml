@@ -16,7 +16,7 @@ dependencies = [
     "httpx ==0.28.*",
     "nats-py ==2.11.0",
     "Pillow >=11.0.0, <12.0.0",
-    "python-telegram-bot ==22.3",
+    "python-telegram-bot ==22.4",
     "sentry-sdk >=2.0.0, <3.0.0",
     "uvloop ==0.21.*",
     "yt-dlp [default] ==2025.9.5",
