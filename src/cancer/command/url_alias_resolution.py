@@ -15,7 +15,7 @@ _LOG = logging.getLogger(__name__)
 
 
 async def _resolve_url(client: httpx.AsyncClient, url: str) -> str | None:
-    request = client.build_request("GET", url)
+    request: httpx.Request | None = client.build_request("GET", url)
     current_url = url
     while request is not None:
         current_url = str(request.url)

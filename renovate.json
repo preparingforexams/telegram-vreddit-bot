@@ -12,6 +12,13 @@
         "nats",
         "bs-nats-updater"
       ]
+    },
+    {
+      "groupName": "yt-dlp",
+      "matchDepNames": [
+        "yt-dlp",
+        "types-yt-dlp"
+      ]
     }
   ]
 }

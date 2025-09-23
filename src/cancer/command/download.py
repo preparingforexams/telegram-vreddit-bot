@@ -44,11 +44,15 @@ def _get_info(url: str) -> VideoInfo:
     except DownloadError:
         return VideoInfo(None, [])
 
+    size: int | None
     if info is None:
         size = None
         thumbnails = []
     else:
-        size = info.get("filesize") or info.get("filesize_approx")
+        size = cast(
+            int | None,
+            info.get("filesize") or info.get("filesize_approx"),
+        )
 
         if size is None:
             _LOG.debug("Got no file size for URL %s", url)
@@ -59,7 +63,7 @@ def _get_info(url: str) -> VideoInfo:
                 url,
             )
 
-        raw_thumbnails = info.get("thumbnails", [])
+        raw_thumbnails = cast(list, info.get("thumbnails", []))
         if raw_thumbnails:
             _LOG.debug(
                 "Thumbnails for URL %s have the following keys: %s",
@@ -106,10 +110,10 @@ def _download_videos(
     if cookie_file := credentials.cookie_file:
         params["cookies"] = cookie_file
 
-    ytdl = YoutubeDL(params=params)
+    ytdl = YoutubeDL(params=params)  # type: ignore[arg-type]
 
     try:
-        return_code = ytdl.download([url])
+        return_code = ytdl.download([url])  # type: ignore[func-returns-value]
     except DownloadError as e:
         cause = e.exc_info
         if isinstance(cause, UnsupportedError):

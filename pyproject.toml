@@ -19,16 +19,17 @@ dependencies = [
     "python-telegram-bot ==22.4",
     "sentry-sdk >=2.0.0, <3.0.0",
     "uvloop ==0.21.*",
-    "yt-dlp [default] ==2025.9.23",
+    "yt-dlp [default]==2025.9.5",
 ]
 
 [dependency-groups]
 dev = [
+    "mypy==1.18.*",
     "pytest >=8.0.0, <9.0.0",
     "ruff ==0.13.1",
     "types-requests >=2.28.11, <3.0.0",
     "types-Pillow >=10.0.0, <11.0.0",
-    "pyright==1.1.403",
+    "types-yt-dlp==2025.9.5.*",
 ]
 
 [[tool.uv.index]]
