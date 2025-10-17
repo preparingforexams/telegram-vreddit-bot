@@ -16,6 +16,9 @@ RUN apt-get update -qq \
 RUN groupadd --system --gid 1000 app
 RUN useradd --system --uid 1000 --gid app --create-home --home-dir /app app
 
+ARG DENO_VERSION="2.5.4"
+COPY --from="docker.io/denoland/deno:${DENO_VERSION}" /usr/bin/deno /usr/bin/deno
+
 USER 1000
 WORKDIR /app
 
