@@ -12,7 +12,7 @@ from typing import cast
 from httpx import AsyncClient
 from PIL import Image
 from telegram import Bot, ReplyParameters, Video
-from telegram.error import NetworkError, TelegramError
+from telegram.error import BadRequest, NetworkError, TelegramError
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
 
@@ -307,6 +307,23 @@ class _Downloader:
         file_id = video.file_id
         return Path(file_id)
 
+    async def _notify_no_videos(self, *, chat_id: int, message_id: int) -> None:
+        try:
+            await self.bot.set_message_reaction(
+                chat_id=chat_id, message_id=message_id, reaction="🗿"
+            )
+            if chat_id > 0:
+                # private chat
+                await self.bot.send_message(
+                    chat_id=chat_id,
+                    reply_parameters=ReplyParameters(
+                        message_id,
+                    ),
+                    text="Couldn't find any videos there",
+                )
+        except BadRequest:
+            _LOG.warning("Could not set reaction on message (probably deleted)")
+
     async def handle_payload(
         self,
         payload: DownloadMessage,
@@ -364,6 +381,10 @@ class _Downloader:
 
                 if not files:
                     _LOG.warning("Download returned no videos")
+                    await self._notify_no_videos(
+                        chat_id=payload.chat_id,
+                        message_id=payload.message_id,
+                    )
                     return Subscriber.Result.Ack
 
                 for thumb_file, file in files:
