@@ -324,6 +324,23 @@ class _Downloader:
         except BadRequest:
             _LOG.warning("Could not set reaction on message (probably deleted)")
 
+    async def _notify_video_too_large(self, *, chat_id: int, message_id: int) -> None:
+        try:
+            await self.bot.set_message_reaction(
+                chat_id=chat_id, message_id=message_id, reaction="🐳"
+            )
+            if chat_id > 0:
+                # private chat
+                await self.bot.send_message(
+                    chat_id=chat_id,
+                    reply_parameters=ReplyParameters(
+                        message_id,
+                    ),
+                    text="That video is too large for Telegram's bot API",
+                )
+        except BadRequest:
+            _LOG.warning("Could not set reaction on message (probably deleted)")
+
     async def handle_payload(
         self,
         payload: DownloadMessage,
@@ -336,11 +353,13 @@ class _Downloader:
         with TemporaryDirectory(dir=str(self.config.storage_dir)) as folder_path:
             folder = Path(folder_path)
             async with _busy_lock:
+                found_too_large = False
                 files: list[tuple[Path | None, Path]] = []
                 for url in payload.urls:
                     info = await _run_blocking(lambda: _get_info(url))
                     if info.size is not None and info.size > self.config.max_file_size:
                         _LOG.info("Skipping URL %s because it's too large", url)
+                        found_too_large = True
                         continue
 
                     thumb_file: Path | None = None
@@ -381,10 +400,16 @@ class _Downloader:
 
                 if not files:
                     _LOG.warning("Download returned no videos")
-                    await self._notify_no_videos(
-                        chat_id=payload.chat_id,
-                        message_id=payload.message_id,
-                    )
+                    if found_too_large:
+                        await self._notify_video_too_large(
+                            chat_id=payload.chat_id,
+                            message_id=payload.message_id,
+                        )
+                    else:
+                        await self._notify_no_videos(
+                            chat_id=payload.chat_id,
+                            message_id=payload.message_id,
+                        )
                     return Subscriber.Result.Ack
 
                 for thumb_file, file in files:
