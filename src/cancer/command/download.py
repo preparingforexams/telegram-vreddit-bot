@@ -307,36 +307,28 @@ class _Downloader:
         file_id = video.file_id
         return Path(file_id)
 
-    async def _notify_no_videos(self, *, chat_id: int, message_id: int) -> None:
+    async def _notify_failure(
+        self,
+        *,
+        chat_id: int,
+        message_id: int,
+        reaction: str,
+        private_chat_message: str | None = None,
+    ) -> None:
         try:
             await self.bot.set_message_reaction(
-                chat_id=chat_id, message_id=message_id, reaction="🗿"
+                chat_id=chat_id,
+                message_id=message_id,
+                reaction=reaction,
             )
-            if chat_id > 0:
+            if private_chat_message and chat_id > 0:
                 # private chat
                 await self.bot.send_message(
                     chat_id=chat_id,
                     reply_parameters=ReplyParameters(
                         message_id,
                     ),
-                    text="Couldn't find any videos there",
-                )
-        except BadRequest:
-            _LOG.warning("Could not set reaction on message (probably deleted)")
-
-    async def _notify_video_too_large(self, *, chat_id: int, message_id: int) -> None:
-        try:
-            await self.bot.set_message_reaction(
-                chat_id=chat_id, message_id=message_id, reaction="🐳"
-            )
-            if chat_id > 0:
-                # private chat
-                await self.bot.send_message(
-                    chat_id=chat_id,
-                    reply_parameters=ReplyParameters(
-                        message_id,
-                    ),
-                    text="That video is too large for Telegram's bot API",
+                    text=private_chat_message,
                 )
         except BadRequest:
             _LOG.warning("Could not set reaction on message (probably deleted)")
@@ -401,15 +393,20 @@ class _Downloader:
                 if not files:
                     _LOG.warning("Download returned no videos")
                     if found_too_large:
-                        await self._notify_video_too_large(
-                            chat_id=payload.chat_id,
-                            message_id=payload.message_id,
+                        reaction = "🐳"
+                        private_message = (
+                            "Das Video ist zu groß für die Telegram Bot API"
                         )
                     else:
-                        await self._notify_no_videos(
-                            chat_id=payload.chat_id,
-                            message_id=payload.message_id,
-                        )
+                        reaction = "🗿"
+                        private_message = "Konnte keine Videos finden"
+
+                    await self._notify_failure(
+                        chat_id=payload.chat_id,
+                        message_id=payload.message_id,
+                        reaction=reaction,
+                        private_chat_message=private_message,
+                    )
                     return Subscriber.Result.Ack
 
                 for thumb_file, file in files:
