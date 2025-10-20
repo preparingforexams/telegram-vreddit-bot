@@ -140,7 +140,7 @@ def _download_videos(
         return []
 
     cure_names = list(Path.iterdir(cure_dir))
-    _LOG.debug("Downloaded files %s", cure_names)
+    _LOG.info("Downloaded files %s", cure_names)
 
     return cure_names
 
