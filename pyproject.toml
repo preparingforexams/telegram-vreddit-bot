@@ -19,7 +19,7 @@ dependencies = [
     "python-telegram-bot ==22.5",
     "sentry-sdk >=2.0.0, <3.0.0",
     "uvloop ==0.22.*",
-    "yt-dlp [default]==2025.10.14",
+    "yt-dlp [default]==2025.10.22",
 ]
 
 [dependency-groups]
