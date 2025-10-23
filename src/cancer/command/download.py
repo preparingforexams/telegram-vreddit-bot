@@ -108,7 +108,7 @@ def _download_videos(
         params["password"] = password
 
     if cookie_file := credentials.cookie_file:
-        params["cookies"] = cookie_file
+        params["cookies"] = str(cookie_file)
 
     ytdl = YoutubeDL(params=params)  # type: ignore[arg-type]
 

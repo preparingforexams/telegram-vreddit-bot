@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+from typing import Self, cast
 
 from bs_config import Env
 from bs_nats_updater import NatsConfig
@@ -53,8 +53,14 @@ class DownloaderConfig:
                 max_file_size=int(
                     env.get_string("max-download-file-size", default="40_000_000")
                 ),
-                storage_dir=env.get_string("storage-dir", default=Path("downloads"), transform=Path),
-                topic=                    env.get_string("download-type", default="download", transform=cls._parse_topic),
+                storage_dir=env.get_string(
+                    "storage-dir", default=Path("downloads"), transform=Path
+                ),
+                topic=env.get_string(
+                    "download-type",
+                    default=cast(Topic, Topic.download),
+                    transform=cls._parse_topic,
+                ),
                 upload_chat_id=int(
                     env.get_string("upload-chat-id", default="1259947317")
                 ),
