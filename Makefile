@@ -9,4 +9,4 @@ lint:
 
 .PHONY: test
 test:
-	uv run pytest src/
+	uv run pytest

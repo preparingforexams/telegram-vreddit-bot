@@ -15,14 +15,14 @@ _LOG = logging.getLogger(__name__)
 class DownloaderCredentials:
     username: str | None
     password: str | None
-    cookie_file: str | None
+    cookie_file: Path | None
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            username=env.get_string("USERNAME"),
-            password=env.get_string("PASSWORD"),
-            cookie_file=env.get_string("COOKIE_FILE"),
+            username=env.get_string("username"),
+            password=env.get_string("password"),
+            cookie_file=env.get_string("cookie-file", transform=Path),
         )
 
 
@@ -51,14 +51,12 @@ class DownloaderConfig:
             return cls(
                 credentials=DownloaderCredentials.from_env(env),
                 max_file_size=int(
-                    env.get_string("MAX_DOWNLOAD_FILE_SIZE", default="40_000_000")
+                    env.get_string("max-download-file-size", default="40_000_000")
                 ),
-                storage_dir=Path(env.get_string("STORAGE_DIR", default="downloads")),
-                topic=cls._parse_topic(
-                    env.get_string("DOWNLOAD_TYPE", default="download")
-                ),
+                storage_dir=env.get_string("storage-dir", default=Path("downloads"), transform=Path),
+                topic=                    env.get_string("download-type", default="download", transform=cls._parse_topic),
                 upload_chat_id=int(
-                    env.get_string("UPLOAD_CHAT_ID", default="1259947317")
+                    env.get_string("upload-chat-id", default="1259947317")
                 ),
             )
         except ValueError as e:
@@ -74,8 +72,8 @@ class SentryConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            dsn=env.get_string("SENTRY_DSN"),
-            release=env.get_string("APP_VERSION", default="debug"),
+            dsn=env.get_string("sentry-dsn"),
+            release=env.get_string("app-version", default="debug"),
         )
 
 
@@ -87,8 +85,8 @@ class TelegramConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            token=env.get_string("API_KEY", required=True),
-            updater_nats=NatsConfig.from_env(env.scoped("NATS_")),
+            token=env.get_string("api-key", required=True),
+            updater_nats=NatsConfig.from_env(env / "nats"),
         )
 
 
@@ -107,9 +105,9 @@ class EventNatsConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            endpoint=env.get_string("ENDPOINT", required=True),
-            credentials=env.get_string("CREDENTIALS"),
-            stream_name=env.get_string("STREAM_NAME", required=True),
+            endpoint=env.get_string("endpoint", required=True),
+            credentials=env.get_string("credentials"),
+            stream_name=env.get_string("stream-name", required=True),
         )
 
 
@@ -120,7 +118,7 @@ class EventConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            nats=EventNatsConfig.from_env(env.scoped("NATS_CANCER_")),
+            nats=EventNatsConfig.from_env(env / "nats-cancer"),
         )
 
 
@@ -137,7 +135,7 @@ class Config:
         return cls(
             download=DownloaderConfig.from_env(env),
             event=EventConfig.from_env(env),
-            running_signal_file=env.get_string("RUNNING_SIGNAL_FILE"),
+            running_signal_file=env.get_string("running-signal-file"),
             sentry=SentryConfig.from_env(env),
-            telegram=TelegramConfig.from_env(env.scoped("TELEGRAM_")),
+            telegram=TelegramConfig.from_env(env / "telegram"),
         )
