@@ -3,7 +3,6 @@ import signal
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, cast
 from urllib.parse import ParseResult, urlparse
 
@@ -283,7 +282,7 @@ def run(config: Config) -> None:
         if signal_file is None:
             return
 
-        with Path(signal_file).open("w"):
+        with signal_file.open("w"):
             pass
 
     app = (

@@ -11,7 +11,7 @@ from cancer.message import Topic
 _LOG = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class DownloaderCredentials:
     username: str | None
     password: str | None
@@ -26,7 +26,7 @@ class DownloaderCredentials:
         )
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class DownloaderConfig:
     credentials: DownloaderCredentials
     max_file_size: int
@@ -50,9 +50,7 @@ class DownloaderConfig:
         try:
             return cls(
                 credentials=DownloaderCredentials.from_env(env),
-                max_file_size=int(
-                    env.get_string("max-download-file-size", default="40_000_000")
-                ),
+                max_file_size=env.get_int("max-download-file-size", default=40_000_000),
                 storage_dir=env.get_string(
                     "storage-dir", default=Path("downloads"), transform=Path
                 ),
@@ -61,16 +59,14 @@ class DownloaderConfig:
                     default=cast(Topic, Topic.download),
                     transform=cls._parse_topic,
                 ),
-                upload_chat_id=int(
-                    env.get_string("upload-chat-id", default="1259947317")
-                ),
+                upload_chat_id=env.get_int("upload-chat-id", default=1259947317),
             )
         except ValueError as e:
-            _LOG.info("Downloader config is missing %s", e)
+            _LOG.info("Downloader config is missing. %s", e)
             return None
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class SentryConfig:
     dsn: str | None
     release: str
@@ -83,7 +79,7 @@ class SentryConfig:
         )
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class TelegramConfig:
     token: str
     updater_nats: NatsConfig
@@ -96,7 +92,7 @@ class TelegramConfig:
         )
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class EventNatsConfig:
     endpoint: str
     credentials: str | None
@@ -117,7 +113,7 @@ class EventNatsConfig:
         )
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class EventConfig:
     nats: EventNatsConfig
 
@@ -128,11 +124,11 @@ class EventConfig:
         )
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class Config:
     download: DownloaderConfig | None
     event: EventConfig
-    running_signal_file: str | None
+    running_signal_file: Path | None
     sentry: SentryConfig
     telegram: TelegramConfig
 
@@ -141,7 +137,10 @@ class Config:
         return cls(
             download=DownloaderConfig.from_env(env),
             event=EventConfig.from_env(env),
-            running_signal_file=env.get_string("running-signal-file"),
+            running_signal_file=env.get_string(
+                "running-signal-file",
+                transform=Path,
+            ),
             sentry=SentryConfig.from_env(env),
             telegram=TelegramConfig.from_env(env / "telegram"),
         )
