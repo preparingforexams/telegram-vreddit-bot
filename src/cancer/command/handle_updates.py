@@ -8,7 +8,7 @@ from urllib.parse import ParseResult, urlparse
 
 from bs_nats_updater import create_updater
 from telegram import MessageEntity, Update, Voice
-from telegram.constants import ChatType, MessageEntityType
+from telegram.constants import ChatType, MessageEntityType, ReactionEmoji
 from telegram.error import BadRequest
 from telegram.ext import ApplicationBuilder, MessageHandler
 
@@ -243,7 +243,9 @@ class _CancerBot:
 
         try:
             await message.set_reaction(
-                reaction="🫡" if is_direct_chat else "😡",
+                reaction=ReactionEmoji.SALUTING_FACE
+                if is_direct_chat
+                else ReactionEmoji.POUTING_FACE,
             )
         except Exception as e:
             # Don't really care if this fails.

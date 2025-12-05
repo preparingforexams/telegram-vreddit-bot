@@ -12,6 +12,7 @@ from typing import cast
 from httpx import AsyncClient
 from PIL import Image
 from telegram import Bot, ReplyParameters, Video
+from telegram.constants import ReactionEmoji
 from telegram.error import BadRequest, NetworkError, TelegramError
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError, UnsupportedError
@@ -312,7 +313,7 @@ class _Downloader:
         *,
         chat_id: int,
         message_id: int,
-        reaction: str,
+        reaction: ReactionEmoji,
         private_chat_message: str | None = None,
     ) -> None:
         try:
@@ -393,12 +394,12 @@ class _Downloader:
                 if not files:
                     _LOG.warning("Download returned no videos")
                     if found_too_large:
-                        reaction = "🐳"
+                        reaction = ReactionEmoji.SPOUTING_WHALE
                         private_message = (
                             "Das Video ist zu groß für die Telegram Bot API"
                         )
                     else:
-                        reaction = "🗿"
+                        reaction = ReactionEmoji.MOYAI
                         private_message = "Konnte keine Videos finden"
 
                     await self._notify_failure(
