@@ -134,7 +134,7 @@ dev = [
     { name = "ruff", specifier = "==0.14.8" },
     { name = "types-pillow", specifier = "==10.2.*" },
     { name = "types-requests", specifier = ">=2.28.11,<3.0.0" },
-    { name = "types-yt-dlp", specifier = "==2025.11.12.*" },
+    { name = "types-yt-dlp", specifier = "==2025.12.8.*" },
 ]
 
 [[package]]
@@ -620,14 +620,14 @@ wheels = [
 
 [[package]]
 name = "types-yt-dlp"
-version = "2025.11.12.20251115"
+version = "2025.12.8.20251210"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/57/ee/7f6df9773b2fadf2300b5668aad1676ac1b5c20401bbba2647cf893cfda5/types_yt_dlp-2025.11.12.20251115.tar.gz", hash = "sha256:eac6f0a91a3312a531080d6d1e0d6f396f10366f25c478dd7eaf69fe0c7df97f", size = 42082, upload-time = "2025-11-15T03:00:24.926Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/fe/30d3d4a6c62f413369966a4fe549c2ea1bee8a8d590bd4c8d831951a3bbd/types_yt_dlp-2025.12.8.20251210.tar.gz", hash = "sha256:7eda94d9ff745049aa6b624f2bc91b84db5d07141bb3ba7c2223ab9daafd2336", size = 42182, upload-time = "2025-12-10T03:14:36.996Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/32/1cbc426d8f8b305b19d58c5d0ac6546131cc83141ab24817d9130e2f67b0/types_yt_dlp-2025.11.12.20251115-py3-none-any.whl", hash = "sha256:2269eb81f3b7c32cb6acebcb5d7f666197051380676e5f5398d6340d46b0a26a", size = 57365, upload-time = "2025-11-15T03:00:23.931Z" },
+    { url = "https://files.pythonhosted.org/packages/26/41/408aece2675deaf58beadc1be25110adafe957e2da15138d739e5f7f2d18/types_yt_dlp-2025.12.8.20251210-py3-none-any.whl", hash = "sha256:5d8e37032c6dffa3651b1a1706a7eb541ffe5fb187778bbd817cb055d6ac0e70", size = 57367, upload-time = "2025-12-10T03:14:36.134Z" },
 ]
 
 [[package]]
