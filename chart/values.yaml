@@ -68,10 +68,10 @@ subscribers:
       DOWNLOAD_TYPE: vimeo-download
     resources:
       limits:
-        cpu: "2"
+        cpu: "1"
         memory: 2048Mi
       requests:
-        cpu: "2"
+        cpu: "1"
         memory: 2048Mi
   youtube-converter:
     kedaConsumer: youtube-url-convert
@@ -92,10 +92,10 @@ subscribers:
       DOWNLOAD_TYPE: youtube-download
     resources:
       limits:
-        cpu: "2"
+        cpu: "1"
         memory: 2048Mi
       requests:
-        cpu: "2"
+        cpu: "1"
         memory: 2048Mi
 
 scratch:
